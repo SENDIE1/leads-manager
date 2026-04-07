@@ -94,6 +94,9 @@
   thead th{background:var(--bg3)}
   thead{position:sticky;top:0;z-index:50;isolation:isolate}
   .gh th{background:var(--bg3);padding:4px 8px;text-align:center;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);border-right:1px solid var(--border);white-space:nowrap}
+  .gh th:nth-child(1),.gh th:nth-child(2),.gh th:nth-child(3){position:sticky;z-index:11;background:var(--bg3);left:0}
+  .gh th:nth-child(2){left:40px}
+  .gh th:nth-child(3){left:80px}
   .gh th.g1{background:#e0f7f4;color:#0d7a6e;border-bottom:2px solid #0d9488}
   .gh th.g2{background:#dbeafe;color:#1e40af;border-bottom:2px solid #2563eb}
   .gh th.g3{background:#f3e8ff;color:#6b21a8;border-bottom:2px solid #7c3aed}
@@ -107,11 +110,11 @@
   .ch th{background:var(--bg2);padding:7px 8px;text-align:left;font-size:10px;font-weight:600;color:var(--text2);border-bottom:1px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;min-width:80px}
   .ch th:hover{background:var(--bg3);color:var(--text)}
   .ch th:nth-child(1),.ch th:nth-child(2),.ch th:nth-child(3){position:sticky;z-index:11;background:var(--bg2)}
-  tbody td:nth-child(1),tbody td:nth-child(2),tbody td:nth-child(3){position:sticky;z-index:10;background:var(--bg)}
-  tbody tr:hover td:nth-child(1),tbody tr:hover td:nth-child(2),tbody tr:hover td:nth-child(3){background:var(--bg3)}
+  tbody td:nth-child(1),tbody td:nth-child(2),tbody td:nth-child(3){position:sticky;z-index:10;background:var(--bg2)}
+  tbody tr:hover td:nth-child(1),tbody tr:hover td:nth-child(2),tbody tr:hover td:nth-child(3){background:var(--bg3) !important}
   .ch th:nth-child(1),tbody td:nth-child(1){left:0;width:40px;min-width:40px}
   .ch th:nth-child(2),tbody td:nth-child(2){left:40px;width:40px;min-width:40px}
-  .ch th:nth-child(3),tbody td:nth-child(3){left:80px;min-width:130px}
+  .ch th:nth-child(3),tbody td:nth-child(3){left:80px;min-width:130px;border-right:2px solid var(--border2) !important}
   tbody tr{background:var(--bg);border-bottom:1px solid var(--border);transition:background .1s}
   tbody tr:hover{background:var(--bg3)}
   tbody td{padding:7px 8px;border-right:1px solid var(--border);vertical-align:middle;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
@@ -613,6 +616,7 @@
                 <li><strong>CRF</strong> — Client Referral</li>
                 <li><strong>CRF Agency</strong> — Agency referral</li>
                 <li><strong>EDM</strong> — Email / direct mail campaign</li>
+                <li><strong>Website</strong> — Company website enquiry</li>
               </ul>
             </div>
         </div>
@@ -624,6 +628,7 @@
             <div class="ls-pill" data-key="rea"       data-color="#dc2626" data-bg="#fee2e2" onclick="toggleLeadSource(this)">REA</div>
             <div class="ls-pill" data-key="reaAds"    data-color="#ea580c" data-bg="#ffedd5" onclick="toggleLeadSource(this)">REA Ads</div>
             <div class="ls-pill" data-key="google"    data-color="#16a34a" data-bg="#dcfce7" onclick="toggleLeadSource(this)">Google</div>
+            <div class="ls-pill" data-key="website"   data-color="#0ea5e9" data-bg="#e0f2fe" onclick="toggleLeadSource(this)">Website</div>
             <div class="ls-pill" data-key="crf"       data-color="#ca8a04" data-bg="#fef9c3" onclick="toggleLeadSource(this)">CRF</div>
             <div class="ls-pill" data-key="crfAgency" data-color="#9333ea" data-bg="#fae8ff" onclick="toggleLeadSource(this)">CRF Agency</div>
             <div class="ls-pill" data-key="edm"       data-color="#0284c7" data-bg="#e0f2fe" onclick="toggleLeadSource(this)">EDM</div>
@@ -1244,7 +1249,7 @@ function mapFromDb(r) {
     leadMsg: r.lead_msg||'', roiEmail: r.roi_email||'', call1: r.call1||'', call2: r.call2||'',
     sms: r.sms||'', finalEmail: r.final_email||'', walkIns: !!r.walk_ins, social: !!r.social,
     roi: !!r.roi, rea: !!r.rea, reaAds: !!r.rea_ads, google: !!r.google, crf: !!r.crf,
-    crfAgency: !!r.crf_agency, edm: !!r.edm, lsoVisit: r.lso_visit||'',
+    crfAgency: !!r.crf_agency, edm: !!r.edm, website: !!r.website, lsoVisit: r.lso_visit||'',
     buyerType: r.buyer_type||'', timeToBuy: r.time_to_buy||'', priceHL: r.price_hl||'',
     priceLand: r.price_land||'', storey: r.storey||'', garage: r.garage||'',
     lotType: r.lot_type||'', lotArea: r.lot_area||'', lotNumbers: r.lot_numbers||'',
@@ -1266,7 +1271,7 @@ function mapToDb(l) {
     call2: l.call2||null, sms: l.sms||null, final_email: l.finalEmail||null,
     walk_ins: !!l.walkIns, social: !!l.social, roi: !!l.roi, rea: !!l.rea,
     rea_ads: !!l.reaAds, google: !!l.google, crf: !!l.crf, crf_agency: !!l.crfAgency,
-    edm: !!l.edm, lso_visit: l.lsoVisit||null, buyer_type: l.buyerType||null,
+    edm: !!l.edm, website: !!l.website, lso_visit: l.lsoVisit||null, buyer_type: l.buyerType||null,
     time_to_buy: l.timeToBuy||null, price_hl: l.priceHL||null, price_land: l.priceLand||null,
     storey: l.storey||null, garage: l.garage||null, lot_type: l.lotType||null,
     lot_area: l.lotArea||null, lot_numbers: l.lotNumbers||null,
@@ -2039,6 +2044,7 @@ function getLeadSource(l) {
     [l.rea,       'REA',        '#dc2626','#fee2e2'],
     [l.reaAds,    'REA Ads',    '#ea580c','#ffedd5'],
     [l.google,    'Google',     '#16a34a','#dcfce7'],
+    [l.website,   'Website',    '#0ea5e9','#e0f2fe'],
     [l.crf,       'CRF',        '#ca8a04','#fef9c3'],
     [l.crfAgency, 'CRF Agency', '#9333ea','#fae8ff'],
     [l.edm,       'EDM',        '#0284c7','#e0f2fe'],
@@ -2349,7 +2355,7 @@ const FIELD_LABELS = {
   storey:'Storey',garage:'Garage',lotType:'Frontage',lotArea:'Area (m²)',lotNumbers:'Lot Numbers',
 hotWarmStatus:'Status',cfsLot:'CFS Lot #',underCfs:'Under CfS',
   lsoVisit:'LSO Visit',walkIns:'Walk Ins',social:'Social',roi:'ROI',rea:'REA',reaAds:'REA Ads',
-  google:'Google',crf:'CRF',crfAgency:'CRF Agency',edm:'EDM',tba1:'TBA 1',tba2:'TBA 2',tba3:'TBA 3',
+  google:'Google',website:'Website',crf:'CRF',crfAgency:'CRF Agency',edm:'EDM',tba1:'TBA 1',tba2:'TBA 2',tba3:'TBA 3',
   deposit5:'5%',deposit5plus5:'5%+5%',deposit10:'10%',settleOk:'Settle OK',
   isHot:'Hot',isWarm:'Warm',isCold:'Cold',
   tc:'TC',cb:'CB',vm:'VM',na:'NA',nm:'NM',dc:'DC',ni:'NI',duplicate:'Duplicate',
@@ -2538,7 +2544,7 @@ async function saveLead() {
   const txtFields = ['name','date','mobile','email','leadMsg',
    'buyerType','timeToBuy','suburbPostcode','pocComments','priceLand','priceHL','storey','garage',
    'lotType','lotArea','lotNumbers','cfsLot','underCfs','lsoVisit'];
-  const boolFields = ['walkIns','social','roi','rea','reaAds','google','crf','crfAgency','edm','tba1','tba2','tba3',
+  const boolFields = ['walkIns','social','roi','rea','reaAds','google','website','crf','crfAgency','edm','tba1','tba2','tba3',
    'deposit5','deposit5plus5','deposit10','settleOk','isHot','isWarm','isCold','tc','cb','vm','na','nm','dc','ni','duplicate'];
 
   txtFields.forEach(f=>{ lead[f]=document.getElementById('f-'+f)?.value||''; });
