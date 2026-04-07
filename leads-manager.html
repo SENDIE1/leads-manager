@@ -1407,7 +1407,7 @@ async function loadData() {
   ]);
   leads    = (leadsRes.data    || []).map(mapFromDb);
   agencies = agenciesRes.data  || [];
-  agents   = agentsRes.data    || [];
+  agents   = (agentsRes.data || []).map(a => ({...a, agencyId: a.agency_id||null}));
   deletedLeads = [];
   nextId   = leads.length ? Math.max(...leads.map(l=>parseInt(l.id)||0))+1 : 1;
   const auditRes = await sb.from('audit_log').select('*').order('created_at',{ascending:false}).limit(500);
@@ -1436,7 +1436,7 @@ async function persist(opts) {
     }
   }
   if (opts.agency) { await sb.from('agencies').upsert(opts.agency); }
-  if (opts.agent)  { await sb.from('agents').upsert(opts.agent); }
+  if (opts.agent)  { const ag = {...opts.agent, agency_id: opts.agent.agencyId||opts.agent.agency_id||null}; await sb.from('agents').upsert(ag); }
   if (opts.deleteLead)    { await sb.from('leads').update({deleted:true,deleted_at:new Date().toISOString(),deleted_by:me?.username||''}).eq('id',opts.deleteLead); }
   if (opts.deleteAgency)  { await sb.from('agencies').delete().eq('id',opts.deleteAgency); }
   if (opts.deleteAgent)   { await sb.from('agents').delete().eq('id',opts.deleteAgent); }
@@ -3162,7 +3162,7 @@ async function saveEntity() {
       const ag = agents.find(a=>a.id===editEntityId);
       Object.assign(ag, {name, email:document.getElementById('ed-principal').value.trim(), color:pickedColor});
     } else {
-      agents.push({id:'agt_'+Date.now(), agency_id:agencyId, name, email:document.getElementById('ed-principal').value.trim(), color:pickedColor});
+      agents.push({id:'agt_'+Date.now(), agencyId:agencyId, agency_id:agencyId, name, email:document.getElementById('ed-principal').value.trim(), color:pickedColor});
     }
     await persist({agent: agents.find(a=>a.name===name)||agents[agents.length-1]}); entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityType=null; renderAgentsPanel(); buildDynFilters();
   }
