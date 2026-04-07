@@ -111,13 +111,13 @@
   .ch th:hover{background:var(--bg3);color:var(--text)}
   .ch th:nth-child(1),.ch th:nth-child(2),.ch th:nth-child(3){position:sticky;z-index:11;background:var(--bg2)}
   tbody td:nth-child(1),tbody td:nth-child(2),tbody td:nth-child(3){position:sticky;z-index:10;background:var(--bg2)}
-  tbody tr:hover td:nth-child(1),tbody tr:hover td:nth-child(2),tbody tr:hover td:nth-child(3){background:var(--bg3) !important}
   .ch th:nth-child(1),tbody td:nth-child(1){left:0;width:40px;min-width:40px}
   .ch th:nth-child(2),tbody td:nth-child(2){left:40px;width:40px;min-width:40px}
   .ch th:nth-child(3),tbody td:nth-child(3){left:80px;min-width:130px;border-right:2px solid var(--border2) !important}
-  tbody tr{background:var(--bg);border-bottom:1px solid var(--border);transition:background .1s}
-  tbody tr:hover{background:var(--bg3)}
-  tbody td{padding:7px 8px;border-right:1px solid var(--border);vertical-align:middle;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
+  tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+  tbody tr:hover td{background:var(--bg3) !important}
+  tbody td{background:var(--bg2)}
+  tbody td{padding:7px 8px;border-right:1px solid var(--border);vertical-align:middle;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;background:var(--bg2)}
   .rn{font-size:10px;color:var(--text3);text-align:right}
   .rcb{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
   .badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:500;white-space:nowrap}
@@ -156,7 +156,7 @@
   tbody td:nth-child(n+35):nth-child(-n+36),
   .ch th:nth-child(n+35):nth-child(-n+36) { background-color: rgba(124,58,237,0.05) }  /* g10 Assignment */
   /* Keep hover visible over shading */
-  tbody tr:hover td { background-color: var(--bg3) !important }
+  tbody tr:hover td { background-color: var(--bg3) !important; background: var(--bg3) !important }
   .ls-pill,.oc-pill{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid transparent;transition:all .15s;user-select:none;opacity:1}
   .ls-pill.active,.oc-pill.active{border-color:currentColor;font-weight:600}
   .ls-pill:not(.active),.oc-pill:not(.active){filter:saturate(0.5);opacity:0.7}
