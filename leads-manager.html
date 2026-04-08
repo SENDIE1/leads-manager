@@ -977,14 +977,10 @@
     </div>
     <div class="db" oninput="entityDirty=true" onchange="entityDirty=true">
       <div class="fs"><div class="fst" id="edFormTitle">Details</div>
-        <div class="fg" id="edFormGrid">
+        <div class="fg1" id="edFormGrid">
           <div class="ff"><label id="edNameLabel">Name *</label><input type="text" id="ed-name"></div>
           <div class="ff" id="ed-principalWrap"><label>Principal Name</label><input type="text" id="ed-principal"></div>
-          <div class="ff"><label>Login Username *</label><input type="text" id="ed-username" autocomplete="off"></div>
-          <div class="ff"><label>Password *</label><input type="password" id="ed-password" autocomplete="off"></div>
-        </div>
-        <div class="fg1" style="margin-top:12px" id="ed-colorWrap">
-          <div class="ff"><label>Colour</label><div class="swatches" id="colorSwatches"></div></div>
+          <div class="ff" id="ed-emailWrap"><label id="edEmailLabel">Login Email *</label><input type="email" id="ed-email" autocomplete="off" placeholder="email@example.com"></div>
         </div>
       </div>
     </div>
@@ -3200,11 +3196,12 @@ function renderAgentsPanel() {
 // ═══════════════════════════════════════════
 //  ENTITY DRAWER (agency or agent)
 // ═══════════════════════════════════════════
-function buildColorSwatches() {
-  document.getElementById('colorSwatches').innerHTML = COLORS.map(c =>
-    `<div class="swatch${c===pickedColor?' sel':''}" style="background:${c}" onclick="pickColor('${c}',this)"></div>`
-  ).join('');
+function autoPickColor() {
+  const usedColors = [...agencies.map(a=>a.color), ...agents.map(a=>a.color)].filter(Boolean);
+  const available = COLORS.filter(c => !usedColors.includes(c));
+  return available.length ? available[0] : COLORS[Math.floor(Math.random() * COLORS.length)];
 }
+function buildColorSwatches() {}
 function pickColor(c, el) {
   pickedColor=c;
   document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));
@@ -3225,13 +3222,13 @@ function openEntityDrawer(type, id) {
   document.getElementById('edFormTitle').textContent = isAgency ? 'Agency Details' : 'Agent Details';
   document.getElementById('edNameLabel').textContent = isAgency ? 'Agency Name *' : 'Agent Name *';
   document.getElementById('ed-principalWrap').style.display = isAgency ? 'block' : 'none';
-  document.getElementById('ed-colorWrap').style.display = 'block';
+
 
   document.getElementById('ed-name').value = '';
   document.getElementById('ed-principal').value = '';
-  document.getElementById('ed-username').value = '';
-  document.getElementById('ed-password').value = '';
-  buildColorSwatches();
+  document.getElementById('ed-email').value = '';
+  document.getElementById('ed-emailWrap').style.display = 'block';
+  document.getElementById('edEmailLabel').textContent = isAgency ? 'Login Email *' : 'Login Email *';
 
   if (id) {
     const list = isAgency ? agencies : agents;
@@ -3239,10 +3236,8 @@ function openEntityDrawer(type, id) {
     if (!e) return;
     document.getElementById('ed-name').value      = e.name;
     document.getElementById('ed-principal').value = e.principal||'';
-    document.getElementById('ed-username').value  = e.username;
-    document.getElementById('ed-password').value  = e.password;
-    pickedColor = e.color||COLORS[5];
-    buildColorSwatches();
+    document.getElementById('ed-email').value     = e.email||'';
+    pickedColor = e.color||autoPickColor();
   }
   entityDirty = false;
   document.getElementById('entityOv').classList.add('open');
@@ -3260,35 +3255,69 @@ function closeEntityDrawer() {
 }
 
 async function saveEntity() {
-  const name = document.getElementById('ed-name').value.trim();
-  const user = document.getElementById('ed-username').value.trim();
-  const pass = document.getElementById('ed-password').value;
-  if (entityType === 'agency' && (!name||!user||!pass)) { alert('Name, username and password are required.'); return; }
-  if (entityType === 'agent' && !name) { alert('Agent name is required.'); return; }
-
-  const allLogins = [...agencies.map(a=>a.username), ...agents.map(a=>a.username)];
-  if (!editEntityId && user && allLogins.includes(user)) { alert('Username already taken.'); return; }
+  const name  = document.getElementById('ed-name').value.trim();
+  const email = document.getElementById('ed-email').value.trim();
+  if (!name) { alert('Name is required.'); return; }
+  if (!editEntityId && !email) { alert('Login email is required.'); return; }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address.'); return; }
+  const color = editEntityId ? (pickedColor||autoPickColor()) : autoPickColor();
+  const isNew = !editEntityId;
 
   if (entityType === 'agency') {
     if (editEntityId) {
       const ag = agencies.find(a=>a.id===editEntityId);
-      Object.assign(ag, {name, principal:document.getElementById('ed-principal').value.trim(), color:pickedColor});
+      Object.assign(ag, {name, principal:document.getElementById('ed-principal').value.trim(), color});
     } else {
-      agencies.push({id:'ag_'+Date.now(), name, principal:document.getElementById('ed-principal').value.trim(), color:pickedColor});
+      agencies.push({id:'ag_'+Date.now(), name, principal:document.getElementById('ed-principal').value.trim(), email, color});
     }
-      await persist({agency: agencies.find(a=>a.name===name)||agencies[agencies.length-1]}); entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityType=null; renderAgenciesPanel(); buildDynFilters();
-    entityDirty = false;
+    const savedAgency = agencies.find(a=>a.name===name)||agencies[agencies.length-1];
+    await persist({agency: savedAgency});
+
+    // Send invite for new agencies
+    if (isNew && email) {
+      notify('Saving agency and sending invite…');
+      const res = await fetch(`https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/invite-user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_KEY}` },
+        body: JSON.stringify({ email, role: 'agency', name, agency_id: savedAgency.id })
+      });
+      const result = await res.json();
+      if (result.error) { notify('Agency saved but invite failed: ' + result.error); }
+      else { notify('Agency saved and invite sent to ' + email + ' ✓'); }
+    } else {
+      notify(isNew ? 'Agency saved ✓' : 'Agency updated ✓');
+    }
+
+    entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityType=null; renderAgenciesPanel(); buildDynFilters();
+
   } else {
     const agencyId = entityParentAgencyId || me.agencyId;
     if (editEntityId) {
       const ag = agents.find(a=>a.id===editEntityId);
-      Object.assign(ag, {name, email:document.getElementById('ed-principal').value.trim(), color:pickedColor});
+      Object.assign(ag, {name, email, color});
     } else {
-      agents.push({id:'agt_'+Date.now(), agencyId:agencyId, agency_id:agencyId, name, email:document.getElementById('ed-principal').value.trim(), color:pickedColor});
+      agents.push({id:'agt_'+Date.now(), agencyId:agencyId, agency_id:agencyId, name, email, color});
     }
-    await persist({agent: agents.find(a=>a.name===name)||agents[agents.length-1]}); entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityParentAgencyId=null; entityType=null; renderAgenciesPanel(); buildDynFilters();
+    const savedAgent = agents.find(a=>a.name===name)||agents[agents.length-1];
+    await persist({agent: savedAgent});
+
+    // Send invite for new agents
+    if (isNew && email) {
+      notify('Saving agent and sending invite…');
+      const res = await fetch(`https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/invite-user`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_KEY}` },
+        body: JSON.stringify({ email, role: 'agent', name, agency_id: agencyId, agent_id: savedAgent.id })
+      });
+      const result = await res.json();
+      if (result.error) { notify('Agent saved but invite failed: ' + result.error); }
+      else { notify('Agent saved and invite sent to ' + email + ' ✓'); }
+    } else {
+      notify(isNew ? 'Agent saved ✓' : 'Agent updated ✓');
+    }
+
+    entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityParentAgencyId=null; entityType=null; renderAgenciesPanel(); buildDynFilters();
   }
-  notify(editEntityId?'Updated ✓':'Created ✓');
 }
 
 async function deleteAgency(id) {
