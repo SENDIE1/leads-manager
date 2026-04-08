@@ -973,7 +973,11 @@
     </div>
     <div class="dh">
       <div><div class="dt" id="edTitle">Add</div><div class="ds" id="edSub"></div></div>
-      <button class="dc-btn" onclick="closeEntityDrawer()">×</button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-ghost btn-sm" onclick="closeEntityDrawer()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="saveEntity()">Save</button>
+        <button class="dc-btn" onclick="closeEntityDrawer()">×</button>
+      </div>
     </div>
     <div class="db" oninput="entityDirty=true" onchange="entityDirty=true">
       <div class="fs" style="width:100%"><div class="fst" id="edFormTitle">Details</div>
@@ -984,7 +988,7 @@
         </div>
       </div>
     </div>
-    <div class="df">
+    <div class="df" style="display:none">
       <button class="btn btn-ghost" onclick="closeEntityDrawer()">Cancel</button>
       <button class="btn btn-primary" onclick="saveEntity()">Save</button>
     </div>
@@ -3332,10 +3336,17 @@ async function saveEntity() {
 
 async function deleteAgency(id) {
   if (!confirm('Delete agency? Their leads become unassigned.')) return;
+  // First unassign all leads in Supabase
+  await sb.from('leads').update({assigned_agency: null, assigned_agent: null}).eq('assigned_agency', id);
+  // Then delete all agents for this agency
+  await sb.from('agents').delete().eq('agency_id', id);
+  // Then delete the agency
+  await sb.from('agencies').delete().eq('id', id);
+  // Update local state
   leads.forEach(l=>{ if(l.assignedAgency===id){l.assignedAgency=null;l.assignedAgent=null;} });
   agents = agents.filter(a=>a.agencyId!==id);
   agencies = agencies.filter(a=>a.id!==id);
-  await persist({deleteAgency:id}); renderAgenciesPanel(); buildDynFilters(); renderLeads(); notify('Agency deleted');
+  renderAgenciesPanel(); buildDynFilters(); renderLeads(); notify('Agency deleted');
 }
 async function deleteAgent(id) {
   if (!confirm('Delete agent? Their leads become unassigned from agent.')) return;
