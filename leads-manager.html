@@ -100,6 +100,7 @@
   .gh th:nth-child(1){position:sticky;z-index:11;background:var(--bg3) !important;left:0;width:40px;min-width:40px}
   .gh th:nth-child(2){position:sticky;z-index:11;background:var(--bg3) !important;left:40px;width:40px;min-width:40px}
   .gh th:nth-child(3){position:sticky;z-index:11;background:var(--bg3) !important;left:80px;min-width:130px}
+  .ch th:nth-child(3){background:#e0f7f4 !important}
   .gh th.g1{background:#e0f7f4;color:#0d7a6e;border-bottom:2px solid #0d9488}
   .gh th.g2{background:#dbeafe;color:#1e40af;border-bottom:2px solid #2563eb}
   .gh th.g3{background:#f3e8ff;color:#6b21a8;border-bottom:2px solid #7c3aed}
@@ -142,13 +143,13 @@
   .empty-row td{text-align:center;padding:60px 20px;color:var(--text3);font-size:12px}
 
   /* Column header shading — matches group headers exactly */
-  .ch th:nth-child(n+4):nth-child(-n+5)   { background-color: #e0f7f4 }  /* g1 Lead Details (D-E) */
-  .ch th:nth-child(n+6):nth-child(-n+10)  { background-color: #dbeafe }  /* g2 48 Hours Process (F-J) */
-  .ch th:nth-child(11)                    { background-color: #f3e8ff }  /* g3 Lead Source (K) */
-  .ch th:nth-child(n+12):nth-child(-n+24) { background-color: #fef9c3 }  /* g4 Qualifying Questions (L-X) */
-  .ch th:nth-child(n+25):nth-child(-n+26) { background-color: #ccfbf1 }  /* g7 Under CFS (Y-Z) */
-  .ch th:nth-child(n+27):nth-child(-n+32) { background-color: #fee2e2 }  /* g8 Qualifying Outcomes (AA-AF) */
-  .ch th:nth-child(n+33):nth-child(-n+34) { background-color: #ede9fe }  /* g10 Assignment (AG-AH) */
+  .ch th:nth-child(n+3):nth-child(-n+7)   { background-color: #e0f7f4 }  /* LEAD DETAILS (A-E) */
+  .ch th:nth-child(n+8):nth-child(-n+12)  { background-color: #dbeafe }  /* 48 HOURS PROCESS (F-J) */
+  .ch th:nth-child(13)                    { background-color: #f3e8ff }  /* LEAD SOURCE (K) */
+  .ch th:nth-child(n+14):nth-child(-n+26) { background-color: #fef9c3 }  /* QUALIFYING QUESTIONS (L-X) */
+  .ch th:nth-child(n+27):nth-child(-n+28) { background-color: #ccfbf1 }  /* UNDER CFS (Y-Z) */
+  .ch th:nth-child(n+29):nth-child(-n+34) { background-color: #fee2e2 }  /* QUALIFYING OUTCOMES (AA-AF) */
+  .ch th:nth-child(n+35):nth-child(-n+36) { background-color: #ede9fe }  /* ASSIGNMENT (AG-AH) */
   /* Zebra striping on data rows */
   tbody tr:nth-child(even) td { background-color: #f8fafc }
   tbody tr:nth-child(odd) td  { background-color: #ffffff }
@@ -422,7 +423,7 @@
             <th style="background:var(--bg3)"></th>
             <th style="background:var(--bg3)"></th>
             <th style="background:var(--bg3)"></th>
-            <th colspan="2" class="g1">LEAD DETAILS</th>
+            <th colspan="5" class="g1">LEAD DETAILS</th>
             <th colspan="5" class="g2">48 HOURS PROCESS</th>
             <th colspan="1" class="g3">LEAD SOURCE</th>
             <th colspan="13" class="g4">QUALIFYING QUESTIONS</th>
@@ -438,6 +439,7 @@
             <th onclick="sortBy('name')">NAME</th>
             <th onclick="sortBy('mobile')">MOBILE</th>
             <th onclick="sortBy('email')">EMAIL</th>
+            <th onclick="sortBy('leadMsg')">LEAD MESSAGE</th>
             <th onclick="sortBy('roiEmail')">RETURN ON INVESTMENT EMAIL</th>
             <th onclick="sortBy('call1')">1ST CALL</th>
             <th onclick="sortBy('call2')">2ND CALL</th>
@@ -2108,6 +2110,7 @@ function renderRow(l) {
     <td style="font-weight:500;color:var(--text)">${l.name||'—'}</td>
     <td style="font-size:11px${!isMobileValid(l.mobile)&&l.mobile?';color:var(--red);font-weight:500':''}">${l.mobile||'—'}${!isMobileValid(l.mobile)&&l.mobile?' <span title="Invalid format" style="cursor:default">⚠</span>':''}</td>
     <td style="font-size:11px${!isEmailValid(l.email)&&l.email?';color:var(--red);font-weight:500':';color:var(--accent)'}">${l.email||'—'}${!isEmailValid(l.email)&&l.email?' <span title="Invalid email" style="cursor:default">⚠</span>':''}</td>
+    <td style="font-size:11px;color:var(--text2)" title="${l.leadMsg||''}">${l.leadMsg||'—'}</td>
     <td style="font-size:11px" class="${isBackdated(l.roiEmail)?'bd-cell':''}">${fmtDate(l.roiEmail)||'—'}${isBackdated(l.roiEmail)?'<span class="bd-dot"></span>':''}</td>
     <td style="font-size:11px" class="${isBackdated(l.call1)?'bd-cell':''}">${fmtDate(l.call1)||'—'}${isBackdated(l.call1)?'<span class="bd-dot"></span>':''}</td>
     <td style="font-size:11px" class="${isBackdated(l.call2)?'bd-cell':''}">${fmtDate(l.call2)||'—'}${isBackdated(l.call2)?'<span class="bd-dot"></span>':''}</td>
