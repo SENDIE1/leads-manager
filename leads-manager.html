@@ -426,9 +426,8 @@
             <th colspan="4" class="g1">LEAD DETAILS</th>
             <th colspan="5" class="g2">48 HOURS PROCESS</th>
             <th colspan="1" class="g3">LEAD SOURCE</th>
-            <th colspan="13" class="g4">QUALIFYING QUESTIONS</th>
-            <th colspan="1" class="g5">COMMENTS STATUS</th>
-            <th colspan="2" class="g7">UNDER CFS</th>
+            <th colspan="14" class="g4">QUALIFYING QUESTIONS</th>
+            <th colspan="1" class="g7">UNDER CFS</th>
             <th colspan="6" class="g8">QUALIFYING OUTCOMES</th>
             <th colspan="2" class="g10">ASSIGNMENT</th>
           </tr>
@@ -459,14 +458,14 @@
             <th onclick="sortBy('deposit5')">5% DEPOSIT</th>
             <th onclick="sortBy('deposit5plus5')">5% + 5% DEPOSIT</th>
             <th onclick="sortBy('deposit10')">10% DEPOSIT</th>
-            <th onclick="sortBy('hotWarmStatus')">HOT / WARM / COLD STATUS</th>
-            <th onclick="sortBy('cfsLot')">CONTRACT FOR SALE LOT #</th>
-            <th onclick="sortBy('underCfs')">UNDER CONTRACT FOR SALE</th>
-            <th onclick="sortBy('isHot')">HOT / WARM / COLD (OUTCOME)</th>
+            <th onclick="sortBy('hotWarmStatus')">HWC STATUS</th>
+            <th onclick="sortBy('cfsLot')">CFS LOT #</th>
+            <th onclick="sortBy('underCfs')">UNDER CFS</th>
+            <th onclick="sortBy('isHot')">HWC OUTCOME</th>
             <th onclick="sortBy('tc')">FOLLOW UP</th>
             <th onclick="sortBy('nm')">CLOSED</th>
             <th onclick="sortBy('settleOk')">SETTLE TIME OK</th>
-            <th onclick="sortBy('pocComments')">POINT OF CONTACT COMMENTS</th>
+            <th onclick="sortBy('pocComments')">POC COMMENTS</th>
             <th onclick="sortBy('suburbPostcode')">POSTCODE</th>
             <th onclick="sortBy('assignedAgency')">ASSIGNED AGENCY</th>
             <th onclick="sortBy('assignedAgent')">ASSIGNED AGENT</th>
@@ -2128,9 +2127,40 @@ function renderRow(l) {
     <td>${ck(l.settleOk)}</td>
     <td style="font-size:11px;color:var(--text2)">${l.pocComments||'—'}</td>
     <td style="font-size:11px${!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?';color:var(--red);font-weight:500':''}">${l.suburbPostcode||'—'}${!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?' <span title="Invalid postcode" style="cursor:default">⚠</span>':''}</td>
-    <td>${agBadge(l.assignedAgency, agencies)}</td>
-    <td>${agBadge(l.assignedAgent, agents)}</td>
+    <td>${me.role==='admin' ? 
+      `<select style="font-size:11px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:3px 6px;color:var(--text);cursor:pointer;max-width:130px" 
+        onchange="quickAssignAgency(${l.id},this.value)" onclick="event.stopPropagation()">
+        <option value="">— Unassigned —</option>
+        ${agencies.map(a=>`<option value="${a.id}" ${l.assignedAgency===a.id?'selected':''}>${a.name}</option>`).join('')}
+      </select>` : agBadge(l.assignedAgency, agencies)}</td>
+    <td>${(me.role==='admin'||me.role==='agency') ? 
+      `<select style="font-size:11px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:3px 6px;color:var(--text);cursor:pointer;max-width:130px"
+        onchange="quickAssignAgent(${l.id},this.value)" onclick="event.stopPropagation()">
+        <option value="">— Unassigned —</option>
+        ${(me.role==='agency' ? agents.filter(a=>a.agencyId===me.agencyId) : agents).map(a=>`<option value="${a.id}" ${l.assignedAgent===a.id?'selected':''}>${a.name}</option>`).join('')}
+      </select>` : agBadge(l.assignedAgent, agents)}</td>
   </tr>`;
+}
+
+async function quickAssignAgency(leadId, agencyId) {
+  const l = leads.find(x=>x.id===leadId); if(!l) return;
+  const old = l.assignedAgency;
+  l.assignedAgency = agencyId||null;
+  l.assignedAgent = null; // clear agent when agency changes
+  addAuditEntry('assigned', l.id, l.name, [{field:'Agency', from:old||'Unassigned', to:agencyId||'Unassigned'}]);
+  await persist({lead:l, auditEntry:auditLog[0]});
+  renderLeads();
+  notify('Agency assigned ✓');
+}
+
+async function quickAssignAgent(leadId, agentId) {
+  const l = leads.find(x=>x.id===leadId); if(!l) return;
+  const old = l.assignedAgent;
+  l.assignedAgent = agentId||null;
+  addAuditEntry('assigned', l.id, l.name, [{field:'Agent', from:old||'Unassigned', to:agentId||'Unassigned'}]);
+  await persist({lead:l, auditEntry:auditLog[0]});
+  renderLeads();
+  notify('Agent assigned ✓');
 }
 
 function renderLeads() {
@@ -3031,6 +3061,8 @@ function saveCustomFieldValues(lead) {
 // ═══════════════════════════════════════════
 //  MANAGEMENT PANELS
 // ═══════════════════════════════════════════
+let expandedAgencyId = null;
+
 function renderAgenciesPanel() {
   const mv = document.getElementById('mgmtView');
   const total = agencies.length;
@@ -3042,38 +3074,47 @@ function renderAgenciesPanel() {
     ${agencies.length ? agencies.map(ag => {
       const lCount = leads.filter(l=>l.assignedAgency===ag.id).length;
       const agencyAgents = agents.filter(a=>a.agencyId===ag.id);
-      return `<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:16px 20px;margin-bottom:14px">
-        <div style="display:flex;align-items:center;gap:14px;margin-bottom:${agencyAgents.length?'14px':'0'}">
+      const isExpanded = expandedAgencyId === ag.id;
+      return `<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;margin-bottom:8px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer" onclick="toggleAgencyExpand('${ag.id}')">
           <div class="card-dot" style="background:${ag.color}"></div>
           <div style="flex:1">
             <div class="card-name">${ag.name}</div>
-            <div class="card-meta">👤 ${ag.principal||'—'} &nbsp;·&nbsp; 👥 ${agencyAgents.length} agent${agencyAgents.length!==1?'s':''}</div>
+            <div class="card-meta">👤 ${ag.principal||'—'} &nbsp;·&nbsp; 👥 ${agencyAgents.length} agent${agencyAgents.length!==1?'s':''} &nbsp;·&nbsp; ${lCount} lead${lCount!==1?'s':''}</div>
           </div>
-          <div class="card-stat"><div class="card-count">${lCount}</div><div class="card-label">leads</div></div>
-          <div class="card-actions">
-            <button class="btn btn-primary btn-sm" onclick="openEntityDrawerForAgency('${ag.id}')">+ Add Agent</button>
+          <div style="font-size:11px;color:var(--text3);margin-right:4px">${isExpanded ? '▲ Hide' : '▼ Show agents'}</div>
+          <div class="card-actions" onclick="event.stopPropagation()">
             <button class="btn btn-ghost btn-sm" onclick="openEntityDrawer('agency','${ag.id}')">Edit</button>
             <button class="btn btn-danger btn-sm" onclick="deleteAgency('${ag.id}')">Delete</button>
           </div>
         </div>
-        ${agencyAgents.length ? `<div style="border-top:1px solid var(--border);padding-top:10px;display:flex;flex-direction:column;gap:6px">
-          ${agencyAgents.map(a => {
+        ${isExpanded ? `<div style="border-top:1px solid var(--border);padding:12px 16px;background:var(--bg2)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <span style="font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.5px;text-transform:uppercase">Agents</span>
+            <button class="btn btn-primary btn-sm" onclick="openEntityDrawerForAgency('${ag.id}')">+ Add Agent</button>
+          </div>
+          ${agencyAgents.length ? agencyAgents.map(a => {
             const alCount = leads.filter(l=>l.assignedAgent===a.id).length;
-            return `<div style="display:flex;align-items:center;gap:10px;padding:6px 10px;background:var(--bg2);border-radius:4px;border:1px solid var(--border)">
+            return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg3);border-radius:4px;border:1px solid var(--border);margin-bottom:6px">
               <div style="width:8px;height:8px;border-radius:50%;background:${a.color};flex-shrink:0"></div>
               <div style="flex:1">
                 <div style="font-size:12px;font-weight:600;color:var(--text)">${a.name}</div>
                 <div style="font-size:11px;color:var(--text3)">${a.email||'—'}</div>
               </div>
-              <div style="font-size:11px;color:var(--text3)">${alCount} lead${alCount!==1?'s':''}</div>
+              <div style="font-size:11px;color:var(--text3);margin-right:8px">${alCount} lead${alCount!==1?'s':''}</div>
               <button class="btn btn-ghost btn-sm" onclick="openEntityDrawer('agent','${a.id}')">Edit</button>
               <button class="btn btn-danger btn-sm" onclick="deleteAgent('${a.id}')">Delete</button>
             </div>`;
-          }).join('')}
-        </div>` : `<div style="font-size:11px;color:var(--text3);padding:8px 0 0">No agents yet — click + Add Agent to add one.</div>`}
+          }).join('') : '<div style="font-size:11px;color:var(--text3);padding:4px 0">No agents yet.</div>'}
+        </div>` : ''}
       </div>`;
     }).join('') : '<div style="color:var(--text3);font-size:12px;padding:20px">No agencies yet.</div>'}
   </div>`;
+}
+
+function toggleAgencyExpand(agencyId) {
+  expandedAgencyId = expandedAgencyId === agencyId ? null : agencyId;
+  renderAgenciesPanel();
 }
 
 function openEntityDrawerForAgency(agencyId) {
