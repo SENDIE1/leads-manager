@@ -91,7 +91,7 @@
   /* TABLE */
   .table-wrap{flex:1;overflow:auto;position:relative;overscroll-behavior-x:contain}
   table{border-collapse:collapse;width:max-content;min-width:100%}
-  thead th{background:var(--bg3)}
+  thead th{background:var(--bg3) !important}
   thead th:nth-child(1),thead th:nth-child(2),thead th:nth-child(3){background:var(--bg3) !important;position:sticky;z-index:12;left:0}
   thead th:nth-child(2){left:28px !important}
   thead th:nth-child(3){left:56px !important}
@@ -113,8 +113,8 @@
   .ch th{background:var(--bg2);padding:7px 8px;text-align:left;font-size:10px;font-weight:600;color:var(--text2);border-bottom:1px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;min-width:80px}
 
   .ch th:hover{background:var(--bg3);color:var(--text)}
-  .ch th:nth-child(1),.ch th:nth-child(2),.ch th:nth-child(3){position:sticky;z-index:11;background:var(--bg2)}
-  tbody td:nth-child(1),tbody td:nth-child(2),tbody td:nth-child(3){position:sticky;z-index:10}
+  .ch th:nth-child(1),.ch th:nth-child(2),.ch th:nth-child(3){position:sticky;z-index:11;background:var(--bg2) !important}
+  tbody td:nth-child(1),tbody td:nth-child(2),tbody td:nth-child(3){position:sticky;z-index:10;background:inherit}
   .ch th:nth-child(1),tbody td:nth-child(1){left:0;width:28px;min-width:28px}
   .ch th:nth-child(2),tbody td:nth-child(2){left:28px;min-width:28px;white-space:nowrap}
   .ch th:nth-child(3),tbody td:nth-child(3){left:56px;min-width:90px;white-space:nowrap;border-right:2px solid var(--border2) !important}
@@ -152,8 +152,11 @@
   /* Zebra striping on data rows */
   tbody tr:nth-child(even) td { background-color: #f8fafc }
   tbody tr:nth-child(odd) td  { background-color: #ffffff }
+  tbody tr:nth-child(even) td:nth-child(1),tbody tr:nth-child(even) td:nth-child(2),tbody tr:nth-child(even) td:nth-child(3) { background-color: #f8fafc !important }
+  tbody tr:nth-child(odd) td:nth-child(1),tbody tr:nth-child(odd) td:nth-child(2),tbody tr:nth-child(odd) td:nth-child(3) { background-color: #ffffff !important }
   /* Keep hover visible */
   tbody tr:hover td { background-color: var(--bg3) !important }
+  tbody tr:hover td:nth-child(1),tbody tr:hover td:nth-child(2),tbody tr:hover td:nth-child(3) { background-color: var(--bg3) !important }
   .ls-pill,.oc-pill{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid transparent;transition:all .15s;user-select:none;opacity:1}
   .ls-pill.active,.oc-pill.active{border-color:currentColor;font-weight:600}
   .ls-pill:not(.active),.oc-pill:not(.active){filter:saturate(0.5);opacity:0.7}
@@ -453,7 +456,7 @@
             <th onclick="sortBy('mobile')">MOBILE</th>
             <th onclick="sortBy('email')">EMAIL</th>
             <th onclick="sortBy('leadMsg')">LEAD MESSAGE</th>
-            <th onclick="sortBy('roiEmail')">RETURN ON INVESTMENT EMAIL</th>
+            <th onclick="sortBy('roiEmail')">REG. OF INTEREST EMAIL</th>
             <th onclick="sortBy('call1')">1ST CALL</th>
             <th onclick="sortBy('call2')">2ND CALL</th>
             <th onclick="sortBy('sms')">TEXT MESSAGE (SMS)</th>
@@ -681,7 +684,7 @@
           <div style="display:flex;flex-direction:column;gap:10px;max-width:720px">
 
             <div class="contact-row">
-              <div class="contact-row-label">Return On Investment Email</div>
+              <div class="contact-row-label">Reg. of Interest Email</div>
               <div class="contact-row-stamp" id="stamp-roiEmail">—</div>
               <button class="stamp-btn" onclick="stampField('roiEmail')">Stamp Now</button>
               <button class="stamp-backdate" onclick="toggleBackdate('roiEmail')" title="Backdate">✎</button>
