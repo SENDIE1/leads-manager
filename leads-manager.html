@@ -111,6 +111,7 @@
   .gh th.g9{background:#f1f5f9;color:#334155;border-bottom:2px solid #64748b}
   .gh th.g10{background:#ede9fe;color:#5b21b6;border-bottom:2px solid #7c3aed}
   .ch th{background:var(--bg2);padding:7px 8px;text-align:left;font-size:10px;font-weight:600;color:var(--text2);border-bottom:1px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;min-width:80px}
+  .ch th:nth-child(4),tbody td:nth-child(4){width:88px;min-width:88px;max-width:88px}
   .ch th:hover{background:var(--bg3);color:var(--text)}
   .ch th:nth-child(1),.ch th:nth-child(2),.ch th:nth-child(3){position:sticky;z-index:11;background:var(--bg2)}
   tbody td:nth-child(1),tbody td:nth-child(2),tbody td:nth-child(3){position:sticky;z-index:10}
@@ -3040,21 +3041,44 @@ function renderAgenciesPanel() {
     </div>
     ${agencies.length ? agencies.map(ag => {
       const lCount = leads.filter(l=>l.assignedAgency===ag.id).length;
-      const aCount = agents.filter(a=>a.agencyId===ag.id).length;
-      return `<div class="card">
-        <div class="card-dot" style="background:${ag.color}"></div>
-        <div>
-          <div class="card-name">${ag.name}</div>
-          <div class="card-meta">👤 ${ag.principal||'—'} &nbsp;·&nbsp; 🔑 @${ag.username} &nbsp;·&nbsp; 👥 ${aCount} agent${aCount!==1?'s':''}</div>
+      const agencyAgents = agents.filter(a=>a.agencyId===ag.id);
+      return `<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:16px 20px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:${agencyAgents.length?'14px':'0'}">
+          <div class="card-dot" style="background:${ag.color}"></div>
+          <div style="flex:1">
+            <div class="card-name">${ag.name}</div>
+            <div class="card-meta">👤 ${ag.principal||'—'} &nbsp;·&nbsp; 👥 ${agencyAgents.length} agent${agencyAgents.length!==1?'s':''}</div>
+          </div>
+          <div class="card-stat"><div class="card-count">${lCount}</div><div class="card-label">leads</div></div>
+          <div class="card-actions">
+            <button class="btn btn-primary btn-sm" onclick="openEntityDrawerForAgency('${ag.id}')">+ Add Agent</button>
+            <button class="btn btn-ghost btn-sm" onclick="openEntityDrawer('agency','${ag.id}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteAgency('${ag.id}')">Delete</button>
+          </div>
         </div>
-        <div class="card-stat"><div class="card-count">${lCount}</div><div class="card-label">leads</div></div>
-        <div class="card-actions">
-          <button class="btn btn-ghost btn-sm" onclick="openEntityDrawer('agency','${ag.id}')">Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteAgency('${ag.id}')">Delete</button>
-        </div>
+        ${agencyAgents.length ? `<div style="border-top:1px solid var(--border);padding-top:10px;display:flex;flex-direction:column;gap:6px">
+          ${agencyAgents.map(a => {
+            const alCount = leads.filter(l=>l.assignedAgent===a.id).length;
+            return `<div style="display:flex;align-items:center;gap:10px;padding:6px 10px;background:var(--bg2);border-radius:4px;border:1px solid var(--border)">
+              <div style="width:8px;height:8px;border-radius:50%;background:${a.color};flex-shrink:0"></div>
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:600;color:var(--text)">${a.name}</div>
+                <div style="font-size:11px;color:var(--text3)">${a.email||'—'}</div>
+              </div>
+              <div style="font-size:11px;color:var(--text3)">${alCount} lead${alCount!==1?'s':''}</div>
+              <button class="btn btn-ghost btn-sm" onclick="openEntityDrawer('agent','${a.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteAgent('${a.id}')">Delete</button>
+            </div>`;
+          }).join('')}
+        </div>` : `<div style="font-size:11px;color:var(--text3);padding:8px 0 0">No agents yet — click + Add Agent to add one.</div>`}
       </div>`;
     }).join('') : '<div style="color:var(--text3);font-size:12px;padding:20px">No agencies yet.</div>'}
   </div>`;
+}
+
+function openEntityDrawerForAgency(agencyId) {
+  entityParentAgencyId = agencyId;
+  openEntityDrawer('agent');
 }
 
 function renderAgentsPanel() {
