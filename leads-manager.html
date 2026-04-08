@@ -314,6 +314,19 @@
   </div>
 </div>
 
+
+<!-- ═══════════ SET PASSWORD SCREEN (invite flow) ═══════════ -->
+<div id="setPasswordScreen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:1000;align-items:center;justify-content:center">
+  <div class="login-card">
+    <div class="login-logo">LEADS<span>/</span>MGR</div>
+    <div class="login-sub">Set your password to activate your account</div>
+    <div class="login-field"><label>New Password</label><input type="password" id="newPw" placeholder="Min 10 chars, uppercase, lowercase, number, symbol" onkeydown="if(event.key==='Enter')doSetPassword()"></div>
+    <div class="login-field"><label>Confirm Password</label><input type="password" id="newPwConfirm" placeholder="Repeat password" onkeydown="if(event.key==='Enter')doSetPassword()"></div>
+    <button class="login-btn" id="setPwBtn" onclick="doSetPassword()">Set Password & Sign In</button>
+    <div class="login-err" id="setPwErr"></div>
+  </div>
+</div>
+
 <!-- ═══════════ APP SHELL ═══════════ -->
 <div id="app" style="display:none;flex-direction:column;height:100vh">
 
@@ -1434,7 +1447,7 @@ async function persist(opts) {
       delete opts.lead._newNote;
     }
   }
-  if (opts.agency) { await sb.from('agencies').upsert(opts.agency, {onConflict: 'id'}); }
+  if (opts.agency) { const {error:agcyErr} = await sb.from('agencies').upsert(opts.agency, {onConflict: 'id'}); if(agcyErr){console.error('Agency save error:',agcyErr); notify('Agency save failed: '+agcyErr.message); return;} }
   if (opts.agent) {
     const ag = {
       id: opts.agent.id,
@@ -1497,6 +1510,58 @@ window.addEventListener('popstate', function(e) {
 //  AUTH
 // ═══════════════════════════════════════════
 function setLoginRole(r, el) {} // kept for compatibility
+
+
+// ─── Handle invite / password reset token from URL ───
+document.addEventListener('DOMContentLoaded', async function handleAuthRedirect() {
+  const hash = window.location.hash;
+  if (!hash) return;
+  const params = new URLSearchParams(hash.substring(1));
+  const type = params.get('type');
+  const accessToken = params.get('access_token');
+  const refreshToken = params.get('refresh_token');
+  if ((type === 'invite' || type === 'recovery') && accessToken) {
+    const { error } = await sb.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+    if (error) {
+      document.getElementById('setPwErr').textContent = error.message;
+    }
+    history.replaceState(null, '', window.location.pathname);
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('setPasswordScreen').style.display = 'flex';
+    document.getElementById('newPw').focus();
+  }
+});
+
+async function doSetPassword() {
+  const pw = document.getElementById('newPw').value;
+  const pw2 = document.getElementById('newPwConfirm').value;
+  const errEl = document.getElementById('setPwErr');
+  const btn = document.getElementById('setPwBtn');
+  if (pw.length < 10) { errEl.textContent = 'Password must be at least 10 characters.'; return; }
+  if (!/[A-Z]/.test(pw)) { errEl.textContent = 'Password must contain an uppercase letter.'; return; }
+  if (!/[a-z]/.test(pw)) { errEl.textContent = 'Password must contain a lowercase letter.'; return; }
+  if (!/[0-9]/.test(pw)) { errEl.textContent = 'Password must contain a number.'; return; }
+  if (!/[^A-Za-z0-9]/.test(pw)) { errEl.textContent = 'Password must contain a symbol.'; return; }
+  if (pw !== pw2) { errEl.textContent = 'Passwords do not match.'; return; }
+  btn.textContent = 'Setting password…'; btn.disabled = true;
+  const { error } = await sb.auth.updateUser({ password: pw });
+  if (error) {
+    errEl.textContent = error.message;
+    btn.textContent = 'Set Password & Sign In'; btn.disabled = false;
+    return;
+  }
+  // Password set — now log them in properly
+  document.getElementById('setPasswordScreen').style.display = 'none';
+  const { data: { user } } = await sb.auth.getUser();
+  if (user) {
+    const { data: userRows } = await sb.from('users').select('*').eq('id', user.id);
+    const userRow = userRows?.[0];
+    if (!userRow) { errEl.textContent = 'User not configured. Contact admin.'; return; }
+    me = { role: userRow.role, username: userRow.username, agencyId: userRow.agency_id||null, agentId: userRow.agent_id||null };
+    await loadData();
+    enterApp();
+  }
+}
 
 async function doLogin() {
   const email = document.getElementById('lu').value.trim();
@@ -3352,9 +3417,16 @@ async function deleteAgency(id) {
 }
 async function deleteAgent(id) {
   if (!confirm('Delete agent? Their leads become unassigned from agent.')) return;
+  // Unassign leads in Supabase first
+  await sb.from('leads').update({assigned_agent: null}).eq('assigned_agent', id);
+  // Delete from users table (removes login access)
+  await sb.from('users').delete().eq('agent_id', id);
+  // Delete the agent
+  await sb.from('agents').delete().eq('id', id);
+  // Update local state
   leads.forEach(l=>{ if(l.assignedAgent===id) l.assignedAgent=null; });
   agents = agents.filter(a=>a.id!==id);
-  await persist({deleteAgent:id}); renderAgentsPanel(); buildDynFilters(); renderLeads(); notify('Agent deleted');
+  renderAgenciesPanel(); buildDynFilters(); renderLeads(); notify('Agent deleted');
 }
 
 // ═══════════════════════════════════════════
