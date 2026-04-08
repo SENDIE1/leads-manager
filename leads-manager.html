@@ -3336,10 +3336,12 @@ async function saveEntity() {
 
 async function deleteAgency(id) {
   if (!confirm('Delete agency? Their leads become unassigned.')) return;
-  // First unassign all leads in Supabase
+  // Unassign all leads in Supabase
   await sb.from('leads').update({assigned_agency: null, assigned_agent: null}).eq('assigned_agency', id);
-  // Then delete all agents for this agency
+  // Delete all agents for this agency
   await sb.from('agents').delete().eq('agency_id', id);
+  // Delete users table entry for this agency
+  await sb.from('users').delete().eq('agency_id', id);
   // Then delete the agency
   await sb.from('agencies').delete().eq('id', id);
   // Update local state
