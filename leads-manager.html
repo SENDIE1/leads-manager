@@ -1420,7 +1420,12 @@ async function loadData() {
   leads    = (leadsRes.data    || []).map(mapFromDb);
   agencies = agenciesRes.data  || [];
   agents   = (agentsRes.data || []).map(a => ({...a, agencyId: a.agency_id||null}));
-  deletedLeads = [];
+  // Load deleted leads scoped by role
+  let deletedQuery = sb.from('leads').select('*, notes(*)').eq('deleted', true).order('id', {ascending: false});
+  if (me.role === 'agency') deletedQuery = deletedQuery.eq('assigned_agency', me.agencyId);
+  if (me.role === 'agent')  deletedQuery = deletedQuery.eq('assigned_agent', me.agentId);
+  const deletedRes = await deletedQuery;
+  deletedLeads = (deletedRes.data || []).map(mapFromDb);
   nextId   = leads.length ? Math.max(...leads.map(l=>parseInt(l.id)||0))+1 : 1;
   const auditRes = await sb.from('audit_log').select('*').order('created_at',{ascending:false}).limit(500);
   auditLog = (auditRes.data||[]).map(e=>({
@@ -1520,12 +1525,23 @@ document.addEventListener('DOMContentLoaded', async function handleAuthRedirect(
   const type = params.get('type');
   const accessToken = params.get('access_token');
   const refreshToken = params.get('refresh_token');
+  const error = params.get('error');
+  const errorDesc = params.get('error_description');
+  // Clear hash from URL
+  history.replaceState(null, '', window.location.pathname);
+  if (error) {
+    // Show error on login screen
+    document.getElementById('lerr').textContent = errorDesc
+      ? decodeURIComponent(errorDesc.replace(/\+/g,' '))
+      : 'Invite link is invalid or has expired. Please contact your admin.';
+    return;
+  }
   if ((type === 'invite' || type === 'recovery') && accessToken) {
-    const { error } = await sb.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
-    if (error) {
-      document.getElementById('setPwErr').textContent = error.message;
+    const { error: sessionErr } = await sb.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+    if (sessionErr) {
+      document.getElementById('lerr').textContent = sessionErr.message;
+      return;
     }
-    history.replaceState(null, '', window.location.pathname);
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('setPasswordScreen').style.display = 'flex';
     document.getElementById('newPw').focus();
@@ -1646,14 +1662,16 @@ function buildTabs() {
     ];
   } else if (me.role === 'agency') {
     tabs = [
-      {id:'leads', label:'📋 Leads'},
-      {id:'agents',label:'👤 Agents'},
-      {id:'audit', label:'🕓 Audit Log'},
+      {id:'leads',   label:'📋 Leads'},
+      {id:'deleted', label:'🗑 Deleted'},
+      {id:'agents',  label:'👤 Agents'},
+      {id:'audit',   label:'🕓 Audit Log'},
     ];
   } else {
     tabs = [
-      {id:'leads', label:'📋 Leads'},
-      {id:'audit', label:'🕓 Audit Log'},
+      {id:'leads',   label:'📋 Leads'},
+      {id:'deleted', label:'🗑 Deleted'},
+      {id:'audit',   label:'🕓 Audit Log'},
     ];
   }
   bar.style.display = 'flex';
@@ -2432,7 +2450,7 @@ function openLeadDrawer(id) {
 
   // Show/hide delete button
   const delBtn = document.getElementById('deleteLeadBtn');
-  delBtn.style.display = (me && me.role === 'admin' && editLeadId) ? 'flex' : 'none';
+  delBtn.style.display = (me && (me.role === 'admin' || me.role === 'agency' || me.role === 'agent') && editLeadId) ? 'flex' : 'none';
   document.getElementById('deleteConfirm').style.display = 'none';
 
   renderCustomFieldsInForm();
@@ -2579,6 +2597,7 @@ async function deleteLead() {
   const copy = JSON.parse(JSON.stringify(l));
   copy.deletedAt = nowStamp();
   copy.deletedBy = me.username;
+  // Scope check - only add to local deletedLeads if role can see it
   deletedLeads.unshift(copy);
   addAuditEntry('deleted', l.id, l.name, [{field:'Lead moved to bin', from:l.name, to:'Deleted'}]);
   await persist({deleteLead: l.id, auditEntry: auditLog[0]});
@@ -2751,7 +2770,7 @@ function renderDeletedPanel() {
         <button class="btn btn-danger btn-sm" onclick="deletedLeads=[];renderDeletedPanel();notify('Bin emptied')">Yes, empty</button>
         <button class="btn btn-ghost btn-sm" onclick="document.getElementById('emptyBinConfirm').style.display='none';document.getElementById('emptyBinBtn').style.display='flex'">Cancel</button>
       </div>
-      ${deletedLeads.length ? `<button id="emptyBinBtn" class="btn btn-danger btn-sm" onclick="this.style.display='none';document.getElementById('emptyBinConfirm').style.display='flex'">Empty Bin</button>` : ''}
+      ${deletedLeads.length && me.role==='admin' ? `<button id="emptyBinBtn" class="btn btn-danger btn-sm" onclick="this.style.display='none';document.getElementById('emptyBinConfirm').style.display='flex'">Empty Bin</button>` : ''}
     </div>`;
 }
 
