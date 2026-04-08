@@ -113,14 +113,13 @@
   .ch th{background:var(--bg2);padding:7px 8px;text-align:left;font-size:10px;font-weight:600;color:var(--text2);border-bottom:1px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;min-width:80px}
   .ch th:hover{background:var(--bg3);color:var(--text)}
   .ch th:nth-child(1),.ch th:nth-child(2),.ch th:nth-child(3){position:sticky;z-index:11;background:var(--bg2)}
-  tbody td:nth-child(1),tbody td:nth-child(2),tbody td:nth-child(3){position:sticky;z-index:10;background:var(--bg2) !important}
-  .ch th:nth-child(1),.ch th:nth-child(2),.ch th:nth-child(3){background:var(--bg2) !important}
+  tbody td:nth-child(1),tbody td:nth-child(2),tbody td:nth-child(3){position:sticky;z-index:10}
   .ch th:nth-child(1),tbody td:nth-child(1){left:0;width:40px;min-width:40px}
   .ch th:nth-child(2),tbody td:nth-child(2){left:40px;width:40px;min-width:40px}
   .ch th:nth-child(3),tbody td:nth-child(3){left:80px;min-width:130px;border-right:2px solid var(--border2) !important}
   tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
   tbody tr:hover td{background:var(--bg3) !important}
-  tbody td{padding:7px 8px;border-right:1px solid var(--border);vertical-align:middle;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;background:var(--bg2);}
+  tbody td{padding:7px 8px;border-right:1px solid var(--border);vertical-align:middle;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
   .rn{font-size:10px;color:var(--text3);text-align:right}
   .rcb{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
   .badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:500;white-space:nowrap}
@@ -141,25 +140,20 @@
   .unassigned-badge{background:var(--bg4);color:var(--text3);border:1px solid var(--border);font-size:10px;padding:2px 7px;border-radius:3px}
   .empty-row td{text-align:center;padding:60px 20px;color:var(--text3);font-size:12px}
 
-  /* Column shading — solid colours matching group headers */
-  tbody td:nth-child(n+3):nth-child(-n+6),
-  .ch th:nth-child(n+3):nth-child(-n+6)   { background-color: #e0f7f4 }  /* g1 Lead Details */
-  tbody td:nth-child(n+7):nth-child(-n+11),
-  .ch th:nth-child(n+7):nth-child(-n+11)  { background-color: #dbeafe }  /* g2 48 Hours Process */
-  tbody td:nth-child(12),
-  .ch th:nth-child(12)                    { background-color: #f3e8ff }  /* g3 Lead Source */
-  tbody td:nth-child(n+13):nth-child(-n+25),
-  .ch th:nth-child(n+13):nth-child(-n+25) { background-color: #fef9c3 }  /* g4 Qualifying Questions */
-  tbody td:nth-child(26),
-  .ch th:nth-child(26)                    { background-color: #dcfce7 }  /* g5 Comments Status */
-  tbody td:nth-child(n+27):nth-child(-n+28),
-  .ch th:nth-child(n+27):nth-child(-n+28) { background-color: #ccfbf1 }  /* g7 Under CFS */
-  tbody td:nth-child(n+29):nth-child(-n+34),
-  .ch th:nth-child(n+29):nth-child(-n+34) { background-color: #fee2e2 }  /* g8 Qualifying Outcomes */
-  tbody td:nth-child(n+35):nth-child(-n+36),
-  .ch th:nth-child(n+35):nth-child(-n+36) { background-color: #ede9fe }  /* g10 Assignment */
-  /* Keep hover visible over shading */
-  tbody tr:hover td { background-color: var(--bg3) !important; background: var(--bg3) !important }
+  /* Column header shading — solid colours matching group headers, headers only */
+  .ch th:nth-child(n+4):nth-child(-n+7)   { background-color: #e0f7f4 }  /* g1 Lead Details */
+  .ch th:nth-child(n+8):nth-child(-n+12)  { background-color: #dbeafe }  /* g2 48 Hours Process */
+  .ch th:nth-child(13)                    { background-color: #f3e8ff }  /* g3 Lead Source */
+  .ch th:nth-child(n+14):nth-child(-n+26) { background-color: #fef9c3 }  /* g4 Qualifying Questions */
+  .ch th:nth-child(27)                    { background-color: #dcfce7 }  /* g5 Comments Status */
+  .ch th:nth-child(n+28):nth-child(-n+29) { background-color: #ccfbf1 }  /* g7 Under CFS */
+  .ch th:nth-child(n+30):nth-child(-n+35) { background-color: #fee2e2 }  /* g8 Qualifying Outcomes */
+  .ch th:nth-child(n+36):nth-child(-n+37) { background-color: #ede9fe }  /* g10 Assignment */
+  /* Zebra striping on data rows */
+  tbody tr:nth-child(even) td { background-color: #f8fafc }
+  tbody tr:nth-child(odd) td  { background-color: #ffffff }
+  /* Keep hover visible */
+  tbody tr:hover td { background-color: var(--bg3) !important }
   .ls-pill,.oc-pill{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid transparent;transition:all .15s;user-select:none;opacity:1}
   .ls-pill.active,.oc-pill.active{border-color:currentColor;font-weight:600}
   .ls-pill:not(.active),.oc-pill:not(.active){filter:saturate(0.5);opacity:0.7}
@@ -441,7 +435,7 @@
           <tr class="ch">
             <th><input type="checkbox" class="rcb" id="selAll" onchange="toggleSelAll()"></th>
             <th class="rn">#</th>
-            <th onclick="sortBy('date')">DATE (INITIAL CONTACT)</th>
+            <th onclick="sortBy('date')">LEAD DATE</th>
             <th onclick="sortBy('name')">NAME</th>
             <th onclick="sortBy('mobile')">MOBILE</th>
             <th onclick="sortBy('email')">EMAIL</th>
