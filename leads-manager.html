@@ -1423,14 +1423,14 @@ async function persist(opts) {
   if (!opts) { const el=document.getElementById('s-saved'); if(el) el.textContent=nowStamp(); return; }
   if (opts.lead) {
     const dbLead = mapToDb(opts.lead);
-    const { error } = await sb.from('leads').upsert(dbLead);
+    const { error } = await sb.from('leads').upsert(dbLead, {onConflict: 'id'});
     if (error) { console.error('Lead save:', error); notify('Save failed ✗'); return; }
     if (opts.lead._newNote) {
       await sb.from('notes').insert({lead_id:opts.lead.id, author:opts.lead._newNote.author, text:opts.lead._newNote.text});
       delete opts.lead._newNote;
     }
   }
-  if (opts.agency) { await sb.from('agencies').upsert(opts.agency); }
+  if (opts.agency) { await sb.from('agencies').upsert(opts.agency, {onConflict: 'id'}); }
   if (opts.agent) {
     const ag = {
       id: opts.agent.id,
@@ -1439,7 +1439,7 @@ async function persist(opts) {
       color: opts.agent.color||null,
       agency_id: opts.agent.agencyId||opts.agent.agency_id||null,
     };
-    const { error: agErr } = await sb.from('agents').upsert(ag);
+    const { error: agErr } = await sb.from('agents').upsert(ag, {onConflict: 'id'});
     if (agErr) { console.error('Agent save error:', agErr); notify('Agent save failed: ' + agErr.message); return; }
   }
   if (opts.deleteLead)    { await sb.from('leads').update({deleted:true,deleted_at:new Date().toISOString(),deleted_by:me?.username||''}).eq('id',opts.deleteLead); }
@@ -1456,7 +1456,7 @@ async function persist(opts) {
   if (opts.inventory) {
     const lot={...opts.inventory, linked_leads:opts.inventory.linkedLeads||[]};
     delete lot.linkedLeads;
-    await sb.from('inventory').upsert(lot);
+    await sb.from('inventory').upsert(lot, {onConflict: 'id'});
   }
   if (opts.deleteInventory) { await sb.from('inventory').delete().eq('id',opts.deleteInventory); }
   if (opts.customFields) { localStorage.setItem('lm3_customFields', JSON.stringify(customFields)); localStorage.setItem('lm3_customGroups', JSON.stringify(customGroups)); }
