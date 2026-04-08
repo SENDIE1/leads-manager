@@ -3276,9 +3276,10 @@ async function saveEntity() {
     // Send invite for new agencies
     if (isNew && email) {
       notify('Saving agency and sending invite…');
+      const { data: { session } } = await sb.auth.getSession();
       const res = await fetch(`https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/invite-user`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_KEY}` },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
         body: JSON.stringify({ email, role: 'agency', name, agency_id: savedAgency.id })
       });
       const result = await res.json();
@@ -3304,9 +3305,10 @@ async function saveEntity() {
     // Send invite for new agents
     if (isNew && email) {
       notify('Saving agent and sending invite…');
+      const { data: { session } } = await sb.auth.getSession();
       const res = await fetch(`https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/invite-user`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_KEY}` },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
         body: JSON.stringify({ email, role: 'agent', name, agency_id: agencyId, agent_id: savedAgent.id })
       });
       const result = await res.json();
