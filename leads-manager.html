@@ -3258,6 +3258,10 @@ async function saveEntity() {
   const name  = document.getElementById('ed-name').value.trim();
   const email = document.getElementById('ed-email').value.trim();
   if (!name) { alert('Name is required.'); return; }
+  if (entityType === 'agency' && !editEntityId) {
+    const duplicate = agencies.find(a => a.name.toLowerCase() === name.toLowerCase());
+    if (duplicate) { alert(`An agency named "${duplicate.name}" already exists.`); return; }
+  }
   if (!editEntityId && !email) { alert('Login email is required.'); return; }
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address.'); return; }
   const color = editEntityId ? (pickedColor||autoPickColor()) : autoPickColor();
