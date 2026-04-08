@@ -121,6 +121,7 @@
   tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
   tbody tr:hover td{background:var(--bg3) !important}
   tbody td{padding:7px 8px;border-right:1px solid var(--border);vertical-align:middle;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
+  .cell-popup{position:fixed;z-index:9999;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:12px 14px;max-width:320px;font-size:12px;color:var(--text);line-height:1.6;box-shadow:0 4px 16px rgba(0,0,0,.12);pointer-events:none;white-space:pre-wrap;word-break:break-word}
   .rn{font-size:10px;color:var(--text3);text-align:right}
   .rcb{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
   .badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:500;white-space:nowrap}
@@ -142,13 +143,13 @@
   .empty-row td{text-align:center;padding:60px 20px;color:var(--text3);font-size:12px}
 
   /* Column header shading — matches group headers exactly */
-  .ch th:nth-child(n+4):nth-child(-n+7)   { background-color: #e0f7f4 }  /* LEAD DETAILS (B-E) */
-  .ch th:nth-child(n+8):nth-child(-n+12)  { background-color: #dbeafe }  /* 48 HOURS PROCESS (F-J) */
-  .ch th:nth-child(13)                    { background-color: #f3e8ff }  /* LEAD SOURCE (K) */
-  .ch th:nth-child(n+14):nth-child(-n+26) { background-color: #fef9c3 }  /* QUALIFYING QUESTIONS (L-X) */
-  .ch th:nth-child(n+27):nth-child(-n+28) { background-color: #ccfbf1 }  /* UNDER CFS (Y-Z) */
-  .ch th:nth-child(n+29):nth-child(-n+35) { background-color: #fee2e2 }  /* QUALIFYING OUTCOMES (AA-AG) */
-  .ch th:nth-child(n+36):nth-child(-n+37) { background-color: #ede9fe }  /* ASSIGNMENT (AH-AI) */
+  .ch th:nth-child(n+4):nth-child(-n+7)   { background-color: #e0f7f4 !important }  /* LEAD DETAILS (B-E) */
+  .ch th:nth-child(n+8):nth-child(-n+12)  { background-color: #dbeafe !important }  /* 48 HOURS PROCESS (F-J) */
+  .ch th:nth-child(13)                    { background-color: #f3e8ff !important }  /* LEAD SOURCE (K) */
+  .ch th:nth-child(n+14):nth-child(-n+26) { background-color: #fef9c3 !important }  /* QUALIFYING QUESTIONS (L-X) */
+  .ch th:nth-child(n+27):nth-child(-n+28) { background-color: #ccfbf1 !important }  /* UNDER CFS (Y-Z) */
+  .ch th:nth-child(n+29):nth-child(-n+35) { background-color: #fee2e2 !important }  /* QUALIFYING OUTCOMES (AA-AG) */
+  .ch th:nth-child(n+36):nth-child(-n+37) { background-color: #ede9fe !important }  /* ASSIGNMENT (AH-AI) */
   /* Zebra striping on data rows */
   tbody tr:nth-child(even) td { background-color: #f8fafc }
   tbody tr:nth-child(odd) td  { background-color: #ffffff }
@@ -2196,7 +2197,7 @@ function renderRow(l) {
     <td style="font-weight:500;color:var(--text)">${l.name||'—'}</td>
     <td style="font-size:11px${!isMobileValid(l.mobile)&&l.mobile?';color:var(--red);font-weight:500':''}">${l.mobile||'—'}${!isMobileValid(l.mobile)&&l.mobile?' <span title="Invalid format" style="cursor:default">⚠</span>':''}</td>
     <td style="font-size:11px${!isEmailValid(l.email)&&l.email?';color:var(--red);font-weight:500':';color:var(--accent)'}">${l.email||'—'}${!isEmailValid(l.email)&&l.email?' <span title="Invalid email" style="cursor:default">⚠</span>':''}</td>
-    <td style="font-size:11px;color:var(--text2)" title="${l.leadMsg||''}">${l.leadMsg||'—'}</td>
+    <td style="font-size:11px;color:var(--text2);cursor:default" data-popup="Lead Message" data-popup-text="${(l.leadMsg||'').replace(/"/g,'&quot;')}" onmouseenter="showCellPopup(event,this)" onmouseleave="hideCellPopup()">${l.leadMsg?l.leadMsg.substring(0,30)+(l.leadMsg.length>30?'…':''):'—'}</td>
     <td style="font-size:11px" class="${isBackdated(l.roiEmail)?'bd-cell':''}">${fmtDate(l.roiEmail)||'—'}${isBackdated(l.roiEmail)?'<span class="bd-dot"></span>':''}</td>
     <td style="font-size:11px" class="${isBackdated(l.call1)?'bd-cell':''}">${fmtDate(l.call1)||'—'}${isBackdated(l.call1)?'<span class="bd-dot"></span>':''}</td>
     <td style="font-size:11px" class="${isBackdated(l.call2)?'bd-cell':''}">${fmtDate(l.call2)||'—'}${isBackdated(l.call2)?'<span class="bd-dot"></span>':''}</td>
@@ -2223,7 +2224,7 @@ function renderRow(l) {
     <td>${l.tc?'<span class="tag t-tc">Agent To Call</span>':l.cb?'<span class="tag t-cb">Lead Call Back</span>':l.vm?'<span class="tag t-vm">Voicemail</span>':l.na?'<span class="tag t-na">No Answer</span>':'—'}</td>
     <td>${l.nm?'<span class="tag t-nm">No Mobile</span>':l.dc?'<span class="tag t-dc">Disconnected</span>':l.ni?'<span class="tag t-ni">Not Interested</span>':l.duplicate?'<span class="tag t-dup">Duplicate</span>':'—'}</td>
     <td>${ck(l.settleOk)}</td>
-    <td style="font-size:11px;color:var(--text2)">${l.pocComments||'—'}</td>
+    <td style="font-size:11px;color:var(--text2);cursor:default" data-popup="POC Comments" data-popup-text="${(l.pocComments||'').replace(/"/g,'&quot;')}" onmouseenter="showCellPopup(event,this)" onmouseleave="hideCellPopup()">${l.pocComments?l.pocComments.substring(0,30)+(l.pocComments.length>30?'…':''):'—'}</td>
     <td style="font-size:11px${!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?';color:var(--red);font-weight:500':''}">${l.suburbPostcode||'—'}${!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?' <span title="Invalid postcode" style="cursor:default">⚠</span>':''}</td>
     <td>${me.role==='admin' ? 
       `<select style="font-size:11px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:3px 6px;color:var(--text);cursor:pointer;max-width:130px" 
@@ -2270,6 +2271,28 @@ function fixStickyOffsets() {
     el.style.left = offset3 + 'px';
   });
 }
+
+// ─── Cell hover popup ───
+let _popup = null;
+function showCellPopup(e, el) {
+  const text = el.dataset.popupText;
+  if (!text) return;
+  hideCellPopup();
+  _popup = document.createElement('div');
+  _popup.className = 'cell-popup';
+  _popup.innerHTML = '<div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase">' + el.dataset.popup + '</div>' + text.replace(/&quot;/g,'"').replace(/</g,'&lt;');
+  document.body.appendChild(_popup);
+  _posPopup(e);
+}
+function _posPopup(e) {
+  if (!_popup) return;
+  const x = e.clientX + 14, y = e.clientY + 14;
+  const pw = _popup.offsetWidth || 320, ph = _popup.offsetHeight || 80;
+  _popup.style.left = (x + pw > window.innerWidth  ? x - pw - 28 : x) + 'px';
+  _popup.style.top  = (y + ph > window.innerHeight ? y - ph - 28 : y) + 'px';
+}
+function hideCellPopup() { if (_popup) { _popup.remove(); _popup = null; } }
+document.addEventListener('mousemove', e => { if (_popup) _posPopup(e); });
 
 function renderLeads() {
   const data = getVisible();
