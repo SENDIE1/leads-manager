@@ -3078,7 +3078,7 @@ function renderAgenciesPanel() {
 
 function openEntityDrawerForAgency(agencyId) {
   entityParentAgencyId = agencyId;
-  openEntityDrawer('agent');
+  openEntityDrawer('agent', null);
 }
 
 function renderAgentsPanel() {
@@ -3123,7 +3123,9 @@ function pickColor(c, el) {
 
 function openEntityDrawer(type, id) {
   entityType = type; editEntityId = id||null;
-  entityParentAgencyId = me.role==='agency' ? me.agencyId : null;
+  // Only reset agencyId if not pre-set by openEntityDrawerForAgency
+  if (me.role==='agency') entityParentAgencyId = me.agencyId;
+  else if (!entityParentAgencyId) entityParentAgencyId = null;
   pickedColor = COLORS[5];
 
   // Configure labels
@@ -3171,10 +3173,11 @@ async function saveEntity() {
   const name = document.getElementById('ed-name').value.trim();
   const user = document.getElementById('ed-username').value.trim();
   const pass = document.getElementById('ed-password').value;
-  if (!name||!user||!pass) { alert('Name, username and password are required.'); return; }
+  if (entityType === 'agency' && (!name||!user||!pass)) { alert('Name, username and password are required.'); return; }
+  if (entityType === 'agent' && !name) { alert('Agent name is required.'); return; }
 
   const allLogins = [...agencies.map(a=>a.username), ...agents.map(a=>a.username)];
-  if (!editEntityId && allLogins.includes(user)) { alert('Username already taken.'); return; }
+  if (!editEntityId && user && allLogins.includes(user)) { alert('Username already taken.'); return; }
 
   if (entityType === 'agency') {
     if (editEntityId) {
@@ -3193,7 +3196,7 @@ async function saveEntity() {
     } else {
       agents.push({id:'agt_'+Date.now(), agencyId:agencyId, agency_id:agencyId, name, email:document.getElementById('ed-principal').value.trim(), color:pickedColor});
     }
-    await persist({agent: agents.find(a=>a.name===name)||agents[agents.length-1]}); entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityType=null; renderAgentsPanel(); buildDynFilters();
+    await persist({agent: agents.find(a=>a.name===name)||agents[agents.length-1]}); entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityParentAgencyId=null; entityType=null; renderAgenciesPanel(); buildDynFilters();
   }
   notify(editEntityId?'Updated ✓':'Created ✓');
 }
