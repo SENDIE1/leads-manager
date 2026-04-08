@@ -976,11 +976,11 @@
       <button class="dc-btn" onclick="closeEntityDrawer()">×</button>
     </div>
     <div class="db" oninput="entityDirty=true" onchange="entityDirty=true">
-      <div class="fs"><div class="fst" id="edFormTitle">Details</div>
-        <div class="fg1" id="edFormGrid">
-          <div class="ff"><label id="edNameLabel">Name *</label><input type="text" id="ed-name"></div>
-          <div class="ff" id="ed-principalWrap"><label>Principal Name</label><input type="text" id="ed-principal"></div>
-          <div class="ff" id="ed-emailWrap"><label id="edEmailLabel">Login Email *</label><input type="email" id="ed-email" autocomplete="off" placeholder="email@example.com"></div>
+      <div class="fs" style="width:100%"><div class="fst" id="edFormTitle">Details</div>
+        <div style="display:flex;flex-direction:column;gap:14px;width:100%" id="edFormGrid">
+          <div class="ff" style="width:100%"><label id="edNameLabel">Name *</label><input type="text" id="ed-name" style="width:100%;box-sizing:border-box"></div>
+          <div class="ff" style="width:100%" id="ed-principalWrap"><label>Principal Name</label><input type="text" id="ed-principal" style="width:100%;box-sizing:border-box"></div>
+          <div class="ff" style="width:100%" id="ed-emailWrap"><label id="edEmailLabel">Login Email *</label><input type="email" id="ed-email" autocomplete="off" placeholder="email@example.com" style="width:100%;box-sizing:border-box"></div>
         </div>
       </div>
     </div>
