@@ -3282,8 +3282,10 @@ async function saveEntity() {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
         body: JSON.stringify({ email, role: 'agency', name, agency_id: savedAgency.id })
       });
-      const result = await res.json();
-      if (result.error) { notify('Agency saved but invite failed: ' + result.error); }
+      const resultText = await res.text();
+      console.log('Invite response:', res.status, resultText);
+      let result = {}; try { result = JSON.parse(resultText); } catch(e) {}
+      if (!res.ok || result.error) { notify('Agency saved but invite failed: ' + (result.error||resultText)); }
       else { notify('Agency saved and invite sent to ' + email + ' ✓'); }
     } else {
       notify(isNew ? 'Agency saved ✓' : 'Agency updated ✓');
@@ -3311,8 +3313,10 @@ async function saveEntity() {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
         body: JSON.stringify({ email, role: 'agent', name, agency_id: agencyId, agent_id: savedAgent.id })
       });
-      const result = await res.json();
-      if (result.error) { notify('Agent saved but invite failed: ' + result.error); }
+      const resultText = await res.text();
+      console.log('Invite response:', res.status, resultText);
+      let result = {}; try { result = JSON.parse(resultText); } catch(e) {}
+      if (!res.ok || result.error) { notify('Agent saved but invite failed: ' + (result.error||resultText)); }
       else { notify('Agent saved and invite sent to ' + email + ' ✓'); }
     } else {
       notify(isNew ? 'Agent saved ✓' : 'Agent updated ✓');
