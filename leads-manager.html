@@ -99,7 +99,7 @@
   .gh th{background:var(--bg3);padding:4px 8px;text-align:center;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);border-right:1px solid var(--border);white-space:nowrap}
   .gh th:nth-child(1){position:sticky;z-index:11;background:var(--bg3) !important;left:0;width:28px;min-width:28px}
   .gh th:nth-child(2){position:sticky;z-index:11;background:var(--bg3) !important;left:28px;min-width:28px}
-  .gh th:nth-child(3){position:sticky;z-index:11;background:var(--bg3) !important;left:56px;min-width:80px;max-width:80px}
+  .gh th:nth-child(3){position:sticky;z-index:11;background:var(--bg3) !important;left:56px;min-width:90px;white-space:nowrap}
   .gh th.g1{background:#e0f7f4;color:#0d7a6e;border-bottom:2px solid #0d9488}
   .gh th.g2{background:#dbeafe;color:#1e40af;border-bottom:2px solid #2563eb}
   .gh th.g3{background:#f3e8ff;color:#6b21a8;border-bottom:2px solid #7c3aed}
@@ -117,7 +117,7 @@
   tbody td:nth-child(1),tbody td:nth-child(2),tbody td:nth-child(3){position:sticky;z-index:10}
   .ch th:nth-child(1),tbody td:nth-child(1){left:0;width:28px;min-width:28px}
   .ch th:nth-child(2),tbody td:nth-child(2){left:28px;min-width:28px;white-space:nowrap}
-  .ch th:nth-child(3),tbody td:nth-child(3){left:56px;width:80px;min-width:80px;max-width:80px;border-right:2px solid var(--border2) !important}
+  .ch th:nth-child(3),tbody td:nth-child(3){left:56px;min-width:90px;white-space:nowrap;border-right:2px solid var(--border2) !important}
   tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
   tbody tr:hover td{background:var(--bg3) !important}
   tbody td{padding:7px 8px;border-right:1px solid var(--border);vertical-align:middle;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
@@ -524,9 +524,9 @@
     <div style="font-size:15px;font-weight:600;color:var(--text)" id="ldTitle">New Lead</div>
     <div style="font-size:11px;color:var(--text3);padding:2px 10px;background:var(--bg3);border-radius:20px;border:1px solid var(--border)" id="ldSub"></div>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-      <button class="btn btn-danger" id="deleteLeadBtn" onclick="event.stopPropagation();showDeleteConfirm()" style="display:none">🗑 Move to Deleted</button>
+      <button class="btn btn-danger" id="deleteLeadBtn" onclick="event.stopPropagation();showDeleteConfirm()" style="display:none">🗑 Move to Cold Leads</button>
       <div id="deleteConfirm" style="display:none;align-items:center;gap:8px">
-        <span style="font-size:12px;color:var(--red)">Move to Deleted?</span>
+        <span style="font-size:12px;color:var(--red)">Move to Cold Leads?</span>
         <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteLead()">Yes</button>
         <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();hideDeleteConfirm()">Cancel</button>
       </div>
@@ -1655,7 +1655,7 @@ function buildTabs() {
   if (me.role === 'admin') {
     tabs = [
       {id:'leads',     label:'📋 Leads'},
-      {id:'deleted',   label:'🗑 Deleted'},
+      {id:'deleted',   label:'❄️ Cold Leads'},
       {id:'inventory', label:'🏗 Inventory'},
       {id:'agencies',  label:'🏢 Agencies'},
       {id:'audit',     label:'🕓 Audit Log'},
@@ -1663,14 +1663,14 @@ function buildTabs() {
   } else if (me.role === 'agency') {
     tabs = [
       {id:'leads',   label:'📋 Leads'},
-      {id:'deleted', label:'🗑 Deleted'},
+      {id:'deleted', label:'❄️ Cold Leads'},
       {id:'agents',  label:'👤 Agents'},
       {id:'audit',   label:'🕓 Audit Log'},
     ];
   } else {
     tabs = [
       {id:'leads',   label:'📋 Leads'},
-      {id:'deleted', label:'🗑 Deleted'},
+      {id:'deleted', label:'❄️ Cold Leads'},
       {id:'audit',   label:'🕓 Audit Log'},
     ];
   }
@@ -2604,7 +2604,7 @@ async function deleteLead() {
   leads = leads.filter(x => String(x.id) !== String(editLeadId));
   closeLeadDrawer();
   renderLeads();
-  notify('"' + l.name + '" moved to Deleted');
+  notify('"' + l.name + '" moved to Cold Leads');
 }
 
 function closeLeadDrawer() {
@@ -2752,7 +2752,7 @@ function renderDeletedPanel() {
 
   const tbody = document.getElementById('leadsBody');
   if (!deletedLeads.length) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="57" style="text-align:center;padding:60px;color:var(--text3);font-size:12px">No deleted leads — bin is empty.</td></tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="57" style="text-align:center;padding:60px;color:var(--text3);font-size:12px">No cold leads yet.</td></tr>';
   } else {
     tbody.innerHTML = deletedLeads.map(l => {
       const base = renderDeletedRow(l);
@@ -2763,14 +2763,14 @@ function renderDeletedPanel() {
   // Replace status bar with deleted-specific toolbar
   const statusbar = document.querySelector('#leadsView .statusbar');
   statusbar.innerHTML = `
-    <span>Showing <b>${deletedLeads.length}</b> deleted lead${deletedLeads.length!==1?'s':''}</span>
+    <span>Showing <b>${deletedLeads.length}</b> cold lead${deletedLeads.length!==1?'s':''}</span>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
       <div id="emptyBinConfirm" style="display:none;align-items:center;gap:8px">
-        <span style="font-size:11px;color:var(--red)">Empty all ${deletedLeads.length} leads?</span>
-        <button class="btn btn-danger btn-sm" onclick="deletedLeads=[];renderDeletedPanel();notify('Bin emptied')">Yes, empty</button>
+        <span style="font-size:11px;color:var(--red)">Clear all ${deletedLeads.length} leads?</span>
+        <button class="btn btn-danger btn-sm" onclick="deletedLeads=[];renderDeletedPanel();notify('Cold leads cleared')">Yes, clear</button>
         <button class="btn btn-ghost btn-sm" onclick="document.getElementById('emptyBinConfirm').style.display='none';document.getElementById('emptyBinBtn').style.display='flex'">Cancel</button>
       </div>
-      ${deletedLeads.length && me.role==='admin' ? `<button id="emptyBinBtn" class="btn btn-danger btn-sm" onclick="this.style.display='none';document.getElementById('emptyBinConfirm').style.display='flex'">Empty Bin</button>` : ''}
+      ${deletedLeads.length && me.role==='admin' ? `<button id="emptyBinBtn" class="btn btn-danger btn-sm" onclick="this.style.display='none';document.getElementById('emptyBinConfirm').style.display='flex'">Clear All</button>` : ''}
     </div>`;
 }
 
