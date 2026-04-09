@@ -146,9 +146,9 @@
   .ch th:nth-child(n+4):nth-child(-n+7)   { background-color: #e0f7f4 !important }  /* LEAD DETAILS (B-E) */
   .ch th:nth-child(n+8):nth-child(-n+12)  { background-color: #dbeafe !important }  /* 48 HOURS PROCESS (F-J) */
   .ch th:nth-child(13)                    { background-color: #f3e8ff !important }  /* LEAD SOURCE (K) */
-  .ch th:nth-child(n+14):nth-child(-n+26) { background-color: #fef9c3 !important }  /* QUALIFYING QUESTIONS (L-X) */
-  .ch th:nth-child(n+27):nth-child(-n+28) { background-color: #ccfbf1 !important }  /* UNDER CFS (Y-Z) */
-  .ch th:nth-child(n+29):nth-child(-n+35) { background-color: #fee2e2 !important }  /* QUALIFYING OUTCOMES (AA-AG) */
+  .ch th:nth-child(n+14):nth-child(-n+27) { background-color: #fef9c3 !important }  /* QUALIFYING QUESTIONS (L-Y) */
+  .ch th:nth-child(n+28):nth-child(-n+29) { background-color: #ccfbf1 !important }  /* UNDER CFS (Z-AA) */
+  .ch th:nth-child(n+30):nth-child(-n+35) { background-color: #fee2e2 !important }  /* QUALIFYING OUTCOMES (AB-AG) */
   .ch th:nth-child(n+36):nth-child(-n+37) { background-color: #ede9fe !important }  /* ASSIGNMENT (AH-AI) */
   /* Zebra striping on data rows */
   tbody tr:nth-child(even) td { background-color: #f8fafc }
@@ -443,9 +443,9 @@
             <th colspan="4" class="g1">LEAD DETAILS</th>
             <th colspan="5" class="g2">48 HOURS PROCESS</th>
             <th colspan="1" class="g3">LEAD SOURCE</th>
-            <th colspan="13" class="g4">QUALIFYING QUESTIONS</th>
+            <th colspan="14" class="g4">QUALIFYING QUESTIONS</th>
             <th colspan="2" class="g7">UNDER CFS</th>
-            <th colspan="7" class="g8">QUALIFYING OUTCOMES</th>
+            <th colspan="6" class="g8">QUALIFYING OUTCOMES</th>
             <th colspan="2" class="g10">ASSIGNMENT</th>
           </tr>
           <!-- ROW 2: Column headers -->
@@ -476,15 +476,15 @@
             <th onclick="sortBy('deposit5')">5% DEPOSIT</th>
             <th onclick="sortBy('deposit5plus5')">5% + 5% DEPOSIT</th>
             <th onclick="sortBy('deposit10')">10% DEPOSIT</th>
-            <th onclick="sortBy('hotWarmStatus')">HWC STATUS</th>
+            <th onclick="sortBy('suburbPostcode')">POSTCODE</th>
             <th onclick="sortBy('cfsLot')">CFS LOT #</th>
             <th onclick="sortBy('underCfs')">UNDER CFS</th>
+            <th onclick="sortBy('hotWarmStatus')">HWC STATUS</th>
             <th onclick="sortBy('isHot')">HWC OUTCOME</th>
             <th onclick="sortBy('tc')">FOLLOW UP</th>
             <th onclick="sortBy('nm')">CLOSED</th>
             <th onclick="sortBy('settleOk')">SETTLE TIME OK</th>
             <th onclick="sortBy('pocComments')">POC COMMENTS</th>
-            <th onclick="sortBy('suburbPostcode')">POSTCODE</th>
             <th onclick="sortBy('assignedAgency')">ASSIGNED AGENCY</th>
             <th onclick="sortBy('assignedAgent')">ASSIGNED AGENT</th>
             <th id="col-deletedAt" style="display:none">DELETED AT</th>
@@ -570,7 +570,7 @@
         <div class="lp-sec-body">
           <div class="lp-grid-3">
             <div class="ff lp-field"><label>Name <span style="color:var(--red)">*</span></label><input type="text" id="f-name" placeholder="Full name"></div>
-            <div class="ff lp-field"><label>Date (Initial Contact)</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="f-date"></div>
+            <div class="ff lp-field"><label>Lead Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="f-date"></div>
             <div></div>
             <div class="ff lp-field">
               <label>Mobile</label>
@@ -582,11 +582,6 @@
               <input type="email" id="f-email" placeholder="email@example.com" oninput="validateEmail(this)">
               <div class="mobile-warn" id="emailWarn">Doesn't look like a valid email address</div>
             </div>
-            <div class="ff lp-field">
-              <label>Postcode</label>
-              <input type="text" id="f-suburbPostcode" placeholder="e.g. 3064" maxlength="4" oninput="validatePostcode(this)">
-              <div class="mobile-warn" id="postcodeWarn">Australian postcodes are 4 digits (e.g. 3064)</div>
-            </div>
           </div>
           <div class="lp-grid-3" style="margin-top:16px">
             <div class="ff lp-field"><label>Buyer Type</label><select id="f-buyerType"><option value="">— Select —</option><option value="FHB">FHB — First Home Buyer</option><option value="INV">INV — Investor</option><option value="UG">UG — Upgrader</option><option value="DS">DS — Downsizer</option></select></div>
@@ -596,7 +591,7 @@
           <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
             <div class="ff lp-field"><label>Lead Message</label><textarea id="f-leadMsg" placeholder="Paste or type lead message…" style="min-height:72px"></textarea></div>
             <div class="ff lp-field">
-              <label>Point of Contact Comments</label>
+              <label>POC Comments</label>
               <div class="poc-log" id="pocLog" onclick="expandPocLog()" title="Click to expand"><div class="no-notes" style="font-size:11px">No comments yet.</div></div>
               <div style="margin-top:8px">
                 <textarea id="f-pocNew" placeholder="Add a comment… (Ctrl+Enter to save)" style="width:100%;min-height:56px;resize:vertical" onkeydown="if(event.ctrlKey&&event.key==='Enter'){event.preventDefault();addPocComment()}"></textarea>
@@ -752,7 +747,7 @@
           </div>
 
           <div style="margin-top:24px">
-            <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px">Hot / Warm / Cold (Qualifying Outcome)</div>
+            <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px">HWC Outcome</div>
             <div id="hwcPicker" style="display:flex;flex-wrap:wrap;gap:10px">
               <div class="oc-pill" data-key="isHot"  data-color="#ef4444" data-bg="rgba(239,68,68,.1)"  onclick="toggleHWC(this)">Hot</div>
               <div class="oc-pill" data-key="isWarm" data-color="#f97316" data-bg="rgba(249,115,22,.1)" onclick="toggleHWC(this)">Warm</div>
@@ -821,16 +816,16 @@
         </div>
         <div class="lp-sec-body">
           <div class="lp-grid-3">
-            <div class="ff lp-field"><label>Land Price</label><input type="text" id="f-priceLand" placeholder="$000,000"></div>
             <div class="ff lp-field"><label>House &amp; Land Price</label><input type="text" id="f-priceHL" placeholder="$000,000"></div>
+            <div class="ff lp-field"><label>Land Price</label><input type="text" id="f-priceLand" placeholder="$000,000"></div>
             <div></div>
             <div class="ff lp-field"><label>Storey</label><select id="f-storey"><option value="">— Select —</option><option value="S/S">Single (S/S)</option><option value="D/S">Double (D/S)</option></select></div>
             <div class="ff lp-field"><label>Garage</label><select id="f-garage"><option value="">— Select —</option><option value="S">Single</option><option value="D">Double</option></select></div>
-            <div class="ff lp-field"><label>Lot Frontage</label><select id="f-lotType"><option value="">— Select —</option><option>10m</option><option>12m</option><option>14m</option><option>15m</option><option>16m</option><option>18m</option><option>20m+</option></select></div>
+            <div class="ff lp-field"><label>Lot Type</label><select id="f-lotType"><option value="">— Select —</option><option>10m</option><option>12m</option><option>14m</option><option>15m</option><option>16m</option><option>18m</option><option>20m+</option></select></div>
             <div class="ff lp-field"><label>Lot Area (m²)</label><input type="text" id="f-lotArea" placeholder="e.g. 400"></div>
             <div class="ff lp-field"><label>Lot Numbers</label><input type="text" id="f-lotNumbers" placeholder="e.g. 42, 51, 63"></div>
-            <div class="ff lp-field"><label>Contract For Sale Lot #</label><input type="text" id="f-cfsLot"></div>
-            <div class="ff lp-field"><label>Under Contract For Sale</label><select id="f-underCfs"><option value="">— Select —</option><option>Y</option><option>N</option></select></div>
+            <div class="ff lp-field"><label>CFS Lot #</label><input type="text" id="f-cfsLot"></div>
+            <div class="ff lp-field"><label>Under CFS</label><select id="f-underCfs"><option value="">— Select —</option><option>Y</option><option>N</option></select></div>
           </div>
           <div style="margin-top:20px">
             <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px">Deposit & Settlement</div>
@@ -839,6 +834,13 @@
               <label class="cbi"><input type="checkbox" id="f-deposit5plus5"><span>5% + 5% Deposit</span></label>
               <label class="cbi"><input type="checkbox" id="f-deposit10"><span>10% Deposit</span></label>
               <label class="cbi"><input type="checkbox" id="f-settleOk"><span>Settle Time OK</span></label>
+            </div>
+          </div>
+          <div style="margin-top:16px">
+            <div class="ff lp-field" style="max-width:200px">
+              <label>Postcode</label>
+              <input type="text" id="f-suburbPostcode" placeholder="e.g. 3064" maxlength="4" oninput="validatePostcode(this)">
+              <div class="mobile-warn" id="postcodeWarn">Australian postcodes are 4 digits (e.g. 3064)</div>
             </div>
           </div>
         </div>
@@ -865,6 +867,7 @@
             </div>
         </div>
         <div class="lp-sec-body">
+          <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px">HWC Status</div>
           <div style="display:flex;gap:14px;max-width:480px;margin-bottom:20px">
             <label style="cursor:pointer;flex:1">
               <input type="radio" name="hw" value="Hot" style="display:none" onchange="updateTempCards()">
@@ -915,8 +918,8 @@
         </div>
         <div class="lp-sec-body">
           <div class="lp-grid-3">
-            <div class="ff lp-field"><label>Agency</label><select id="f-agency" onchange="syncAgentDropdown()"><option value="">— Unassigned —</option></select></div>
-            <div class="ff lp-field" id="sec-agentAssign"><label>Agent</label><select id="f-agent"><option value="">— Unassigned —</option></select></div>
+            <div class="ff lp-field"><label>Assigned Agency</label><select id="f-agency" onchange="syncAgentDropdown()"><option value="">— Unassigned —</option></select></div>
+            <div class="ff lp-field" id="sec-agentAssign"><label>Assigned Agent</label><select id="f-agent"><option value="">— Unassigned —</option></select></div>
           </div>
         </div>
       </div>
@@ -2217,15 +2220,15 @@ function renderRow(l) {
     <td>${ck(l.deposit5)}</td>
     <td>${ck(l.deposit5plus5)}</td>
     <td>${ck(l.deposit10)}</td>
-    <td>${hwBadge(l.hotWarmStatus)}${hwMismatch(l)?'<span title="Mismatch with Qualifying Outcomes checkboxes" style="cursor:default;margin-left:4px;color:var(--orange)">⚠</span>':''}</td>
+    <td style="font-size:11px${!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?';'+'color:var(--red);font-weight:500':''}">${l.suburbPostcode||'—'}${!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?' <span title="Invalid postcode" style="cursor:default">⚠</span>':''}</td>
     <td style="font-size:11px">${l.cfsLot||'—'}</td>
     <td>${l.underCfs?`<span class="${l.underCfs==='Y'?'cy':'cn'}">${l.underCfs==='Y'?'Yes':'No'}</span>`:'—'}</td>
+    <td>${hwBadge(l.hotWarmStatus)}${hwMismatch(l)?'<span title="Mismatch with Qualifying Outcomes checkboxes" style="cursor:default;margin-left:4px;color:var(--orange)">⚠</span>':''}</td>
     <td>${l.isHot?'<span class="badge b-hot">HOT</span>':l.isWarm?'<span class="badge b-warm">WARM</span>':l.isCold?'<span class="badge b-cold">COLD</span>':'—'}${hwMismatch(l)?'<span title="Mismatch with Comments Status field" style="cursor:default;margin-left:4px;color:var(--orange)">⚠</span>':''}</td>
     <td>${l.tc?'<span class="tag t-tc">Agent To Call</span>':l.cb?'<span class="tag t-cb">Lead Call Back</span>':l.vm?'<span class="tag t-vm">Voicemail</span>':l.na?'<span class="tag t-na">No Answer</span>':'—'}</td>
     <td>${l.nm?'<span class="tag t-nm">No Mobile</span>':l.dc?'<span class="tag t-dc">Disconnected</span>':l.ni?'<span class="tag t-ni">Not Interested</span>':l.duplicate?'<span class="tag t-dup">Duplicate</span>':'—'}</td>
     <td>${ck(l.settleOk)}</td>
     <td style="font-size:11px;color:var(--text2);cursor:default" data-popup="POC Comments" data-popup-text="${(l.pocComments||'').replace(/"/g,'&quot;')}" onmouseenter="showCellPopup(event,this)" onmouseleave="hideCellPopup()">${l.pocComments?l.pocComments.substring(0,30)+(l.pocComments.length>30?'…':''):'—'}</td>
-    <td style="font-size:11px${!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?';color:var(--red);font-weight:500':''}">${l.suburbPostcode||'—'}${!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?' <span title="Invalid postcode" style="cursor:default">⚠</span>':''}</td>
     <td>${me.role==='admin' ? 
       `<select style="font-size:11px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:3px 6px;color:var(--text);cursor:pointer;max-width:130px" 
         onchange="quickAssignAgency(${l.id},this.value)" onclick="event.stopPropagation()">
