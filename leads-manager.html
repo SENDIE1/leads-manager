@@ -147,9 +147,9 @@
   .ch th:nth-child(n+8):nth-child(-n+12)  { background-color: #dbeafe !important }  /* 48 HOURS PROCESS (F-J) */
   .ch th:nth-child(13)                    { background-color: #f3e8ff !important }  /* LEAD SOURCE (K) */
   .ch th:nth-child(n+14):nth-child(-n+27) { background-color: #fef9c3 !important }  /* QUALIFYING QUESTIONS (L-Y) */
-  .ch th:nth-child(n+28):nth-child(-n+29) { background-color: #ccfbf1 !important }  /* UNDER CFS (Z-AA) */
-  .ch th:nth-child(n+30):nth-child(-n+35) { background-color: #fee2e2 !important }  /* QUALIFYING OUTCOMES (AB-AG) */
-  .ch th:nth-child(n+36):nth-child(-n+37) { background-color: #ede9fe !important }  /* ASSIGNMENT (AH-AI) */
+  .ch th:nth-child(n+28):nth-child(-n+32) { background-color: #fee2e2 !important }  /* QUALIFYING OUTCOMES */
+  .ch th:nth-child(n+33):nth-child(-n+34) { background-color: #ccfbf1 !important }  /* UNDER CFS */
+  .ch th:nth-child(n+35):nth-child(-n+36) { background-color: #ede9fe !important }  /* ASSIGNMENT */
   /* Zebra striping on data rows */
   tbody tr:nth-child(even) td { background-color: #f8fafc }
   tbody tr:nth-child(odd) td  { background-color: #ffffff }
@@ -443,9 +443,9 @@
             <th colspan="4" class="g1">LEAD DETAILS</th>
             <th colspan="5" class="g2">48 HOURS PROCESS</th>
             <th colspan="1" class="g3">LEAD SOURCE</th>
-            <th colspan="14" class="g4">QUALIFYING QUESTIONS</th>
+            <th colspan="15" class="g4">QUALIFYING QUESTIONS</th>
+            <th colspan="5" class="g8">QUALIFYING OUTCOMES</th>
             <th colspan="2" class="g7">UNDER CFS</th>
-            <th colspan="6" class="g8">QUALIFYING OUTCOMES</th>
             <th colspan="2" class="g10">ASSIGNMENT</th>
           </tr>
           <!-- ROW 2: Column headers -->
@@ -477,14 +477,13 @@
             <th onclick="sortBy('deposit5plus5')">5% + 5% DEPOSIT</th>
             <th onclick="sortBy('deposit10')">10% DEPOSIT</th>
             <th onclick="sortBy('suburbPostcode')">POSTCODE</th>
-            <th onclick="sortBy('cfsLot')">CFS LOT #</th>
-            <th onclick="sortBy('underCfs')">UNDER CFS</th>
             <th onclick="sortBy('hotWarmStatus')">HWC STATUS</th>
-            <th onclick="sortBy('isHot')">HWC OUTCOME</th>
             <th onclick="sortBy('tc')">FOLLOW UP</th>
             <th onclick="sortBy('nm')">CLOSED</th>
             <th onclick="sortBy('settleOk')">SETTLE TIME OK</th>
             <th onclick="sortBy('pocComments')">POC COMMENTS</th>
+            <th onclick="sortBy('cfsLot')">CFS LOT #</th>
+            <th onclick="sortBy('underCfs')">UNDER CFS</th>
             <th onclick="sortBy('assignedAgency')">ASSIGNED AGENCY</th>
             <th onclick="sortBy('assignedAgent')">ASSIGNED AGENT</th>
             <th id="col-deletedAt" style="display:none">DELETED AT</th>
@@ -783,29 +782,10 @@
         </div>
       </div>
 
-      <!-- ── SECTION 5: Under CFS ── -->
-      <div class="lp-sec" style="border-left:3px solid #0d9488">
-        <div class="lp-sec-label">
-          <div class="lp-sec-num" style="background:#0d9488">5</div>
-          <div style="flex:1">
-            <div style="display:flex;align-items:center;gap:6px">
-              <div class="lp-sec-title">Under CFS</div>
-            </div>
-            <div class="lp-sec-sub">Contract For Sale details</div>
-          </div>
-        </div>
-        <div class="lp-sec-body">
-          <div class="lp-grid-3">
-            <div class="ff lp-field"><label>CFS Lot #</label><input type="text" id="f-cfsLot"></div>
-            <div class="ff lp-field"><label>Under CFS</label><select id="f-underCfs"><option value="">— Select —</option><option>Y</option><option>N</option></select></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── SECTION 6: Qualifying Outcomes ── -->
+      <!-- ── SECTION 5: Qualifying Outcomes ── -->
       <div class="lp-sec" style="border-left:3px solid #dc2626">
         <div class="lp-sec-label">
-          <div class="lp-sec-num" style="background:#dc2626">6</div>
+          <div class="lp-sec-num" style="background:#dc2626">5</div>
           <div style="flex:1">
             <div style="display:flex;align-items:center;gap:6px">
               <div class="lp-sec-title">Qualifying Outcomes</div>
@@ -855,15 +835,6 @@
           </div>
 
           <div style="margin-top:4px">
-            <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px">HWC Outcome</div>
-            <div id="hwcPicker" style="display:flex;flex-wrap:wrap;gap:10px">
-              <div class="oc-pill" data-key="isHot"  data-color="#ef4444" data-bg="rgba(239,68,68,.1)"  onclick="toggleHWC(this)">Hot</div>
-              <div class="oc-pill" data-key="isWarm" data-color="#f97316" data-bg="rgba(249,115,22,.1)" onclick="toggleHWC(this)">Warm</div>
-              <div class="oc-pill" data-key="isCold" data-color="#60a5fa" data-bg="rgba(59,130,246,.1)"  onclick="toggleHWC(this)">Cold</div>
-            </div>
-          </div>
-
-          <div style="margin-top:20px">
             <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px">Follow Up</div>
             <div id="outcomePicker" style="display:flex;flex-wrap:wrap;gap:10px">
               <div class="oc-pill" data-key="tc"  data-color="#0d9488" data-bg="#e0f7f4" onclick="toggleOutcome(this)">Agent To Call (TC)</div>
@@ -884,9 +855,6 @@
           </div>
 
           <div style="display:none">
-            <input type="checkbox" id="f-isHot">
-            <input type="checkbox" id="f-isWarm">
-            <input type="checkbox" id="f-isCold">
             <input type="checkbox" id="f-tc">
             <input type="checkbox" id="f-cb">
             <input type="checkbox" id="f-vm">
@@ -913,6 +881,25 @@
               </div>
               <input type="hidden" id="f-pocComments">
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 6: Under CFS ── -->
+      <div class="lp-sec" style="border-left:3px solid #0d9488">
+        <div class="lp-sec-label">
+          <div class="lp-sec-num" style="background:#0d9488">6</div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:6px">
+              <div class="lp-sec-title">Under CFS</div>
+            </div>
+            <div class="lp-sec-sub">Contract For Sale details</div>
+          </div>
+        </div>
+        <div class="lp-sec-body">
+          <div class="lp-grid-3">
+            <div class="ff lp-field"><label>CFS Lot #</label><input type="text" id="f-cfsLot"></div>
+            <div class="ff lp-field"><label>Under CFS</label><select id="f-underCfs"><option value="">— Select —</option><option>Y</option><option>N</option></select></div>
           </div>
         </div>
       </div>
@@ -2241,14 +2228,13 @@ function renderRow(l) {
     <td>${ck(l.deposit5plus5)}</td>
     <td>${ck(l.deposit10)}</td>
     <td style="font-size:11px${!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?';'+'color:var(--red);font-weight:500':''}">${l.suburbPostcode||'—'}${!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?' <span title="Invalid postcode" style="cursor:default">⚠</span>':''}</td>
-    <td style="font-size:11px">${l.cfsLot||'—'}</td>
-    <td>${l.underCfs?`<span class="${l.underCfs==='Y'?'cy':'cn'}">${l.underCfs==='Y'?'Yes':'No'}</span>`:'—'}</td>
     <td>${hwBadge(l.hotWarmStatus)}${hwMismatch(l)?'<span title="Mismatch with Qualifying Outcomes checkboxes" style="cursor:default;margin-left:4px;color:var(--orange)">⚠</span>':''}</td>
-    <td>${l.isHot?'<span class="badge b-hot">HOT</span>':l.isWarm?'<span class="badge b-warm">WARM</span>':l.isCold?'<span class="badge b-cold">COLD</span>':'—'}${hwMismatch(l)?'<span title="Mismatch with Comments Status field" style="cursor:default;margin-left:4px;color:var(--orange)">⚠</span>':''}</td>
     <td>${l.tc?'<span class="tag t-tc">Agent To Call</span>':l.cb?'<span class="tag t-cb">Lead Call Back</span>':l.vm?'<span class="tag t-vm">Voicemail</span>':l.na?'<span class="tag t-na">No Answer</span>':'—'}</td>
     <td>${l.nm?'<span class="tag t-nm">No Mobile</span>':l.dc?'<span class="tag t-dc">Disconnected</span>':l.ni?'<span class="tag t-ni">Not Interested</span>':l.duplicate?'<span class="tag t-dup">Duplicate</span>':'—'}</td>
     <td>${ck(l.settleOk)}</td>
     <td style="font-size:11px;color:var(--text2);cursor:default" data-popup="POC Comments" data-popup-text="${(l.pocComments||'').replace(/"/g,'&quot;')}" onmouseenter="showCellPopup(event,this)" onmouseleave="hideCellPopup()">${l.pocComments?l.pocComments.substring(0,30)+(l.pocComments.length>30?'…':''):'—'}</td>
+    <td style="font-size:11px">${l.cfsLot||'—'}</td>
+    <td>${l.underCfs?`<span class="${l.underCfs==='Y'?'cy':'cn'}">${l.underCfs==='Y'?'Yes':'No'}</span>`:'—'}</td>
     <td>${me.role==='admin' ? 
       `<select style="font-size:11px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:3px 6px;color:var(--text);cursor:pointer;max-width:130px" 
         onchange="quickAssignAgency(${l.id},this.value)" onclick="event.stopPropagation()">
