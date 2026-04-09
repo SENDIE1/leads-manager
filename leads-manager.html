@@ -121,6 +121,18 @@
   tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
   tbody tr:hover td{background:var(--bg3) !important}
   tbody td{padding:7px 8px;border-right:1px solid var(--border);vertical-align:middle;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
+
+  /* Inline cell editing */
+  .ie-cell{cursor:pointer;position:relative}
+  .ie-cell:hover{background:rgba(37,99,235,0.06) !important;outline:1px solid var(--accent)}
+  .ie-active{outline:2px solid var(--accent) !important;background:var(--bg2) !important;z-index:20;position:relative}
+  .ie-input{width:100%;border:none;outline:none;background:transparent;font-family:var(--sans);font-size:11px;color:var(--text);padding:0;min-width:80px}
+  .ie-select{width:100%;border:none;outline:none;background:transparent;font-family:var(--sans);font-size:11px;color:var(--text);padding:0;cursor:pointer}
+  .ie-actions{display:flex;gap:4px;margin-top:4px}
+  .ie-save{padding:2px 8px;background:var(--accent);color:#fff;border:none;border-radius:3px;font-size:10px;cursor:pointer}
+  .ie-cancel{padding:2px 8px;background:var(--bg4);color:var(--text2);border:1px solid var(--border2);border-radius:3px;font-size:10px;cursor:pointer}
+  .ie-stamp-btn{padding:3px 10px;background:var(--accent);color:#fff;border:none;border-radius:3px;font-size:10px;cursor:pointer;white-space:nowrap}
+  .ie-pill-popup{position:fixed;z-index:9999;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:12px;box-shadow:0 4px 20px rgba(0,0,0,.15);display:flex;flex-wrap:wrap;gap:8px;max-width:280px}
   .cell-popup{position:fixed;z-index:9999;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:12px 14px;max-width:320px;font-size:12px;color:var(--text);line-height:1.6;box-shadow:0 4px 16px rgba(0,0,0,.12);pointer-events:none;white-space:pre-wrap;word-break:break-word}
   .rn{font-size:10px;color:var(--text3);text-align:right}
   .rcb{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
@@ -146,10 +158,10 @@
   .ch th:nth-child(n+4):nth-child(-n+7)   { background-color: #e0f7f4 !important }  /* LEAD DETAILS (B-E) */
   .ch th:nth-child(n+8):nth-child(-n+12)  { background-color: #dbeafe !important }  /* 48 HOURS PROCESS (F-J) */
   .ch th:nth-child(13)                    { background-color: #f3e8ff !important }  /* LEAD SOURCE (K) */
-  .ch th:nth-child(n+14):nth-child(-n+27) { background-color: #fef9c3 !important }  /* QUALIFYING QUESTIONS (L-Y) */
-  .ch th:nth-child(n+28):nth-child(-n+32) { background-color: #fee2e2 !important }  /* QUALIFYING OUTCOMES */
-  .ch th:nth-child(n+33):nth-child(-n+34) { background-color: #ccfbf1 !important }  /* UNDER CFS */
-  .ch th:nth-child(n+35):nth-child(-n+36) { background-color: #ede9fe !important }  /* ASSIGNMENT */
+  .ch th:nth-child(n+14):nth-child(-n+26) { background-color: #fef9c3 !important }  /* QUALIFYING QUESTIONS (cols 14-26) */
+  .ch th:nth-child(n+27):nth-child(-n+31) { background-color: #fee2e2 !important }  /* QUALIFYING OUTCOMES (cols 27-31) */
+  .ch th:nth-child(n+32):nth-child(-n+33) { background-color: #ccfbf1 !important }  /* UNDER CFS (cols 32-33) */
+  .ch th:nth-child(n+34):nth-child(-n+35) { background-color: #ede9fe !important }  /* ASSIGNMENT (cols 34-35) */
   /* Zebra striping on data rows */
   tbody tr:nth-child(even) td { background-color: #f8fafc }
   tbody tr:nth-child(odd) td  { background-color: #ffffff }
@@ -421,8 +433,6 @@
             <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">U</th>
             <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">V</th>
             <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">W</th>
-            <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">X</th>
-            <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">Y</th>
             <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">Z</th>
             <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">AA</th>
             <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">AB</th>
@@ -432,7 +442,8 @@
             <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">AF</th>
             <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">AG</th>
             <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">AH</th>
-            <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">AI</th>
+            <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">AG</th>
+            <th style="background:#0f172a;color:#94a3b8;font-size:9px;font-weight:700;text-align:center;padding:2px 4px;border-right:1px solid #334155">AH</th>
           </tr>
           <!-- END COLUMN REFERENCE ROW -->
           <!-- ROW 1: Group headers matching spreadsheet -->
@@ -443,7 +454,7 @@
             <th colspan="4" class="g1">LEAD DETAILS</th>
             <th colspan="5" class="g2">48 HOURS PROCESS</th>
             <th colspan="1" class="g3">LEAD SOURCE</th>
-            <th colspan="14" class="g4">QUALIFYING QUESTIONS</th>
+            <th colspan="13" class="g4">QUALIFYING QUESTIONS</th>
             <th colspan="5" class="g8">QUALIFYING OUTCOMES</th>
             <th colspan="2" class="g7">UNDER CFS</th>
             <th colspan="2" class="g10">ASSIGNMENT</th>
@@ -463,6 +474,7 @@
             <th onclick="sortBy('sms')">TEXT MESSAGE (SMS)</th>
             <th onclick="sortBy('finalEmail')">FINAL EMAIL</th>
             <th onclick="sortBy('walkIns')">LEAD SOURCE</th>
+            <th onclick="sortBy('hearAboutUs')">HOW DID YOU HEAR ABOUT US?</th>
             <th onclick="sortBy('lsoVisit')">LAND SALES OFFICE VISIT</th>
             <th onclick="sortBy('buyerType')">BUYER TYPE</th>
             <th onclick="sortBy('timeToBuy')">TIME TO BUY</th>
@@ -470,12 +482,10 @@
             <th onclick="sortBy('priceLand')">LAND PRICE</th>
             <th onclick="sortBy('storey')">STOREY</th>
             <th onclick="sortBy('garage')">GARAGE</th>
-            <th onclick="sortBy('lotType')">LOT TYPE</th>
+            <th onclick="sortBy('lotType')">LOT TYPE / FRONTAGE</th>
             <th onclick="sortBy('lotArea')">AREA (M²)</th>
             <th onclick="sortBy('lotNumbers')">LOT NUMBERS</th>
-            <th onclick="sortBy('deposit5')">5% DEPOSIT</th>
-            <th onclick="sortBy('deposit5plus5')">5% + 5% DEPOSIT</th>
-            <th onclick="sortBy('deposit10')">10% DEPOSIT</th>
+            <th>DEPOSIT</th>
             <th onclick="sortBy('suburbPostcode')">POSTCODE</th>
             <th onclick="sortBy('hotWarmStatus')">HWC STATUS</th>
             <th onclick="sortBy('tc')">FOLLOW UP</th>
@@ -703,10 +713,14 @@
         <div class="lp-sec-body">
           <div id="leadSourcePicker" style="display:flex;flex-wrap:wrap;gap:10px">
             <div class="ls-pill" data-key="walkIns"   data-color="#0d9488" data-bg="#e0f7f4" onclick="toggleLeadSource(this)">Walk In</div>
-            <div class="ls-pill" data-key="social"    data-color="#7c3aed" data-bg="#f3e8ff" onclick="toggleLeadSource(this)">Social</div>
+            <div class="ls-pill" data-key="facebook"  data-color="#1877f2" data-bg="#dbeafe" onclick="toggleLeadSource(this)">Facebook</div>
+            <div class="ls-pill" data-key="instagram" data-color="#e1306c" data-bg="#fce7f3" onclick="toggleLeadSource(this)">Instagram</div>
+            <div class="ls-pill" data-key="tiktok"    data-color="#010101" data-bg="#f1f5f9" onclick="toggleLeadSource(this)">TikTok</div>
+            <div class="ls-pill" data-key="xtwitter"  data-color="#000000" data-bg="#f1f5f9" onclick="toggleLeadSource(this)">X (Twitter)</div>
+            <div class="ls-pill" data-key="linkedin"  data-color="#0077b5" data-bg="#e0f2fe" onclick="toggleLeadSource(this)">LinkedIn</div>
+            <div class="ls-pill" data-key="sms"       data-color="#16a34a" data-bg="#dcfce7" onclick="toggleLeadSource(this)">SMS</div>
             <div class="ls-pill" data-key="roi"       data-color="#2563eb" data-bg="#dbeafe" onclick="toggleLeadSource(this)">ROI</div>
             <div class="ls-pill" data-key="rea"       data-color="#dc2626" data-bg="#fee2e2" onclick="toggleLeadSource(this)">REA</div>
-            <div class="ls-pill" data-key="reaAds"    data-color="#ea580c" data-bg="#ffedd5" onclick="toggleLeadSource(this)">REA Ads</div>
             <div class="ls-pill" data-key="google"    data-color="#16a34a" data-bg="#dcfce7" onclick="toggleLeadSource(this)">Google</div>
             <div class="ls-pill" data-key="website"   data-color="#0ea5e9" data-bg="#e0f2fe" onclick="toggleLeadSource(this)">Website</div>
             <div class="ls-pill" data-key="crf"       data-color="#ca8a04" data-bg="#fef9c3" onclick="toggleLeadSource(this)">CRF</div>
@@ -714,12 +728,17 @@
             <div class="ls-pill" data-key="edm"       data-color="#0284c7" data-bg="#e0f2fe" onclick="toggleLeadSource(this)">EDM</div>
           </div>
           <div style="display:none">
-            <input type="checkbox" id="f-walkIns"><input type="checkbox" id="f-social">
+            <input type="checkbox" id="f-walkIns">
+            <input type="checkbox" id="f-facebook">
+            <input type="checkbox" id="f-instagram">
+            <input type="checkbox" id="f-tiktok">
+            <input type="checkbox" id="f-xtwitter">
+            <input type="checkbox" id="f-linkedin">
+            <input type="checkbox" id="f-sms">
             <input type="checkbox" id="f-roi"><input type="checkbox" id="f-rea">
-            <input type="checkbox" id="f-reaAds"><input type="checkbox" id="f-google">
+            <input type="checkbox" id="f-google">
             <input type="checkbox" id="f-crf"><input type="checkbox" id="f-crfAgency">
             <input type="checkbox" id="f-edm">
-            <input type="checkbox" id="f-tba1"><input type="checkbox" id="f-tba2"><input type="checkbox" id="f-tba3">
           </div>
         </div>
       </div>
@@ -750,6 +769,9 @@
           </div>
         </div>
         <div class="lp-sec-body">
+          <div style="margin-bottom:16px">
+            <div class="ff lp-field"><label>How Did You Hear About Us?</label><input type="text" id="f-hearAboutUs" placeholder="e.g. Friend referral, drove past, online search…"></div>
+          </div>
           <div class="lp-grid-3">
             <div class="ff lp-field"><label>Land Sales Office Visit</label><select id="f-lsoVisit"><option value="">— Select —</option><option value="Y">Yes</option><option value="N">No</option><option value="Unsure">Not Sure</option></select></div>
             <div class="ff lp-field"><label>Buyer Type</label><select id="f-buyerType"><option value="">— Select —</option><option value="FHB">FHB — First Home Buyer</option><option value="INV">INV — Investor</option><option value="UG">UG — Upgrader</option><option value="DS">DS — Downsizer</option></select></div>
@@ -759,17 +781,22 @@
             <div></div>
             <div class="ff lp-field"><label>Storey</label><select id="f-storey"><option value="">— Select —</option><option value="S/S">Single (S/S)</option><option value="D/S">Double (D/S)</option></select></div>
             <div class="ff lp-field"><label>Garage</label><select id="f-garage"><option value="">— Select —</option><option value="S">Single</option><option value="D">Double</option></select></div>
-            <div class="ff lp-field"><label>Lot Type</label><select id="f-lotType"><option value="">— Select —</option><option>10m</option><option>12m</option><option>14m</option><option>15m</option><option>16m</option><option>18m</option><option>20m+</option></select></div>
+            <div class="ff lp-field"><label>Lot Type / Frontage</label><select id="f-lotType"><option value="">— Select —</option><option>10m</option><option>12m</option><option>14m</option><option>15m</option><option>16m</option><option>18m</option><option>20m+</option></select></div>
             <div class="ff lp-field"><label>Lot Area (m²)</label><input type="text" id="f-lotArea" placeholder="e.g. 400"></div>
             <div class="ff lp-field"><label>Lot Numbers</label><input type="text" id="f-lotNumbers" placeholder="e.g. 42, 51, 63"></div>
             <div></div>
           </div>
           <div style="margin-top:20px">
             <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px">Deposit</div>
-            <div style="display:flex;flex-wrap:wrap;gap:12px">
-              <label class="cbi"><input type="checkbox" id="f-deposit5"><span>5% Deposit</span></label>
-              <label class="cbi"><input type="checkbox" id="f-deposit5plus5"><span>5% + 5% Deposit</span></label>
-              <label class="cbi"><input type="checkbox" id="f-deposit10"><span>10% Deposit</span></label>
+            <div style="display:flex;flex-wrap:wrap;gap:10px">
+              <div class="ls-pill" id="pill-deposit5" data-key="deposit5" data-color="#1e40af" data-bg="#dbeafe" onclick="toggleDepositPill(this)">5%</div>
+              <div class="ls-pill" id="pill-deposit5plus5" data-key="deposit5plus5" data-color="#1e40af" data-bg="#dbeafe" onclick="toggleDepositPill(this)">5% + 5%</div>
+              <div class="ls-pill" id="pill-deposit10" data-key="deposit10" data-color="#1e40af" data-bg="#dbeafe" onclick="toggleDepositPill(this)">10%</div>
+            </div>
+            <div style="display:none">
+              <input type="checkbox" id="f-deposit5">
+              <input type="checkbox" id="f-deposit5plus5">
+              <input type="checkbox" id="f-deposit10">
             </div>
           </div>
           <div style="margin-top:16px">
@@ -1295,8 +1322,9 @@ function mapToDb(l) {
     date: l.date||null, name: l.name||null, mobile: l.mobile||null, email: l.email||null,
     lead_msg: l.leadMsg||null, roi_email: l.roiEmail||null, call1: l.call1||null,
     call2: l.call2||null, sms: l.sms||null, final_email: l.finalEmail||null,
-    walk_ins: !!l.walkIns, social: !!l.social, roi: !!l.roi, rea: !!l.rea,
-    rea_ads: !!l.reaAds, google: !!l.google, crf: !!l.crf, crf_agency: !!l.crfAgency,
+    walk_ins: !!l.walkIns, facebook: !!l.facebook, instagram: !!l.instagram,
+    tiktok: !!l.tiktok, xtwitter: !!l.xtwitter, linkedin: !!l.linkedin, sms: !!l.sms,
+    roi: !!l.roi, rea: !!l.rea, google: !!l.google, crf: !!l.crf, crf_agency: !!l.crfAgency,
     edm: !!l.edm, website: !!l.website, lso_visit: l.lsoVisit||null, buyer_type: l.buyerType||null,
     time_to_buy: l.timeToBuy||null, price_hl: l.priceHL||null, price_land: l.priceLand||null,
     storey: l.storey||null, garage: l.garage||null, lot_type: l.lotType||null,
@@ -1970,6 +1998,7 @@ function clearStamp(field) {
 }
 
 function initStamps() {
+  initDepositPills();
   ['roiEmail','call1','call2','sms','finalEmail'].forEach(field => {
     const raw = document.getElementById('f-'+field).value;
     const display = document.getElementById('stamp-'+field);
@@ -2123,6 +2152,46 @@ function initOutcomePills() {
   });
 }
 
+function toggleDepositPill(el) {
+  const key = el.dataset.key;
+  const cb = document.getElementById('f-' + key);
+  const active = el.classList.toggle('active');
+  if (cb) cb.checked = active;
+  if (active) {
+    el.style.background = el.dataset.bg;
+    el.style.borderColor = el.dataset.color;
+    el.style.color = el.dataset.color;
+    el.style.opacity = '1';
+    el.style.filter = 'none';
+  } else {
+    el.style.background = '';
+    el.style.borderColor = '';
+    el.style.color = '';
+  }
+  leadDirty = true;
+}
+
+function initDepositPills() {
+  ['deposit5','deposit5plus5','deposit10'].forEach(key => {
+    const pill = document.getElementById('pill-' + key);
+    const cb = document.getElementById('f-' + key);
+    if (!pill || !cb) return;
+    if (cb.checked) {
+      pill.classList.add('active');
+      pill.style.background = pill.dataset.bg;
+      pill.style.borderColor = pill.dataset.color;
+      pill.style.color = pill.dataset.color;
+      pill.style.opacity = '1';
+      pill.style.filter = 'none';
+    } else {
+      pill.classList.remove('active');
+      pill.style.background = '';
+      pill.style.borderColor = '';
+      pill.style.color = '';
+    }
+  });
+}
+
 function toggleLeadSource(el) {
   const key = el.dataset.key;
   const wasActive = el.classList.contains('active');
@@ -2200,48 +2269,51 @@ function hwMismatch(l) {
 
 function renderRow(l) {
   const canCheck = me.role !== 'agent';
+  const ie = (lid,field,val,style='font-size:11px') => `<td class="ie-cell" style="${style};padding:7px 8px" onclick="ieText(event,${lid},'${field}')">${val||'—'}</td>`;
+  const ieSel = (lid,field,display,opts) => `<td class="ie-cell" style="font-size:11px;padding:7px 8px" onclick="ieSelect(event,${lid},'${field}',${JSON.stringify(opts)})">${display||'—'}</td>`;
+  const ieStamp = (lid,field,val,cls='') => `<td class="ie-cell${cls?' '+cls:''}" style="font-size:11px;padding:7px 8px" onclick="ieStamp(event,${lid},'${field}')">${val||'—'}</td>`;
+  const iePills = (lid,field,display,opts) => `<td class="ie-cell" style="padding:7px 8px" onclick="iePills(event,${lid},'${field}',${JSON.stringify(opts)})">${display||'—'}</td>`;
   return `<tr data-id="${l.id}" ondblclick="openLeadDrawer(${l.id})">
-    <td>${canCheck ? `<input type="checkbox" class="rcb" data-id="${l.id}" onchange="updateSel()">` : ''}</td>
-    <td class="rn">${l.id}</td>
-    <td style="font-size:11px;color:var(--text2)">${fmtDate(l.date)}</td>
-    <td style="font-weight:500;color:var(--text)">${l.name||'—'}</td>
-    <td style="font-size:11px${!isMobileValid(l.mobile)&&l.mobile?';color:var(--red);font-weight:500':''}">${l.mobile||'—'}${!isMobileValid(l.mobile)&&l.mobile?' <span title="Invalid format" style="cursor:default">⚠</span>':''}</td>
-    <td style="font-size:11px${!isEmailValid(l.email)&&l.email?';color:var(--red);font-weight:500':';color:var(--accent)'}">${l.email||'—'}${!isEmailValid(l.email)&&l.email?' <span title="Invalid email" style="cursor:default">⚠</span>':''}</td>
-    <td style="font-size:11px;color:var(--text2);cursor:default" data-popup="Lead Message" data-popup-text="${(l.leadMsg||'').replace(/"/g,'&quot;')}" onmouseenter="showCellPopup(event,this)" onmouseleave="hideCellPopup()">${l.leadMsg?l.leadMsg.substring(0,30)+(l.leadMsg.length>30?'…':''):'—'}</td>
-    <td style="font-size:11px" class="${isBackdated(l.roiEmail)?'bd-cell':''}">${fmtDate(l.roiEmail)||'—'}${isBackdated(l.roiEmail)?'<span class="bd-dot"></span>':''}</td>
-    <td style="font-size:11px" class="${isBackdated(l.call1)?'bd-cell':''}">${fmtDate(l.call1)||'—'}${isBackdated(l.call1)?'<span class="bd-dot"></span>':''}</td>
-    <td style="font-size:11px" class="${isBackdated(l.call2)?'bd-cell':''}">${fmtDate(l.call2)||'—'}${isBackdated(l.call2)?'<span class="bd-dot"></span>':''}</td>
-    <td style="font-size:11px" class="${isBackdated(l.sms)?'bd-cell':''}">${fmtDate(l.sms)||'—'}${isBackdated(l.sms)?'<span class="bd-dot"></span>':''}</td>
-    <td style="font-size:11px" class="${isBackdated(l.finalEmail)?'bd-cell':''}">${fmtDate(l.finalEmail)||'—'}${isBackdated(l.finalEmail)?'<span class="bd-dot"></span>':''}</td>
-    <td style="font-size:11px">${getLeadSource(l)}</td>
-    <td>${l.lsoVisit?`<span class="${l.lsoVisit==='Y'?'cy':l.lsoVisit==='N'?'cn':'cu'}">${l.lsoVisit==='Y'?'Yes':l.lsoVisit==='N'?'No':'Not Sure'}</span>`:'—'}</td>
-    <td>${l.buyerType?`<span class="tag">${{FHB:'First Home Buyer',INV:'Investor',UG:'Upgrader',DS:'Downsizer'}[l.buyerType]||l.buyerType}</span>`:'—'}</td>
-    <td style="font-size:11px;color:var(--text2)">${l.timeToBuy||'—'}</td>
-    <td style="font-size:11px;color:var(--green)">${l.priceHL||'—'}</td>
-    <td style="font-size:11px;color:var(--green)">${l.priceLand||'—'}</td>
-    <td style="font-size:11px">${{"S/S":'Single Storey','SS':'Single Storey',"D/S":'Double Storey','DS':'Double Storey'}[l.storey]||l.storey||'—'}</td>
-    <td style="font-size:11px">${{S:'Single',D:'Double'}[l.garage]||l.garage||'—'}</td>
-    <td style="font-size:11px">${l.lotType||'—'}</td>
-    <td style="font-size:11px">${l.lotArea||'—'}</td>
-    <td style="font-size:11px">${l.lotNumbers||'—'}</td>
-    <td>${ck(l.deposit5)}</td>
-    <td>${ck(l.deposit5plus5)}</td>
-    <td>${ck(l.deposit10)}</td>
-    <td style="font-size:11px${!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?';'+'color:var(--red);font-weight:500':''}">${l.suburbPostcode||'—'}${!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?' <span title="Invalid postcode" style="cursor:default">⚠</span>':''}</td>
-    <td>${hwBadge(l.hotWarmStatus)}${hwMismatch(l)?'<span title="Mismatch with Qualifying Outcomes checkboxes" style="cursor:default;margin-left:4px;color:var(--orange)">⚠</span>':''}</td>
-    <td>${l.tc?'<span class="tag t-tc">Agent To Call</span>':l.cb?'<span class="tag t-cb">Lead Call Back</span>':l.vm?'<span class="tag t-vm">Voicemail</span>':l.na?'<span class="tag t-na">No Answer</span>':'—'}</td>
-    <td>${l.nm?'<span class="tag t-nm">No Mobile</span>':l.dc?'<span class="tag t-dc">Disconnected</span>':l.ni?'<span class="tag t-ni">Not Interested</span>':l.duplicate?'<span class="tag t-dup">Duplicate</span>':'—'}</td>
-    <td>${ck(l.settleOk)}</td>
-    <td style="font-size:11px;color:var(--text2);cursor:default" data-popup="POC Comments" data-popup-text="${(l.pocComments||'').replace(/"/g,'&quot;')}" onmouseenter="showCellPopup(event,this)" onmouseleave="hideCellPopup()">${l.pocComments?l.pocComments.substring(0,30)+(l.pocComments.length>30?'…':''):'—'}</td>
-    <td style="font-size:11px">${l.cfsLot||'—'}</td>
-    <td>${l.underCfs?`<span class="${l.underCfs==='Y'?'cy':'cn'}">${l.underCfs==='Y'?'Yes':'No'}</span>`:'—'}</td>
-    <td>${me.role==='admin' ? 
+    <td style="padding:7px 8px">${canCheck ? `<input type="checkbox" class="rcb" data-id="${l.id}" onchange="updateSel()">` : ''}</td>
+    <td class="rn" style="padding:7px 8px">${l.id}</td>
+    <td style="font-size:11px;color:var(--text2);padding:7px 8px">${fmtDate(l.date)}</td>
+    ${ie(l.id,'name',l.name||'—','font-weight:500;color:var(--text)')}
+    ${ie(l.id,'mobile',`${l.mobile||'—'}${!isMobileValid(l.mobile)&&l.mobile?' <span title="Invalid format" style="cursor:default">⚠</span>':''}`,'font-size:11px'+(!isMobileValid(l.mobile)&&l.mobile?';color:var(--red);font-weight:500':''))}
+    ${ie(l.id,'email',`${l.email||'—'}${!isEmailValid(l.email)&&l.email?' <span title="Invalid email" style="cursor:default">⚠</span>':''}`,'font-size:11px'+(!isEmailValid(l.email)&&l.email?';color:var(--red);font-weight:500':';color:var(--accent)'))}
+    <td class="ie-cell" style="font-size:11px;color:var(--text2);padding:7px 8px" data-popup="Lead Message" data-popup-text="${(l.leadMsg||'').replace(/"/g,'&quot;')}" onmouseenter="showCellPopup(event,this)" onmouseleave="hideCellPopup()" onclick="ieText(event,${l.id},'leadMsg')">${l.leadMsg?l.leadMsg.substring(0,30)+(l.leadMsg.length>30?'…':''):'—'}</td>
+    ${ieStamp(l.id,'roiEmail',`${fmtDate(l.roiEmail)||'—'}${isBackdated(l.roiEmail)?'<span class="bd-dot"></span>':''}`,isBackdated(l.roiEmail)?'bd-cell':'')}
+    ${ieStamp(l.id,'call1',`${fmtDate(l.call1)||'—'}${isBackdated(l.call1)?'<span class="bd-dot"></span>':''}`,isBackdated(l.call1)?'bd-cell':'')}
+    ${ieStamp(l.id,'call2',`${fmtDate(l.call2)||'—'}${isBackdated(l.call2)?'<span class="bd-dot"></span>':''}`,isBackdated(l.call2)?'bd-cell':'')}
+    ${ieStamp(l.id,'sms',`${fmtDate(l.sms)||'—'}${isBackdated(l.sms)?'<span class="bd-dot"></span>':''}`,isBackdated(l.sms)?'bd-cell':'')}
+    ${ieStamp(l.id,'finalEmail',`${fmtDate(l.finalEmail)||'—'}${isBackdated(l.finalEmail)?'<span class="bd-dot"></span>':''}`,isBackdated(l.finalEmail)?'bd-cell':'')}
+    <td class="ie-cell" style="font-size:11px;padding:7px 8px" onclick="ieLeadSource(event,${l.id})">${getLeadSource(l)||'—'}</td>
+    ${ie(l.id,'hearAboutUs',l.hearAboutUs?l.hearAboutUs.substring(0,20)+(l.hearAboutUs.length>20?'…':''):'—')}
+    ${ieSel(l.id,'lsoVisit',l.lsoVisit?`<span class="${l.lsoVisit==='Y'?'cy':l.lsoVisit==='N'?'cn':'cu'}">${l.lsoVisit==='Y'?'Yes':l.lsoVisit==='N'?'No':'Not Sure'}</span>`:'—',[{v:'',t:'— Select —'},{v:'Y',t:'Yes'},{v:'N',t:'No'},{v:'Unsure',t:'Not Sure'}])}
+    ${ieSel(l.id,'buyerType',l.buyerType?`<span class="tag">${{FHB:'First Home Buyer',INV:'Investor',UG:'Upgrader',DS:'Downsizer'}[l.buyerType]||l.buyerType}</span>`:'—',[{v:'',t:'— Select —'},{v:'FHB',t:'FHB — First Home Buyer'},{v:'INV',t:'INV — Investor'},{v:'UG',t:'UG — Upgrader'},{v:'DS',t:'DS — Downsizer'}])}
+    ${ieSel(l.id,'timeToBuy',l.timeToBuy||'—',[{v:'',t:'— Select —'},{v:'0–3 months',t:'0–3 months'},{v:'3–6 months',t:'3–6 months'},{v:'6–9 months',t:'6–9 months'},{v:'9–12 months',t:'9–12 months'},{v:'12+ months',t:'12+ months'}])}
+    ${ie(l.id,'priceHL',l.priceHL||'—','font-size:11px;color:var(--green)')}
+    ${ie(l.id,'priceLand',l.priceLand||'—','font-size:11px;color:var(--green)')}
+    ${ieSel(l.id,'storey',({"S/S":'Single Storey','SS':'Single Storey',"D/S":'Double Storey','DS':'Double Storey'}[l.storey]||l.storey||'—'),[{v:'',t:'— Select —'},{v:'S/S',t:'Single (S/S)'},{v:'D/S',t:'Double (D/S)'}])}
+    ${ieSel(l.id,'garage',({S:'Single',D:'Double'}[l.garage]||l.garage||'—'),[{v:'',t:'— Select —'},{v:'S',t:'Single'},{v:'D',t:'Double'}])}
+    ${ieSel(l.id,'lotType',l.lotType||'—',[{v:'',t:'— Select —'},{v:'10m',t:'10m'},{v:'12m',t:'12m'},{v:'14m',t:'14m'},{v:'15m',t:'15m'},{v:'16m',t:'16m'},{v:'18m',t:'18m'},{v:'20m+',t:'20m+'}])}
+    ${ie(l.id,'lotArea',l.lotArea||'—')}
+    ${ie(l.id,'lotNumbers',l.lotNumbers||'—')}
+    ${iePills(l.id,'deposit',[l.deposit5?'<span class="tag" style="background:#dbeafe;color:#1e40af;border-color:#bfdbfe">5%</span>':'', l.deposit5plus5?'<span class="tag" style="background:#dbeafe;color:#1e40af;border-color:#bfdbfe">5%+5%</span>':'', l.deposit10?'<span class="tag" style="background:#dbeafe;color:#1e40af;border-color:#bfdbfe">10%</span>':''].filter(Boolean).join(' ')||'—',[{k:'deposit5',t:'5%'},{k:'deposit5plus5',t:'5%+5%'},{k:'deposit10',t:'10%'}])}
+    ${ie(l.id,'suburbPostcode',`${l.suburbPostcode||'—'}${!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?' <span title="Invalid postcode" style="cursor:default">⚠</span>':''}`,'font-size:11px'+(!isPostcodeValid(l.suburbPostcode)&&l.suburbPostcode?';color:var(--red);font-weight:500':''))}
+    ${iePills(l.id,'hwcStatus',hwBadge(l.hotWarmStatus)||'—',[{k:'Hot',t:'🔴 Hot'},{k:'Warm',t:'🟠 Warm'},{k:'Cold',t:'🔵 Cold'}])}
+    ${iePills(l.id,'followUp',l.tc?'<span class="tag t-tc">Agent To Call</span>':l.cb?'<span class="tag t-cb">Lead Call Back</span>':l.vm?'<span class="tag t-vm">Voicemail</span>':l.na?'<span class="tag t-na">No Answer</span>':'—',[{k:'tc',t:'TC'},{k:'cb',t:'CB'},{k:'vm',t:'VM'},{k:'na',t:'NA'}])}
+    ${iePills(l.id,'closed',l.nm?'<span class="tag t-nm">No Mobile</span>':l.dc?'<span class="tag t-dc">Disconnected</span>':l.ni?'<span class="tag t-ni">Not Interested</span>':l.duplicate?'<span class="tag t-dup">Duplicate</span>':'—',[{k:'nm',t:'NM'},{k:'dc',t:'DC'},{k:'ni',t:'NI'},{k:'duplicate',t:'Dup'}])}
+    ${iePills(l.id,'settleOk',ck(l.settleOk),[{k:'settleOk',t:'✓ Settle OK'}])}
+    <td class="ie-cell" style="font-size:11px;color:var(--text2);padding:7px 8px" data-popup="POC Comments" data-popup-text="${(l.pocComments||'').replace(/"/g,'&quot;')}" onmouseenter="showCellPopup(event,this)" onmouseleave="hideCellPopup()" onclick="ieText(event,${l.id},'pocComments')">${l.pocComments?l.pocComments.substring(0,30)+(l.pocComments.length>30?'…':''):'—'}</td>
+    ${ie(l.id,'cfsLot',l.cfsLot||'—')}
+    ${ieSel(l.id,'underCfs',l.underCfs?`<span class="${l.underCfs==='Y'?'cy':'cn'}">${l.underCfs==='Y'?'Yes':'No'}</span>`:'—',[{v:'',t:'— Select —'},{v:'Y',t:'Yes'},{v:'N',t:'No'}])}
+    <td style="padding:7px 8px">${me.role==='admin' ? 
       `<select style="font-size:11px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:3px 6px;color:var(--text);cursor:pointer;max-width:130px" 
         onchange="quickAssignAgency(${l.id},this.value)" onclick="event.stopPropagation()">
         <option value="">— Unassigned —</option>
         ${agencies.map(a=>`<option value="${a.id}" ${l.assignedAgency===a.id?'selected':''}>${a.name}</option>`).join('')}
       </select>` : agBadge(l.assignedAgency, agencies)}</td>
-    <td>${(me.role==='admin'||me.role==='agency') ? 
+    <td style="padding:7px 8px">${(me.role==='admin'||me.role==='agency') ? 
       `<select style="font-size:11px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:3px 6px;color:var(--text);cursor:pointer;max-width:130px"
         onchange="quickAssignAgent(${l.id},this.value)" onclick="event.stopPropagation()">
         <option value="">— Unassigned —</option>
@@ -2280,6 +2352,317 @@ function fixStickyOffsets() {
     el.style.left = offset3 + 'px';
   });
 }
+
+
+// ═══════════════════════════════════════════
+//  INLINE CELL EDITING
+// ═══════════════════════════════════════════
+let _ieActive = null; // currently active cell
+
+function ieClose() {
+  if (_ieActive) {
+    _ieActive.classList.remove('ie-active');
+    _ieActive = null;
+  }
+  // close any pill popup
+  const pp = document.getElementById('ie-pill-popup');
+  if (pp) pp.remove();
+}
+
+// ── Text field ──
+function ieText(e, lid, field) {
+  e.stopPropagation();
+  hideCellPopup();
+  const td = e.currentTarget;
+  if (td === _ieActive) return;
+  ieClose();
+  _ieActive = td;
+  td.classList.add('ie-active');
+  const l = leads.find(x => x.id === lid);
+  if (!l) return;
+  const val = l[field] || '';
+  td.innerHTML = `
+    <input class="ie-input" value="${val.replace(/"/g,'&quot;')}" placeholder="—" 
+      onkeydown="if(event.key==='Enter')ieSaveText(${lid},'${field}',this.value);if(event.key==='Escape')ieCancel(event,this)">
+    <div class="ie-actions">
+      <button class="ie-save" onclick="ieSaveText(${lid},'${field}',this.closest('td').querySelector('input').value)">✓</button>
+      <button class="ie-cancel" onclick="ieCancel(event,this)">✕ Cancel</button>
+    </div>`;
+  const inp = td.querySelector('input');
+  inp.focus();
+  inp.select();
+}
+
+async function ieSaveText(lid, field, val) {
+  const l = leads.find(x => x.id === lid);
+  if (!l) return;
+  const old = l[field];
+  l[field] = val.trim() || null;
+  addAuditEntry('edited', l.id, l.name, [{field, from: old||'—', to: val.trim()||'—'}]);
+  await persist({lead: l, auditEntry: auditLog[0]});
+  ieClose();
+  renderLeads();
+  notify('Saved ✓');
+}
+
+function ieCancel(e, el) {
+  e.stopPropagation();
+  ieClose();
+  renderLeads();
+}
+
+// ── Select/dropdown field ──
+function ieSelect(e, lid, field, opts) {
+  e.stopPropagation();
+  const td = e.currentTarget;
+  if (td === _ieActive) return;
+  ieClose();
+  _ieActive = td;
+  td.classList.add('ie-active');
+  const l = leads.find(x => x.id === lid);
+  if (!l) return;
+  const cur = l[field] || '';
+  td.innerHTML = `
+    <select class="ie-select" onchange="ieSaveSelect(${lid},'${field}',this.value)" onblur="ieClose();renderLeads()">
+      ${opts.map(o => `<option value="${o.v}" ${cur===o.v?'selected':''}>${o.t}</option>`).join('')}
+    </select>
+    <div class="ie-actions">
+      <button class="ie-cancel" onclick="ieCancel(event,this)">✕ Cancel</button>
+    </div>`;
+  td.querySelector('select').focus();
+}
+
+async function ieSaveSelect(lid, field, val) {
+  const l = leads.find(x => x.id === lid);
+  if (!l) return;
+  const old = l[field];
+  l[field] = val || null;
+  addAuditEntry('edited', l.id, l.name, [{field, from: old||'—', to: val||'—'}]);
+  await persist({lead: l, auditEntry: auditLog[0]});
+  ieClose();
+  renderLeads();
+  notify('Saved ✓');
+}
+
+// ── Stamp field ──
+function ieStamp(e, lid, field) {
+  e.stopPropagation();
+  const td = e.currentTarget;
+  if (td === _ieActive) return;
+  ieClose();
+  _ieActive = td;
+  td.classList.add('ie-active');
+  const l = leads.find(x => x.id === lid);
+  if (!l) return;
+  const cur = l[field];
+  td.innerHTML = `
+    <div style="font-size:10px;color:var(--text3);margin-bottom:4px">${cur ? fmtDate(cur) : 'Not stamped'}</div>
+    <div class="ie-actions">
+      <button class="ie-stamp-btn" onclick="ieSaveStamp(${lid},'${field}')">Stamp Now</button>
+      <button class="ie-cancel" onclick="ieCancel(event,this)">✕ Cancel</button>
+    </div>`;
+}
+
+async function ieSaveStamp(lid, field) {
+  const l = leads.find(x => x.id === lid);
+  if (!l) return;
+  const now = new Date();
+  const stamp = `${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  l[field] = stamp;
+  addAuditEntry('edited', l.id, l.name, [{field, from:'—', to: stamp}]);
+  await persist({lead: l, auditEntry: auditLog[0]});
+  ieClose();
+  renderLeads();
+  notify('Stamped ✓');
+}
+
+// ── Lead Source pills ──
+function ieLeadSource(e, lid) {
+  e.stopPropagation();
+  ieClose();
+  const l = leads.find(x => x.id === lid);
+  if (!l) return;
+  const sourceKeys = ['walkIns','facebook','instagram','tiktok','xtwitter','linkedin','sms','roi','rea','google','website','crf','crfAgency','edm'];
+  const sourceLabels = {walkIns:'Walk In',facebook:'Facebook',instagram:'Instagram',tiktok:'TikTok',xtwitter:'X (Twitter)',linkedin:'LinkedIn',sms:'SMS',roi:'ROI',rea:'REA',google:'Google',website:'Website',crf:'CRF',crfAgency:'CRF Agency',edm:'EDM'};
+  const td = e.currentTarget;
+  const rect = td.getBoundingClientRect();
+  const pp = document.createElement('div');
+  pp.id = 'ie-pill-popup';
+  pp.className = 'ie-pill-popup';
+  pp.onclick = ev => ev.stopPropagation();
+  pp.innerHTML = sourceKeys.map(k => 
+    `<div class="ls-pill${l[k]?' active':''}" style="${l[k]?'opacity:1;filter:none':''}" 
+      onclick="ieToggleSource(${lid},'${k}',this)">${sourceLabels[k]}</div>`
+  ).join('') + `<div style="width:100%;padding-top:6px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+    <button class="ie-save" onclick="ieSaveSource(${lid})">✓ Save</button>
+    <button class="ie-cancel" style="margin-left:6px" onclick="document.getElementById('ie-pill-popup').remove();renderLeads()">✕ Cancel</button>
+  </div>`;
+  // Store original values for cancel
+  pp.dataset.orig = JSON.stringify(sourceKeys.reduce((a,k)=>{a[k]=!!l[k];return a},{}));
+  document.body.appendChild(pp);
+  // Position popup
+  const pw = 280, ph = 200;
+  pp.style.left = Math.min(rect.left, window.innerWidth-pw-10) + 'px';
+  pp.style.top = (rect.bottom + 4 + ph > window.innerHeight ? rect.top - ph - 4 : rect.bottom + 4) + 'px';
+}
+
+function ieToggleSource(lid, key, el) {
+  const l = leads.find(x => x.id === lid);
+  if (!l) return;
+  // Deactivate all other sources first (single select)
+  const sourceKeys = ['walkIns','facebook','instagram','tiktok','xtwitter','linkedin','sms','roi','rea','google','website','crf','crfAgency','edm'];
+  sourceKeys.forEach(k => l[k] = false);
+  document.querySelectorAll('#ie-pill-popup .ls-pill').forEach(p => {
+    p.classList.remove('active');
+    p.style.opacity = '';
+    p.style.filter = '';
+  });
+  // Toggle clicked one
+  l[key] = true;
+  el.classList.add('active');
+  el.style.opacity = '1';
+  el.style.filter = 'none';
+}
+
+async function ieSaveSource(lid) {
+  const l = leads.find(x => x.id === lid);
+  if (!l) return;
+  addAuditEntry('edited', l.id, l.name, [{field:'Lead Source', from:'—', to: getLeadSource(l)||'—'}]);
+  await persist({lead: l, auditEntry: auditLog[0]});
+  document.getElementById('ie-pill-popup')?.remove();
+  renderLeads();
+  notify('Saved ✓');
+}
+
+// ── Multi/single pill fields (deposit, hwcStatus, followUp, closed, settleOk) ──
+function iePills(e, lid, field, opts) {
+  e.stopPropagation();
+  ieClose();
+  const l = leads.find(x => x.id === lid);
+  if (!l) return;
+  const td = e.currentTarget;
+  const rect = td.getBoundingClientRect();
+  const pp = document.createElement('div');
+  pp.id = 'ie-pill-popup';
+  pp.className = 'ie-pill-popup';
+  pp.onclick = ev => ev.stopPropagation();
+
+  if (field === 'hwcStatus') {
+    // Single select - HWC Status
+    const cur = l.hotWarmStatus || '';
+    pp.innerHTML = opts.map(o =>
+      `<div class="ls-pill${cur===o.k?' active':''}" style="${cur===o.k?'opacity:1;filter:none':''}"
+        onclick="ieHWCSelect(${lid},'${o.k}',this)">${o.t}</div>`
+    ).join('') + `<div style="width:100%;padding-top:6px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+      <button class="ie-save" onclick="ieSaveHWC(${lid})">✓ Save</button>
+      <button class="ie-cancel" style="margin-left:6px" onclick="document.getElementById('ie-pill-popup').remove();renderLeads()">✕ Cancel</button>
+    </div>`;
+  } else if (field === 'followUp') {
+    // Single select from tc/cb/vm/na
+    pp.innerHTML = opts.map(o =>
+      `<div class="ls-pill${l[o.k]?' active':''}" style="${l[o.k]?'opacity:1;filter:none':''}"
+        onclick="ieFollowUpSelect(${lid},'${o.k}',this)">${o.t}</div>`
+    ).join('') + `<div style="width:100%;padding-top:6px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+      <button class="ie-save" onclick="ieSaveFollowUp(${lid})">✓ Save</button>
+      <button class="ie-cancel" style="margin-left:6px" onclick="document.getElementById('ie-pill-popup').remove();renderLeads()">✕ Cancel</button>
+    </div>`;
+  } else if (field === 'closed') {
+    // Single select from nm/dc/ni/duplicate
+    pp.innerHTML = opts.map(o =>
+      `<div class="ls-pill${l[o.k]?' active':''}" style="${l[o.k]?'opacity:1;filter:none':''}"
+        onclick="ieClosedSelect(${lid},'${o.k}',this)">${o.t}</div>`
+    ).join('') + `<div style="width:100%;padding-top:6px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+      <button class="ie-save" onclick="ieSaveClosed(${lid})">✓ Save</button>
+      <button class="ie-cancel" style="margin-left:6px" onclick="document.getElementById('ie-pill-popup').remove();renderLeads()">✕ Cancel</button>
+    </div>`;
+  } else if (field === 'deposit') {
+    // Multi select
+    pp.innerHTML = opts.map(o =>
+      `<div class="ls-pill${l[o.k]?' active':''}" style="${l[o.k]?'opacity:1;filter:none':''}"
+        onclick="ieDepositToggle(${lid},'${o.k}',this)">${o.t}</div>`
+    ).join('') + `<div style="width:100%;padding-top:6px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+      <button class="ie-save" onclick="ieSaveDeposit(${lid})">✓ Save</button>
+      <button class="ie-cancel" style="margin-left:6px" onclick="document.getElementById('ie-pill-popup').remove();renderLeads()">✕ Cancel</button>
+    </div>`;
+  } else if (field === 'settleOk') {
+    // Toggle
+    pp.innerHTML = `<div class="ls-pill${l.settleOk?' active':''}" style="${l.settleOk?'opacity:1;filter:none':''}"
+      onclick="ieSettleToggle(${lid},this)">✓ Settle OK</div>
+    <div style="width:100%;padding-top:6px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+      <button class="ie-save" onclick="ieSaveSettle(${lid})">✓ Save</button>
+      <button class="ie-cancel" style="margin-left:6px" onclick="document.getElementById('ie-pill-popup').remove();renderLeads()">✕ Cancel</button>
+    </div>`;
+  }
+
+  document.body.appendChild(pp);
+  const pw = 280;
+  pp.style.left = Math.min(rect.left, window.innerWidth-pw-10) + 'px';
+  pp.style.top = (rect.bottom + 4) + 'px';
+}
+
+function ieHWCSelect(lid, val, el) {
+  const l = leads.find(x=>x.id===lid); if(!l) return;
+  l.hotWarmStatus = l.hotWarmStatus===val ? null : val;
+  document.querySelectorAll('#ie-pill-popup .ls-pill').forEach(p=>{p.classList.remove('active');p.style.opacity='';p.style.filter='';});
+  if (l.hotWarmStatus) { el.classList.add('active'); el.style.opacity='1'; el.style.filter='none'; }
+}
+async function ieSaveHWC(lid) {
+  const l = leads.find(x=>x.id===lid); if(!l) return;
+  await persist({lead:l}); document.getElementById('ie-pill-popup')?.remove(); renderLeads(); notify('Saved ✓');
+}
+
+function ieFollowUpSelect(lid, key, el) {
+  const l = leads.find(x=>x.id===lid); if(!l) return;
+  const keys = ['tc','cb','vm','na'];
+  const wasActive = l[key];
+  keys.forEach(k=>l[k]=false);
+  document.querySelectorAll('#ie-pill-popup .ls-pill').forEach(p=>{p.classList.remove('active');p.style.opacity='';p.style.filter='';});
+  if (!wasActive) { l[key]=true; el.classList.add('active'); el.style.opacity='1'; el.style.filter='none'; }
+}
+async function ieSaveFollowUp(lid) {
+  const l = leads.find(x=>x.id===lid); if(!l) return;
+  await persist({lead:l}); document.getElementById('ie-pill-popup')?.remove(); renderLeads(); notify('Saved ✓');
+}
+
+function ieClosedSelect(lid, key, el) {
+  const l = leads.find(x=>x.id===lid); if(!l) return;
+  const keys = ['nm','dc','ni','duplicate'];
+  const wasActive = l[key];
+  keys.forEach(k=>l[k]=false);
+  document.querySelectorAll('#ie-pill-popup .ls-pill').forEach(p=>{p.classList.remove('active');p.style.opacity='';p.style.filter='';});
+  if (!wasActive) { l[key]=true; el.classList.add('active'); el.style.opacity='1'; el.style.filter='none'; }
+}
+async function ieSaveClosed(lid) {
+  const l = leads.find(x=>x.id===lid); if(!l) return;
+  await persist({lead:l}); document.getElementById('ie-pill-popup')?.remove(); renderLeads(); notify('Saved ✓');
+}
+
+function ieDepositToggle(lid, key, el) {
+  const l = leads.find(x=>x.id===lid); if(!l) return;
+  l[key] = !l[key];
+  el.classList.toggle('active', l[key]); el.style.opacity=l[key]?'1':''; el.style.filter=l[key]?'none':'';
+}
+async function ieSaveDeposit(lid) {
+  const l = leads.find(x=>x.id===lid); if(!l) return;
+  await persist({lead:l}); document.getElementById('ie-pill-popup')?.remove(); renderLeads(); notify('Saved ✓');
+}
+
+function ieSettleToggle(lid, el) {
+  const l = leads.find(x=>x.id===lid); if(!l) return;
+  l.settleOk = !l.settleOk;
+  el.classList.toggle('active', l.settleOk); el.style.opacity=l.settleOk?'1':''; el.style.filter=l.settleOk?'none':'';
+}
+async function ieSaveSettle(lid) {
+  const l = leads.find(x=>x.id===lid); if(!l) return;
+  await persist({lead:l}); document.getElementById('ie-pill-popup')?.remove(); renderLeads(); notify('Saved ✓');
+}
+
+// Close popup when clicking outside
+document.addEventListener('click', e => {
+  const pp = document.getElementById('ie-pill-popup');
+  if (pp && !pp.contains(e.target)) { pp.remove(); renderLeads(); }
+  if (_ieActive && !_ieActive.contains(e.target)) { ieClose(); renderLeads(); }
+});
 
 // ─── Cell hover popup ───
 let _popup = null;
