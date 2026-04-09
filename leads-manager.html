@@ -543,7 +543,7 @@
   <div id="ldBody" style="flex:1;overflow-y:auto;padding:32px;display:flex;justify-content:center" oninput="leadDirty=true" onchange="leadDirty=true">
     <div style="width:100%;max-width:1280px;display:flex;flex-direction:column;gap:0">
 
-      <!-- ── SECTION: Contact ── -->
+      <!-- ── SECTION 1: Lead Details ── -->
       <div class="lp-sec" style="border-left:3px solid #0d9488">
         <div class="lp-sec-label">
           <div class="lp-sec-num" style="background:#0d9488">1</div>
@@ -552,20 +552,18 @@
               <div class="lp-sec-title">Lead Details</div>
               <button class="lp-sec-help" id="helpbtn-contact" onclick="toggleHelp('contact')" title="Help">?</button>
             </div>
-            <div class="lp-sec-sub">Name, contact info and lead message</div>          </div>
-            <div class="lp-help-panel" id="help-contact">
-              <strong>Required:</strong> Name + Mobile or Email.<br>
-              <ul>
-                <li><strong>Name</strong> — Lead's full name</li>
-                <li><strong>Date</strong> — First contact date. Type <em>ddmmyy</em> to auto-expand</li>
-                <li><strong>Mobile</strong> — Australian (04xx) or international (+xx)</li>
-                <li><strong>Postcode</strong> — 4-digit Australian postcode</li>
-                <li><strong>Buyer Type</strong> — FHB, Investor, Upgrader or Downsizer</li>
-                <li><strong>Time To Buy</strong> — Estimated purchase timeline</li>
-                <li><strong>LSO Visit</strong> — Has the lead visited the Land Sales Office?</li>
-                <li><strong>POC Comments</strong> — Click the box to expand all entries</li>
-              </ul>
-            </div>
+            <div class="lp-sec-sub">Name, contact info and lead message</div>
+          </div>
+          <div class="lp-help-panel" id="help-contact">
+            <strong>Required:</strong> Name + Mobile or Email.<br>
+            <ul>
+              <li><strong>Name</strong> — Lead's full name</li>
+              <li><strong>Lead Date</strong> — First contact date. Type <em>ddmmyy</em> to auto-expand</li>
+              <li><strong>Mobile</strong> — Australian (04xx) or international (+xx)</li>
+              <li><strong>Email</strong> — Lead's email address</li>
+              <li><strong>Lead Message</strong> — Original enquiry message</li>
+            </ul>
+          </div>
         </div>
         <div class="lp-sec-body">
           <div class="lp-grid-3">
@@ -582,54 +580,126 @@
               <input type="email" id="f-email" placeholder="email@example.com" oninput="validateEmail(this)">
               <div class="mobile-warn" id="emailWarn">Doesn't look like a valid email address</div>
             </div>
+            <div></div>
           </div>
-          <div class="lp-grid-3" style="margin-top:16px">
-            <div class="ff lp-field"><label>Buyer Type</label><select id="f-buyerType"><option value="">— Select —</option><option value="FHB">FHB — First Home Buyer</option><option value="INV">INV — Investor</option><option value="UG">UG — Upgrader</option><option value="DS">DS — Downsizer</option></select></div>
-            <div class="ff lp-field"><label>Time To Buy</label><select id="f-timeToBuy"><option value="">— Select —</option><option>0–3 months</option><option>3–6 months</option><option>6–9 months</option><option>9–12 months</option><option>12+ months</option></select></div>
-            <div class="ff lp-field"><label>Land Sales Office Visit</label><select id="f-lsoVisit"><option value="">— Select —</option><option value="Y">Yes</option><option value="N">No</option><option value="Unsure">Not Sure</option></select></div>
+          <div style="margin-top:16px">
+            <div class="ff lp-field"><label>Lead Message</label><textarea id="f-leadMsg" placeholder="Paste or type lead message…" style="min-height:72px;width:100%"></textarea></div>
           </div>
-          <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
-            <div class="ff lp-field"><label>Lead Message</label><textarea id="f-leadMsg" placeholder="Paste or type lead message…" style="min-height:72px"></textarea></div>
-            <div class="ff lp-field">
-              <label>POC Comments</label>
-              <div class="poc-log" id="pocLog" onclick="expandPocLog()" title="Click to expand"><div class="no-notes" style="font-size:11px">No comments yet.</div></div>
-              <div style="margin-top:8px">
-                <textarea id="f-pocNew" placeholder="Add a comment… (Ctrl+Enter to save)" style="width:100%;min-height:56px;resize:vertical" onkeydown="if(event.ctrlKey&&event.key==='Enter'){event.preventDefault();addPocComment()}"></textarea>
-                <div style="display:flex;justify-content:flex-end;margin-top:6px">
-                  <button class="stamp-btn" style="border-radius:4px" onclick="addPocComment()">+ Add</button>
-                </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 2: 48 Hours Process ── -->
+      <div class="lp-sec" style="border-left:3px solid #2563eb">
+        <div class="lp-sec-label">
+          <div class="lp-sec-num" style="background:#2563eb">2</div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:6px">
+              <div class="lp-sec-title">48 Hours Process</div>
+              <button class="lp-sec-help" id="helpbtn-activity" onclick="toggleHelp('activity')" title="Help">?</button>
+            </div>
+            <div class="lp-sec-sub">Tap to timestamp each interaction</div>
+          </div>
+          <div class="lp-help-panel" id="help-activity">
+            Record when each contact attempt was made.<br>
+            <ul>
+              <li><strong>Stamp Now</strong> — Records current date &amp; time instantly</li>
+              <li><strong>✎ Backdate</strong> — Enter a past date (shown in orange)</li>
+              <li><strong>✕</strong> — Clears the timestamp</li>
+            </ul>
+          </div>
+        </div>
+        <div class="lp-sec-body">
+          <div style="display:flex;flex-direction:column;gap:10px;max-width:720px">
+            <div class="contact-row">
+              <div class="contact-row-label">Reg. of Interest Email</div>
+              <div class="contact-row-stamp" id="stamp-roiEmail">—</div>
+              <button class="stamp-btn" onclick="stampField('roiEmail')">Stamp Now</button>
+              <button class="stamp-backdate" onclick="toggleBackdate('roiEmail')" title="Backdate">✎</button>
+              <div class="backdate-wrap" id="bd-roiEmail" style="display:none">
+                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-roiEmail" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('roiEmail')">
+                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('roiEmail')">Set</button>
               </div>
-              <input type="hidden" id="f-pocComments">
+              <button class="stamp-clear" onclick="clearStamp('roiEmail')" title="Clear">✕</button>
+              <input type="hidden" id="f-roiEmail">
+            </div>
+            <div class="contact-row">
+              <div class="contact-row-label">1st Call</div>
+              <div class="contact-row-stamp" id="stamp-call1">—</div>
+              <button class="stamp-btn" onclick="stampField('call1')">Stamp Now</button>
+              <button class="stamp-backdate" onclick="toggleBackdate('call1')" title="Backdate">✎</button>
+              <div class="backdate-wrap" id="bd-call1" style="display:none">
+                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-call1" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('call1')">
+                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('call1')">Set</button>
+              </div>
+              <button class="stamp-clear" onclick="clearStamp('call1')" title="Clear">✕</button>
+              <input type="hidden" id="f-call1">
+            </div>
+            <div class="contact-row">
+              <div class="contact-row-label">2nd Call</div>
+              <div class="contact-row-stamp" id="stamp-call2">—</div>
+              <button class="stamp-btn" onclick="stampField('call2')">Stamp Now</button>
+              <button class="stamp-backdate" onclick="toggleBackdate('call2')" title="Backdate">✎</button>
+              <div class="backdate-wrap" id="bd-call2" style="display:none">
+                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-call2" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('call2')">
+                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('call2')">Set</button>
+              </div>
+              <button class="stamp-clear" onclick="clearStamp('call2')" title="Clear">✕</button>
+              <input type="hidden" id="f-call2">
+            </div>
+            <div class="contact-row">
+              <div class="contact-row-label">Text Message (SMS)</div>
+              <div class="contact-row-stamp" id="stamp-sms">—</div>
+              <button class="stamp-btn" onclick="stampField('sms')">Stamp Now</button>
+              <button class="stamp-backdate" onclick="toggleBackdate('sms')" title="Backdate">✎</button>
+              <div class="backdate-wrap" id="bd-sms" style="display:none">
+                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-sms" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('sms')">
+                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('sms')">Set</button>
+              </div>
+              <button class="stamp-clear" onclick="clearStamp('sms')" title="Clear">✕</button>
+              <input type="hidden" id="f-sms">
+            </div>
+            <div class="contact-row">
+              <div class="contact-row-label">Final Email</div>
+              <div class="contact-row-stamp" id="stamp-finalEmail">—</div>
+              <button class="stamp-btn" onclick="stampField('finalEmail')">Stamp Now</button>
+              <button class="stamp-backdate" onclick="toggleBackdate('finalEmail')" title="Backdate">✎</button>
+              <div class="backdate-wrap" id="bd-finalEmail" style="display:none">
+                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-finalEmail" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('finalEmail')">
+                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('finalEmail')">Set</button>
+              </div>
+              <button class="stamp-clear" onclick="clearStamp('finalEmail')" title="Clear">✕</button>
+              <input type="hidden" id="f-finalEmail">
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ── SECTION: Lead Source ── -->
+      <!-- ── SECTION 3: Lead Source ── -->
       <div class="lp-sec" style="border-left:3px solid #7c3aed">
         <div class="lp-sec-label">
-          <div class="lp-sec-num" style="background:#7c3aed">2</div>
+          <div class="lp-sec-num" style="background:#7c3aed">3</div>
           <div style="flex:1">
             <div style="display:flex;align-items:center;gap:6px">
               <div class="lp-sec-title">Lead Source <span style="color:var(--red)">*</span></div>
               <button class="lp-sec-help" id="helpbtn-source" onclick="toggleHelp('source')" title="Help">?</button>
             </div>
-            <div class="lp-sec-sub">Select one source</div>          </div>
-            <div class="lp-help-panel" id="help-source">
-              Select <strong>one</strong> channel this lead came from.<br>
-              <ul>
-                <li><strong>Walk In</strong> — Visited the sales office in person</li>
-                <li><strong>Social</strong> — Facebook, Instagram or social media</li>
-                <li><strong>ROI</strong> — Return on Investment enquiry</li>
-                <li><strong>REA</strong> — Realestate.com.au organic listing</li>
-                <li><strong>REA Ads</strong> — Paid ads on realestate.com.au</li>
-                <li><strong>Google</strong> — Google search or Google Ads</li>
-                <li><strong>CRF</strong> — Client Referral</li>
-                <li><strong>CRF Agency</strong> — Agency referral</li>
-                <li><strong>EDM</strong> — Email / direct mail campaign</li>
-                <li><strong>Website</strong> — Company website enquiry</li>
-              </ul>
-            </div>
+            <div class="lp-sec-sub">Select one source</div>
+          </div>
+          <div class="lp-help-panel" id="help-source">
+            Select <strong>one</strong> channel this lead came from.<br>
+            <ul>
+              <li><strong>Walk In</strong> — Visited the sales office in person</li>
+              <li><strong>Social</strong> — Facebook, Instagram or social media</li>
+              <li><strong>ROI</strong> — Return on Investment enquiry</li>
+              <li><strong>REA</strong> — Realestate.com.au organic listing</li>
+              <li><strong>REA Ads</strong> — Paid ads on realestate.com.au</li>
+              <li><strong>Google</strong> — Google search or Google Ads</li>
+              <li><strong>CRF</strong> — Client Referral</li>
+              <li><strong>CRF Agency</strong> — Agency referral</li>
+              <li><strong>EDM</strong> — Email / direct mail campaign</li>
+              <li><strong>Website</strong> — Company website enquiry</li>
+            </ul>
+          </div>
         </div>
         <div class="lp-sec-body">
           <div id="leadSourcePicker" style="display:flex;flex-wrap:wrap;gap:10px">
@@ -655,98 +725,136 @@
         </div>
       </div>
 
-      <!-- ── SECTION: Contact Activity ── -->
-      <div class="lp-sec" style="border-left:3px solid #2563eb">
+      <!-- ── SECTION 4: Qualifying Questions ── -->
+      <div class="lp-sec" style="border-left:3px solid #ca8a04">
         <div class="lp-sec-label">
-          <div class="lp-sec-num" style="background:#2563eb">3</div>
+          <div class="lp-sec-num" style="background:#ca8a04">4</div>
           <div style="flex:1">
             <div style="display:flex;align-items:center;gap:6px">
-              <div class="lp-sec-title">48 Hours Process</div>
-              <button class="lp-sec-help" id="helpbtn-activity" onclick="toggleHelp('activity')" title="Help">?</button>
+              <div class="lp-sec-title">Qualifying Questions</div>
+              <button class="lp-sec-help" id="helpbtn-property" onclick="toggleHelp('property')" title="Help">?</button>
             </div>
-            <div class="lp-sec-sub">Tap to timestamp each interaction</div>          </div>
-            <div class="lp-help-panel" id="help-activity">
-              Record when each contact attempt was made.<br>
-              <ul>
-                <li><strong>Stamp Now</strong> — Records current date &amp; time instantly</li>
-                <li><strong>✎ Backdate</strong> — Enter a past date (shown in orange)</li>
-                <li><strong>Re-stamp</strong> — Overwrites with current time</li>
-                <li><strong>✕</strong> — Clears the timestamp</li>
-                <li><strong>Outcome</strong> — TC, CB, VM, NA, NM, DC or NI for last contact result</li>
-              </ul>
-            </div>
+            <div class="lp-sec-sub">LSO visit, buyer profile, property preferences and deposits</div>
+          </div>
+          <div class="lp-help-panel" id="help-property">
+            Capture what the lead is looking for.<br>
+            <ul>
+              <li><strong>LSO Visit</strong> — Has the lead visited the Land Sales Office?</li>
+              <li><strong>Buyer Type</strong> — FHB, Investor, Upgrader or Downsizer</li>
+              <li><strong>Time To Buy</strong> — Estimated purchase timeline</li>
+              <li><strong>Land / H&amp;L Price</strong> — Budget for land only or house &amp; land</li>
+              <li><strong>Storey</strong> — Single or Double storey</li>
+              <li><strong>Lot Type</strong> — Preferred frontage in metres</li>
+              <li><strong>Deposit</strong> — 5%, 5%+5% or 10%</li>
+              <li><strong>Postcode</strong> — 4-digit Australian postcode</li>
+            </ul>
+          </div>
         </div>
         <div class="lp-sec-body">
-          <div style="display:flex;flex-direction:column;gap:10px;max-width:720px">
-
-            <div class="contact-row">
-              <div class="contact-row-label">Reg. of Interest Email</div>
-              <div class="contact-row-stamp" id="stamp-roiEmail">—</div>
-              <button class="stamp-btn" onclick="stampField('roiEmail')">Stamp Now</button>
-              <button class="stamp-backdate" onclick="toggleBackdate('roiEmail')" title="Backdate">✎</button>
-              <div class="backdate-wrap" id="bd-roiEmail" style="display:none">
-                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-roiEmail" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('roiEmail')">
-                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('roiEmail')">Set</button>
-              </div>
-              <button class="stamp-clear" onclick="clearStamp('roiEmail')" title="Clear">✕</button>
-              <input type="hidden" id="f-roiEmail">
+          <div class="lp-grid-3">
+            <div class="ff lp-field"><label>Land Sales Office Visit</label><select id="f-lsoVisit"><option value="">— Select —</option><option value="Y">Yes</option><option value="N">No</option><option value="Unsure">Not Sure</option></select></div>
+            <div class="ff lp-field"><label>Buyer Type</label><select id="f-buyerType"><option value="">— Select —</option><option value="FHB">FHB — First Home Buyer</option><option value="INV">INV — Investor</option><option value="UG">UG — Upgrader</option><option value="DS">DS — Downsizer</option></select></div>
+            <div class="ff lp-field"><label>Time To Buy</label><select id="f-timeToBuy"><option value="">— Select —</option><option>0–3 months</option><option>3–6 months</option><option>6–9 months</option><option>9–12 months</option><option>12+ months</option></select></div>
+            <div class="ff lp-field"><label>House &amp; Land Price</label><input type="text" id="f-priceHL" placeholder="$000,000"></div>
+            <div class="ff lp-field"><label>Land Price</label><input type="text" id="f-priceLand" placeholder="$000,000"></div>
+            <div></div>
+            <div class="ff lp-field"><label>Storey</label><select id="f-storey"><option value="">— Select —</option><option value="S/S">Single (S/S)</option><option value="D/S">Double (D/S)</option></select></div>
+            <div class="ff lp-field"><label>Garage</label><select id="f-garage"><option value="">— Select —</option><option value="S">Single</option><option value="D">Double</option></select></div>
+            <div class="ff lp-field"><label>Lot Type</label><select id="f-lotType"><option value="">— Select —</option><option>10m</option><option>12m</option><option>14m</option><option>15m</option><option>16m</option><option>18m</option><option>20m+</option></select></div>
+            <div class="ff lp-field"><label>Lot Area (m²)</label><input type="text" id="f-lotArea" placeholder="e.g. 400"></div>
+            <div class="ff lp-field"><label>Lot Numbers</label><input type="text" id="f-lotNumbers" placeholder="e.g. 42, 51, 63"></div>
+            <div></div>
+          </div>
+          <div style="margin-top:20px">
+            <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px">Deposit</div>
+            <div style="display:flex;flex-wrap:wrap;gap:12px">
+              <label class="cbi"><input type="checkbox" id="f-deposit5"><span>5% Deposit</span></label>
+              <label class="cbi"><input type="checkbox" id="f-deposit5plus5"><span>5% + 5% Deposit</span></label>
+              <label class="cbi"><input type="checkbox" id="f-deposit10"><span>10% Deposit</span></label>
             </div>
-
-            <div class="contact-row">
-              <div class="contact-row-label">1st Call</div>
-              <div class="contact-row-stamp" id="stamp-call1">—</div>
-              <button class="stamp-btn" onclick="stampField('call1')">Stamp Now</button>
-              <button class="stamp-backdate" onclick="toggleBackdate('call1')" title="Backdate">✎</button>
-              <div class="backdate-wrap" id="bd-call1" style="display:none">
-                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-call1" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('call1')">
-                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('call1')">Set</button>
-              </div>
-              <button class="stamp-clear" onclick="clearStamp('call1')" title="Clear">✕</button>
-              <input type="hidden" id="f-call1">
+          </div>
+          <div style="margin-top:16px">
+            <div class="ff lp-field" style="max-width:200px">
+              <label>Postcode</label>
+              <input type="text" id="f-suburbPostcode" placeholder="e.g. 3064" maxlength="4" oninput="validatePostcode(this)">
+              <div class="mobile-warn" id="postcodeWarn">Australian postcodes are 4 digits (e.g. 3064)</div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <div class="contact-row">
-              <div class="contact-row-label">2nd Call</div>
-              <div class="contact-row-stamp" id="stamp-call2">—</div>
-              <button class="stamp-btn" onclick="stampField('call2')">Stamp Now</button>
-              <button class="stamp-backdate" onclick="toggleBackdate('call2')" title="Backdate">✎</button>
-              <div class="backdate-wrap" id="bd-call2" style="display:none">
-                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-call2" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('call2')">
-                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('call2')">Set</button>
-              </div>
-              <button class="stamp-clear" onclick="clearStamp('call2')" title="Clear">✕</button>
-              <input type="hidden" id="f-call2">
+      <!-- ── SECTION 5: Under CFS ── -->
+      <div class="lp-sec" style="border-left:3px solid #0d9488">
+        <div class="lp-sec-label">
+          <div class="lp-sec-num" style="background:#0d9488">5</div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:6px">
+              <div class="lp-sec-title">Under CFS</div>
             </div>
+            <div class="lp-sec-sub">Contract For Sale details</div>
+          </div>
+        </div>
+        <div class="lp-sec-body">
+          <div class="lp-grid-3">
+            <div class="ff lp-field"><label>CFS Lot #</label><input type="text" id="f-cfsLot"></div>
+            <div class="ff lp-field"><label>Under CFS</label><select id="f-underCfs"><option value="">— Select —</option><option>Y</option><option>N</option></select></div>
+          </div>
+        </div>
+      </div>
 
-            <div class="contact-row">
-              <div class="contact-row-label">Text Message (SMS)</div>
-              <div class="contact-row-stamp" id="stamp-sms">—</div>
-              <button class="stamp-btn" onclick="stampField('sms')">Stamp Now</button>
-              <button class="stamp-backdate" onclick="toggleBackdate('sms')" title="Backdate">✎</button>
-              <div class="backdate-wrap" id="bd-sms" style="display:none">
-                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-sms" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('sms')">
-                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('sms')">Set</button>
-              </div>
-              <button class="stamp-clear" onclick="clearStamp('sms')" title="Clear">✕</button>
-              <input type="hidden" id="f-sms">
+      <!-- ── SECTION 6: Qualifying Outcomes ── -->
+      <div class="lp-sec" style="border-left:3px solid #dc2626">
+        <div class="lp-sec-label">
+          <div class="lp-sec-num" style="background:#dc2626">6</div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:6px">
+              <div class="lp-sec-title">Qualifying Outcomes</div>
+              <button class="lp-sec-help" id="helpbtn-status" onclick="toggleHelp('status')" title="Help">?</button>
             </div>
-
-            <div class="contact-row">
-              <div class="contact-row-label">Final Email</div>
-              <div class="contact-row-stamp" id="stamp-finalEmail">—</div>
-              <button class="stamp-btn" onclick="stampField('finalEmail')">Stamp Now</button>
-              <button class="stamp-backdate" onclick="toggleBackdate('finalEmail')" title="Backdate">✎</button>
-              <div class="backdate-wrap" id="bd-finalEmail" style="display:none">
-                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-finalEmail" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('finalEmail')">
-                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('finalEmail')">Set</button>
+            <div class="lp-sec-sub">HWC status, follow up, closed and POC comments</div>
+          </div>
+          <div class="lp-help-panel" id="help-status">
+            Record the outcome of qualifying this lead.<br>
+            <ul>
+              <li><strong>HWC Status</strong> — Overall Hot/Warm/Cold rating</li>
+              <li><strong>HWC Outcome</strong> — Outcome from last contact</li>
+              <li><strong>Follow Up</strong> — TC, CB, VM or NA</li>
+              <li><strong>Closed</strong> — NM, DC, NI or Duplicate</li>
+              <li><strong>Settle Time OK</strong> — Settlement timing confirmed</li>
+              <li><strong>POC Comments</strong> — Point of contact notes</li>
+            </ul>
+          </div>
+        </div>
+        <div class="lp-sec-body">
+          <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px">HWC Status</div>
+          <div style="display:flex;gap:14px;max-width:480px;margin-bottom:24px">
+            <label style="cursor:pointer;flex:1">
+              <input type="radio" name="hw" value="Hot" style="display:none" onchange="updateTempCards()">
+              <div class="temp-card" id="tc-hot" style="border:2px solid var(--border2);border-radius:8px;padding:14px;text-align:center;transition:all .15s">
+                <div style="font-size:20px;margin-bottom:5px">🔴</div>
+                <div style="font-weight:600;color:var(--red);font-size:13px">Hot</div>
+                <div style="font-size:10px;color:var(--text3);margin-top:3px">Ready to buy</div>
               </div>
-              <button class="stamp-clear" onclick="clearStamp('finalEmail')" title="Clear">✕</button>
-              <input type="hidden" id="f-finalEmail">
-            </div>
-
+            </label>
+            <label style="cursor:pointer;flex:1">
+              <input type="radio" name="hw" value="Warm" style="display:none" onchange="updateTempCards()">
+              <div class="temp-card" id="tc-warm" style="border:2px solid var(--border2);border-radius:8px;padding:14px;text-align:center;transition:all .15s">
+                <div style="font-size:20px;margin-bottom:5px">🟠</div>
+                <div style="font-weight:600;color:var(--orange);font-size:13px">Warm</div>
+                <div style="font-size:10px;color:var(--text3);margin-top:3px">Considering</div>
+              </div>
+            </label>
+            <label style="cursor:pointer;flex:1">
+              <input type="radio" name="hw" value="Cold" style="display:none" onchange="updateTempCards()">
+              <div class="temp-card" id="tc-cold" style="border:2px solid var(--border2);border-radius:8px;padding:14px;text-align:center;transition:all .15s">
+                <div style="font-size:20px;margin-bottom:5px">🔵</div>
+                <div style="font-weight:600;color:#60a5fa;font-size:13px">Cold</div>
+                <div style="font-size:10px;color:var(--text3);margin-top:3px">Early stage</div>
+              </div>
+            </label>
           </div>
 
-          <div style="margin-top:24px">
+          <div style="margin-top:4px">
             <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px">HWC Outcome</div>
             <div id="hwcPicker" style="display:flex;flex-wrap:wrap;gap:10px">
               <div class="oc-pill" data-key="isHot"  data-color="#ef4444" data-bg="rgba(239,68,68,.1)"  onclick="toggleHWC(this)">Hot</div>
@@ -788,133 +896,45 @@
             <input type="checkbox" id="f-ni">
             <input type="checkbox" id="f-duplicate">
           </div>
-        </div>
-      </div>
 
-      <!-- ── SECTION: Property ── -->
-      <div class="lp-sec" style="border-left:3px solid #ca8a04">
-        <div class="lp-sec-label">
-          <div class="lp-sec-num" style="background:#ca8a04">4</div>
-          <div style="flex:1">
-            <div style="display:flex;align-items:center;gap:6px">
-              <div class="lp-sec-title">Qualifying Questions</div>
-              <button class="lp-sec-help" id="helpbtn-property" onclick="toggleHelp('property')" title="Help">?</button>
-            </div>
-            <div class="lp-sec-sub">Property preferences, lot details and deposits</div>          </div>
-            <div class="lp-help-panel" id="help-property">
-              Capture what the lead is looking for.<br>
-              <ul>
-                <li><strong>Land / H&amp;L Price</strong> — Budget for land only or house &amp; land</li>
-                <li><strong>Storey</strong> — S/S = Single, D/S = Double storey</li>
-                <li><strong>Frontage</strong> — Preferred lot frontage in metres</li>
-                <li><strong>Area (m²)</strong> — Preferred lot area</li>
-                <li><strong>Lot Numbers</strong> — Specific lots the lead wants</li>
-                <li><strong>Deposit</strong> — 5%, 5%+5% or 10%</li>
-                <li><strong>CFS</strong> — Contract For Sale details</li>
-              </ul>
-            </div>
-        </div>
-        <div class="lp-sec-body">
-          <div class="lp-grid-3">
-            <div class="ff lp-field"><label>House &amp; Land Price</label><input type="text" id="f-priceHL" placeholder="$000,000"></div>
-            <div class="ff lp-field"><label>Land Price</label><input type="text" id="f-priceLand" placeholder="$000,000"></div>
-            <div></div>
-            <div class="ff lp-field"><label>Storey</label><select id="f-storey"><option value="">— Select —</option><option value="S/S">Single (S/S)</option><option value="D/S">Double (D/S)</option></select></div>
-            <div class="ff lp-field"><label>Garage</label><select id="f-garage"><option value="">— Select —</option><option value="S">Single</option><option value="D">Double</option></select></div>
-            <div class="ff lp-field"><label>Lot Type</label><select id="f-lotType"><option value="">— Select —</option><option>10m</option><option>12m</option><option>14m</option><option>15m</option><option>16m</option><option>18m</option><option>20m+</option></select></div>
-            <div class="ff lp-field"><label>Lot Area (m²)</label><input type="text" id="f-lotArea" placeholder="e.g. 400"></div>
-            <div class="ff lp-field"><label>Lot Numbers</label><input type="text" id="f-lotNumbers" placeholder="e.g. 42, 51, 63"></div>
-            <div class="ff lp-field"><label>CFS Lot #</label><input type="text" id="f-cfsLot"></div>
-            <div class="ff lp-field"><label>Under CFS</label><select id="f-underCfs"><option value="">— Select —</option><option>Y</option><option>N</option></select></div>
-          </div>
           <div style="margin-top:20px">
-            <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px">Deposit & Settlement</div>
-            <div style="display:flex;flex-wrap:wrap;gap:12px">
-              <label class="cbi"><input type="checkbox" id="f-deposit5"><span>5% Deposit</span></label>
-              <label class="cbi"><input type="checkbox" id="f-deposit5plus5"><span>5% + 5% Deposit</span></label>
-              <label class="cbi"><input type="checkbox" id="f-deposit10"><span>10% Deposit</span></label>
-              <label class="cbi"><input type="checkbox" id="f-settleOk"><span>Settle Time OK</span></label>
-            </div>
+            <label class="cbi"><input type="checkbox" id="f-settleOk"><span>Settle Time OK</span></label>
           </div>
-          <div style="margin-top:16px">
-            <div class="ff lp-field" style="max-width:200px">
-              <label>Postcode</label>
-              <input type="text" id="f-suburbPostcode" placeholder="e.g. 3064" maxlength="4" oninput="validatePostcode(this)">
-              <div class="mobile-warn" id="postcodeWarn">Australian postcodes are 4 digits (e.g. 3064)</div>
+
+          <div style="margin-top:20px">
+            <div class="ff lp-field">
+              <label>POC Comments</label>
+              <div class="poc-log" id="pocLog" onclick="expandPocLog()" title="Click to expand"><div class="no-notes" style="font-size:11px">No comments yet.</div></div>
+              <div style="margin-top:8px">
+                <textarea id="f-pocNew" placeholder="Add a comment… (Ctrl+Enter to save)" style="width:100%;min-height:56px;resize:vertical" onkeydown="if(event.ctrlKey&&event.key==='Enter'){event.preventDefault();addPocComment()}"></textarea>
+                <div style="display:flex;justify-content:flex-end;margin-top:6px">
+                  <button class="stamp-btn" style="border-radius:4px" onclick="addPocComment()">+ Add</button>
+                </div>
+              </div>
+              <input type="hidden" id="f-pocComments">
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ── SECTION: Status ── -->
-      <div class="lp-sec" style="border-left:3px solid #dc2626">
-        <div class="lp-sec-label">
-          <div class="lp-sec-num" style="background:#dc2626">5</div>
-          <div style="flex:1">
-            <div style="display:flex;align-items:center;gap:6px">
-              <div class="lp-sec-title">Qualifying Outcomes</div>
-              <button class="lp-sec-help" id="helpbtn-status" onclick="toggleHelp('status')" title="Help">?</button>
-            </div>
-            <div class="lp-sec-sub">Hot / Warm / Cold outcome and follow up status</div>          </div>
-            <div class="lp-help-panel" id="help-status">
-              Rate how ready this lead is to purchase.<br>
-              <ul>
-                <li><strong>🔴 Hot</strong> — Ready to buy now</li>
-                <li><strong>🟠 Warm</strong> — Seriously considering</li>
-                <li><strong>🔵 Cold</strong> — Early stage / just enquiring</li>
-                <li><strong>Comments</strong> — Notes on current status or next steps</li>
-              </ul>
-            </div>
-        </div>
-        <div class="lp-sec-body">
-          <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px">HWC Status</div>
-          <div style="display:flex;gap:14px;max-width:480px;margin-bottom:20px">
-            <label style="cursor:pointer;flex:1">
-              <input type="radio" name="hw" value="Hot" style="display:none" onchange="updateTempCards()">
-              <div class="temp-card" id="tc-hot" style="border:2px solid var(--border2);border-radius:8px;padding:14px;text-align:center;transition:all .15s">
-                <div style="font-size:20px;margin-bottom:5px">🔴</div>
-                <div style="font-weight:600;color:var(--red);font-size:13px">Hot</div>
-                <div style="font-size:10px;color:var(--text3);margin-top:3px">Ready to buy</div>
-              </div>
-            </label>
-            <label style="cursor:pointer;flex:1">
-              <input type="radio" name="hw" value="Warm" style="display:none" onchange="updateTempCards()">
-              <div class="temp-card" id="tc-warm" style="border:2px solid var(--border2);border-radius:8px;padding:14px;text-align:center;transition:all .15s">
-                <div style="font-size:20px;margin-bottom:5px">🟠</div>
-                <div style="font-weight:600;color:var(--orange);font-size:13px">Warm</div>
-                <div style="font-size:10px;color:var(--text3);margin-top:3px">Considering</div>
-              </div>
-            </label>
-            <label style="cursor:pointer;flex:1">
-              <input type="radio" name="hw" value="Cold" style="display:none" onchange="updateTempCards()">
-              <div class="temp-card" id="tc-cold" style="border:2px solid var(--border2);border-radius:8px;padding:14px;text-align:center;transition:all .15s">
-                <div style="font-size:20px;margin-bottom:5px">🔵</div>
-                <div style="font-weight:600;color:#60a5fa;font-size:13px">Cold</div>
-                <div style="font-size:10px;color:var(--text3);margin-top:3px">Early stage</div>
-              </div>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── SECTION: Assignment ── -->
+      <!-- ── SECTION 7: Assignment ── -->
       <div class="lp-sec" id="sec-agencyAssign" style="display:none;border-left:3px solid #7c3aed">
         <div class="lp-sec-label">
-          <div class="lp-sec-num" style="background:#7c3aed">6</div>
+          <div class="lp-sec-num" style="background:#7c3aed">7</div>
           <div style="flex:1">
             <div style="display:flex;align-items:center;gap:6px">
               <div class="lp-sec-title">Assignment</div>
               <button class="lp-sec-help" id="helpbtn-assignment" onclick="toggleHelp('assignment')" title="Help">?</button>
             </div>
-            <div class="lp-sec-sub">Assign to agency and agent</div>          </div>
-            <div class="lp-help-panel" id="help-assignment">
-              Control who follows up this lead.<br>
-              <ul>
-                <li><strong>Agency</strong> — The agency handling this lead</li>
-                <li><strong>Agent</strong> — Specific agent within that agency</li>
-              </ul>
-              Agents only see leads assigned to them. Agencies see all leads in their agency.
-            </div>
+            <div class="lp-sec-sub">Assign to agency and agent</div>
+          </div>
+          <div class="lp-help-panel" id="help-assignment">
+            Control who follows up this lead.<br>
+            <ul>
+              <li><strong>Assigned Agency</strong> — The agency handling this lead</li>
+              <li><strong>Assigned Agent</strong> — Specific agent within that agency</li>
+            </ul>
+          </div>
         </div>
         <div class="lp-sec-body">
           <div class="lp-grid-3">
@@ -924,25 +944,25 @@
         </div>
       </div>
 
-      <!-- ── SECTION: Notes ── -->
+      <!-- ── SECTION 8: Notes ── -->
       <div class="lp-sec" id="sec-notes" style="border-bottom:none;border-left:3px solid #64748b">
         <div class="lp-sec-label">
-          <div class="lp-sec-num" style="background:#64748b">7</div>
+          <div class="lp-sec-num" style="background:#64748b">8</div>
           <div style="flex:1">
             <div style="display:flex;align-items:center;gap:6px">
               <div class="lp-sec-title">Notes</div>
               <button class="lp-sec-help" id="helpbtn-notes" onclick="toggleHelp('notes')" title="Help">?</button>
             </div>
-            <div class="lp-sec-sub">Activity log and comments</div>          </div>
-            <div class="lp-help-panel" id="help-notes">
-              Internal notes visible to all users with access.<br>
-              <ul>
-                <li>Each note is timestamped and attributed to the author</li>
-                <li>Notes cannot be edited after saving</li>
-                <li>Only <strong>Admins</strong> can delete notes</li>
-                <li>Use for call summaries, reminders, internal context</li>
-              </ul>
-            </div>
+            <div class="lp-sec-sub">Activity log and comments</div>
+          </div>
+          <div class="lp-help-panel" id="help-notes">
+            Internal notes visible to all users with access.<br>
+            <ul>
+              <li>Each note is timestamped and attributed to the author</li>
+              <li>Notes cannot be edited after saving</li>
+              <li>Only <strong>Admins</strong> can delete notes</li>
+            </ul>
+          </div>
         </div>
         <div class="lp-sec-body">
           <div class="notes-box" id="notesBox" style="margin-bottom:16px;max-height:200px"><div class="no-notes">No notes yet.</div></div>
