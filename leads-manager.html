@@ -128,8 +128,8 @@
   .ie-cell{cursor:pointer;position:relative}
   @media (max-width:768px) or (pointer:coarse) { .ie-cell{cursor:default;pointer-events:none} }
   .ie-cell:hover{background:rgba(37,99,235,0.06) !important;outline:1px solid var(--accent)}
-  .ie-active{outline:2px solid var(--accent) !important;background:var(--bg2) !important;z-index:20;position:relative}
-  .ie-input{width:100%;border:none;outline:none;background:transparent;font-family:var(--sans);font-size:11px;color:var(--text);padding:0;min-width:80px}
+  .ie-active{outline:2px solid var(--accent) !important;background:#fff !important;z-index:25 !important;position:relative;overflow:visible}
+  .ie-input{width:100%;max-width:100%;border:none;outline:none;background:transparent;font-family:var(--sans);font-size:11px;color:var(--text);padding:0;min-width:80px}
   .ie-select{width:100%;border:none;outline:none;background:transparent;font-family:var(--sans);font-size:11px;color:var(--text);padding:0;cursor:pointer}
   .ie-actions{display:flex;gap:4px;margin-top:4px}
   .ie-save{padding:2px 8px;background:var(--accent);color:#fff;border:none;border-radius:3px;font-size:10px;cursor:pointer}
@@ -325,7 +325,7 @@
   /* ── V4 ADDITIONS ── */
   .lp-sec:first-of-type{border-top:none}
   /* ── Front-page POC comment modal ── */
-  .poc-modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:5000;display:flex;align-items:center;justify-content:center}
+  .poc-modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:5000;display:flex;align-items:center;justify-content:center}
   .poc-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;width:480px;max-width:95vw;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.2)}
   .poc-modal-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
   .poc-modal-title{font-size:14px;font-weight:600;color:var(--text);flex:1}
@@ -2524,7 +2524,6 @@ function ieSelect(e, lid, field, opts, td) {
   _ieActive = td;
   td.classList.add('ie-active');
   showIeDim(td);
-  showIeDim(td);
   const l = leads.find(x => x.id === lid); if (!l) return;
   const cur = l[field] || '';
   td.innerHTML = `
@@ -2574,7 +2573,6 @@ function ieLeadSource(e, lid, td) {
   e.stopPropagation();
   _ieActive = td;
   td.classList.add('ie-active');
-  showIeDim(td);
   showIeDim(td);
   const l = leads.find(x => x.id === lid); if (!l) return;
   const sourceKeys = ['walkIns','facebook','instagram','tiktok','xtwitter','linkedin','sms','roi','rea','google','website','crf','crfAgency','edm'];
@@ -2648,7 +2646,8 @@ document.addEventListener('click', e => {
   const clickedPill = pp && pp.contains(e.target);
   const clickedActive = _ieActive && _ieActive.contains(e.target);
   const clickedIeCell = e.target.closest && e.target.closest('[data-ietype]');
-  if (!clickedPill && !clickedActive && !clickedIeCell) {
+  const clickedModal = e.target.closest && e.target.closest('.poc-modal-ov');
+  if (!clickedPill && !clickedActive && !clickedIeCell && !clickedModal) {
     if (_ieActive) {
       const lid = parseInt(_ieActive.dataset.lid);
       const l = leads.find(x => x.id === lid);
@@ -3056,6 +3055,42 @@ function saveLead() {
   }
 
   if (errors.length) return;
+
+  // ── Duplicate check (new leads only) ──
+  if (!editLeadId) {
+    const normMobile = mobile.replace(/\s/g,'').toLowerCase();
+    const normEmail  = email.toLowerCase();
+    const normName   = name.toLowerCase().replace(/\s+/g,' ').trim();
+
+    const dupes = leads.filter(l => {
+      const lMobile = (l.mobile||'').replace(/\s/g,'').toLowerCase();
+      const lEmail  = (l.email||'').toLowerCase();
+      const lName   = (l.name||'').toLowerCase().replace(/\s+/g,' ').trim();
+      if (normMobile && lMobile && lMobile === normMobile) return true;
+      if (normEmail  && lEmail  && lEmail  === normEmail)  return true;
+      if (normName   && lName   && lName   === normName)   return true;
+      return false;
+    });
+    if (dupes.length) {
+      const reasons = dupes.map(l => {
+        const lMobile = (l.mobile||'').replace(/\s/g,'').toLowerCase();
+        const lEmail  = (l.email||'').toLowerCase();
+        const lName   = (l.name||'').toLowerCase().replace(/\s+/g,' ').trim();
+        const matches = [];
+        if (normMobile && lMobile === normMobile) matches.push('mobile');
+        if (normEmail  && lEmail  === normEmail)  matches.push('email');
+        if (normName   && lName   === normName)   matches.push('name');
+        return (l.name||'Unnamed') + ' (' + matches.join(', ') + ' match)';
+      }).join('\n  \u2022 ');
+      if (me.role === 'admin') {
+        const proceed = confirm('\u26a0\ufe0f Duplicate lead detected!\n\n  \u2022 ' + reasons + '\n\nSave anyway?');
+        if (!proceed) return;
+      } else {
+        alert('\u26a0\ufe0f Duplicate lead detected!\n\n  \u2022 ' + reasons + '\n\nPlease check the existing lead before adding a new one.');
+        return;
+      }
+    }
+  }
 
   const hw = document.querySelector('input[name="hw"]:checked');
 
@@ -4739,7 +4774,7 @@ function iePocModal(lid, td) {
   const ov = document.createElement('div');
   ov.className = 'poc-modal-ov';
   ov.id = 'pocModalOv';
-  ov.onclick = e => { if (e.target === ov) closePocModal(); };
+
   ov.innerHTML = `
     <div class="poc-modal">
       <div class="poc-modal-hdr">
@@ -4835,17 +4870,49 @@ document.addEventListener('keydown', function(e) {
 });
 
 function showIeDim(td) {
+  hideIeDim();
+  const activeTr = td ? td.closest('tr') : null;
   const tbody = document.getElementById('leadsBody');
   if (!tbody) return;
-  const activeTr = td.closest('tr');
+
+  // Un-sticky ALL tbody col-4 (Name) cells so they can't paint above the edit input
+  tbody.querySelectorAll('td:nth-child(4)').forEach(cell => {
+    cell.dataset.wasSticky = cell.style.position;
+    cell.style.setProperty('position', 'static', 'important');
+  });
+
+  // Dim non-active rows, highlight active row
   tbody.querySelectorAll('tr').forEach(tr => {
-    if (tr !== activeTr) tr.style.opacity = '0.2';
+    const isActive = tr === activeTr;
+    tr.querySelectorAll('td').forEach(cell => {
+      cell.style.setProperty('background-color', isActive ? '#ffffff' : '#9ca3af', 'important');
+    });
+    if (isActive) {
+      tr.style.setProperty('outline', '2px solid #2563eb', 'important');
+      tr.style.outlineOffset = '-1px';
+    }
   });
 }
+
 function hideIeDim() {
   const tbody = document.getElementById('leadsBody');
   if (!tbody) return;
-  tbody.querySelectorAll('tr').forEach(tr => tr.style.opacity = '');
+
+  // Restore sticky positioning on Name column cells
+  tbody.querySelectorAll('td:nth-child(4)').forEach(cell => {
+    cell.style.removeProperty('position');
+    delete cell.dataset.wasSticky;
+  });
+
+  // Restore row backgrounds and outlines
+  tbody.querySelectorAll('tr').forEach(tr => {
+    tr.style.removeProperty('outline');
+    tr.style.outlineOffset = '';
+    tr.querySelectorAll('td').forEach(cell => {
+      cell.style.removeProperty('background-color');
+      cell.style.removeProperty('background');
+    });
+  });
 }
 </script>
 </body>
