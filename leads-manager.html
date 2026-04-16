@@ -5304,7 +5304,10 @@ function closeLeadCard() {
 }
 
 function fmtCardDate(raw) {
-  if (!raw) return '—';
+  if (!raw || raw === 'false') return '—';
+  if (raw === 'true' || raw === true) return '✓';
+  const ddmm = raw.match(/^(\d{2}-\d{2}-\d{4})/);
+  if (ddmm) return ddmm[1];
   const d = new Date(raw);
   if (isNaN(d)) return raw;
   return String(d.getDate()).padStart(2,'0') + '-' +
@@ -5314,136 +5317,69 @@ function fmtCardDate(raw) {
 function openLeadCard(id) {
   const l = leads.find(x => String(x.id) === String(id));
   if (!l) return;
-
   const card = document.getElementById('leadCard');
+  const qs = s => card.querySelector(s);
+  const sa = (s,v) => { const e=qs(s); if(e) e.textContent=v; };
 
-  // ── Header ──
-  (function(){const _el=card.querySelector('.header-eyebrow');if(_el)_el.textContent='Sapphire Land Estate · Rouse Hill';})()
-  (function(){const _el=card.querySelector('.header-name');if(_el)_el.textContent=l.name || '—';})()
+  sa('.header-eyebrow','Sapphire Land Estate \u00b7 Rouse Hill');
+  sa('.header-name', l.name||'\u2014');
 
-  // HWC badge
-  const badge = card.querySelector('.hwc-badge');
-  badge.className = 'hwc-badge ' + (l.hotWarmStatus ? l.hotWarmStatus.toLowerCase() : 'none');
-  badge.textContent = l.hotWarmStatus === 'Hot' ? '🔴 Hot' : l.hotWarmStatus === 'Warm' ? '🟠 Warm' : l.hotWarmStatus === 'Cold' ? '🔵 Cold' : '— Status';
+  const badge = qs('.hwc-badge');
+  if(badge){ badge.className='hwc-badge '+(l.hotWarmStatus||'').toLowerCase(); badge.textContent=l.hotWarmStatus==='Hot'?'\ud83d\udd34 Hot':l.hotWarmStatus==='Warm'?'\ud83d\udfe0 Warm':l.hotWarmStatus==='Cold'?'\ud83d\udd35 Cold':'\u2014 Status'; }
 
-  // Source chip
-  const sourceChip = card.querySelector('.chip.source');
-  const sources = ['walkIns','facebook','instagram','tiktok','xtwitter','linkedin','sms','roi','rea','google','website','crf','crfAgency','edm'];
-  const sourceLabels = {walkIns:'Walk In',facebook:'Facebook',instagram:'Instagram',tiktok:'TikTok',xtwitter:'X (Twitter)',linkedin:'LinkedIn',sms:'SMS',roi:'ROI',rea:'REA',google:'Google',website:'Website',crf:'CRF',crfAgency:'CRF Agency',edm:'EDM'};
-  const activeSrc = sources.find(s => l[s]);
-  sourceChip.textContent = activeSrc ? sourceLabels[activeSrc] : '—';
+  const sc=qs('.chip.source');
+  const srcMap={walkIns:'Walk In',facebook:'Facebook',instagram:'Instagram',tiktok:'TikTok',xtwitter:'X',linkedin:'LinkedIn',sms:'SMS',roi:'ROI',rea:'REA',google:'Google',website:'Website',crf:'CRF',crfAgency:'CRF Agency',edm:'EDM'};
+  const as=Object.keys(srcMap).find(s=>l[s]);
+  if(sc) sc.textContent=as?srcMap[as]:'\u2014';
 
-  // ── Header contact row ──
-  function setHci(label, value) {
-    const labels = card.querySelectorAll('.hci-label');
-    for (const el of labels) {
-      if (el.textContent.trim() === label) {
-        el.nextElementSibling.textContent = value || '—';
-        return;
-      }
-    }
-  }
-  setHci('Lead #', l.id);
-  setHci('Date', fmtCardDate(l.date));
-  setHci('Mobile', l.mobile || '—');
-  setHci('Email', l.email || '—');
-  setHci('Agency', (() => { const a = agencies.find(x => x.id === l.assignedAgency); return a ? a.name : '—'; })());
-  setHci('Agent', (() => { const a = agents.find(x => x.id === l.assignedAgent); return a ? a.name : '—'; })());
+  function setHci(lbl,val){ card.querySelectorAll('.hci-label').forEach(el=>{ if(el.textContent.trim()===lbl&&el.nextElementSibling) el.nextElementSibling.textContent=val||'\u2014'; }); }
+  setHci('Lead #',l.id);
+  setHci('Date',fmtCardDate(l.date));
+  setHci('Mobile',l.mobile||'\u2014');
+  setHci('Email',l.email||'\u2014');
+  const ag=agencies&&agencies.find(x=>x.id===l.assignedAgency);
+  const at=agents&&agents.find(x=>x.id===l.assignedAgent);
+  setHci('Agency',ag?ag.name:'\u2014');
+  setHci('Agent',at?at.name:'\u2014');
 
-  // ── Lead Message ──
-  const lmEl = card.querySelector('[data-section="leadmsg"]');
-  if (lmEl) lmEl.textContent = l.leadMsg || '—';
+  const lm=qs('[data-section="leadmsg"]'); if(lm) lm.textContent=l.leadMsg||'\u2014';
 
-  // ── Comments ──
-  const commentsList = card.getElementById ? card.getElementById('comments-list') : card.querySelector('#comments-list');
-  const cl = document.getElementById('leadCard').querySelector('#comments-list');
-  if (cl) {
-    let entries = [];
-    try { entries = l.pocComments ? JSON.parse(l.pocComments) : []; if (!Array.isArray(entries)) entries = [{ts:'',author:'',text:l.pocComments}]; }
-    catch(e) { entries = l.pocComments ? [{ts:'',author:'',text:l.pocComments}] : []; }
-    cl.innerHTML = entries.length
-      ? entries.map(en => '<div class="poc-entry"><div><div class="poc-ts">' + (en.ts||'') + '</div><div class="poc-author">' + (en.author||'') + '</div></div><div class="poc-text">' + (en.text||'').replace(/\n/g,'<br>') + '</div></div>').join('')
-      : '<div style="padding:12px 14px;font-size:12px;color:var(--muted);font-style:italic">No comments yet.</div>';
-  }
+  const cl=card.querySelector('#comments-list');
+  if(cl){ let e=[]; try{e=l.pocComments?JSON.parse(l.pocComments):[];if(!Array.isArray(e))e=[{ts:'',author:'',text:l.pocComments}];}catch(x){e=l.pocComments?[{ts:'',author:'',text:l.pocComments}]:[]; } cl.innerHTML=e.length?e.map(n=>'<div class="poc-entry"><div><div class="poc-ts">'+(n.ts||'')+'</div><div class="poc-author">'+(n.author||'')+'</div></div><div class="poc-text">'+(n.text||'').replace(/\n/g,'<br>')+'</div></div>').join(''):'<div style="padding:12px 14px;font-size:12px;color:var(--muted);font-style:italic">No comments yet.</div>'; }
 
-  // ── Qualifying Questions ──
-  function setField(label, value) {
-    const lc = document.getElementById('leadCard');
-    const rows = lc.querySelectorAll('.field-row');
-    for (const row of rows) {
-      const lbl = row.querySelector('.field-label');
-      if (lbl && lbl.textContent.trim() === label) {
-        const val = row.querySelector('.field-value');
-        if (val) {
-          val.className = 'field-value' + (value ? '' : ' empty');
-          val.textContent = value || '—';
-        }
-        return;
-      }
-    }
-  }
-  setField('How Did You Hear About Us?', l.hearAboutUs);
-  setField('Land Sales Office Visit', l.lsoVisit);
-  setField('Buyer Type', l.buyerType === 'FHB' ? 'First Home Buyer' : l.buyerType);
-  setField('Time To Buy', l.timeToBuy);
-  setField('House & Land Price', l.priceHL);
-  setField('Land Price', l.priceLand);
-  setField('Storey', l.storey);
-  setField('Garage', l.garage);
-  setField('Lot Type / Frontage', l.lotType);
-  setField('Area (m²)', l.lotArea);
-  setField('Interested Lot Numbers', l.lotNumbers);
-  setField('Postcode', l.suburbPostcode);
-  setField('CFS Lot #', l.cfsLot);
-  setField('Under CFS', l.underCfs);
-  setField('Settle Time OK', l.settleOk ? '✓ Yes' : '—');
+  function setField(lbl,val){ card.querySelectorAll('.field-row').forEach(r=>{ const lb=r.querySelector('.field-label'); if(lb&&lb.textContent.trim()===lbl){ const v=r.querySelector('.field-value'); if(v){v.className='field-value'+(val?'':' empty');v.textContent=val||'\u2014';} } }); }
+  setField('How Did You Hear About Us?',l.hearAboutUs);
+  setField('Land Sales Office Visit',l.lsoVisit);
+  setField('Buyer Type',l.buyerType==='FHB'?'First Home Buyer':l.buyerType);
+  setField('Time To Buy',l.timeToBuy);
+  setField('House & Land Price',l.priceHL);
+  setField('Land Price',l.priceLand);
+  setField('Storey',l.storey);
+  setField('Garage',l.garage);
+  setField('Lot Type / Frontage',l.lotType);
+  setField('Area (m\u00b2)',l.lotArea);
+  setField('Interested Lot Numbers',l.lotNumbers);
+  setField('Deposit',l.deposit5?'5%':l.deposit5plus5?'5%+5%':l.deposit10?'10%':'\u2014');
+  setField('Postcode',l.suburbPostcode);
+  setField('CFS Lot #',l.cfsLot);
+  setField('Under CFS',l.underCfs);
+  setField('Settle Time OK',l.settleOk?'\u2713 Yes':'\u2014');
 
-  // ── Deposit pills ──
-  const lc = document.getElementById('leadCard');
-  lc.querySelectorAll('[data-deposit]').forEach(p => {
-    const key = p.dataset.deposit;
-    p.classList.toggle('active', !!l[key]);
-  });
+  function setStamp(lbl,val){ card.querySelectorAll('.process-item').forEach(it=>{ const lb=it.querySelector('.process-label'); if(lb&&lb.textContent.trim()===lbl){ const d=it.querySelector('.process-dot'),t=it.querySelector('.process-ts'); if(d) d.className='process-dot '+(val?'done':'pending'); if(t){t.className='process-ts'+(val?'':' pending');t.textContent=val?fmtCardDate(val):'Not sent';} } }); }
+  setStamp('ROI Email',l.roiEmail);
+  setStamp('1st Call',l.call1);
+  setStamp('2nd Call',l.call2);
+  setStamp('Text Message (SMS)',l.sms);
+  setStamp('Final Email',l.finalEmail);
 
-  // ── 48 Hrs Process stamps ──
-  function setStamp(label, val) {
-    const items = lc.querySelectorAll('.process-item');
-    for (const item of items) {
-      const lbl = item.querySelector('.process-label');
-      if (lbl && lbl.textContent.trim() === label) {
-        const dot = item.querySelector('.process-dot');
-        const ts = item.querySelector('.process-ts');
-        if (dot) dot.className = 'process-dot ' + (val ? 'done' : 'pending');
-        if (ts) { ts.className = 'process-ts' + (val ? '' : ' pending'); ts.textContent = val ? fmtCardDate(val) : 'Not sent'; }
-      }
-    }
-  }
-  setStamp('ROI Email', l.roiEmail);
-  setStamp('1st Call', l.call1);
-  setStamp('2nd Call', l.call2);
-  setStamp('Text Message (SMS)', l.sms);
-  setStamp('Final Email', l.finalEmail);
+  card.querySelectorAll('[data-followup]').forEach(p=>p.classList.toggle('active',!!l[p.dataset.followup]));
+  card.querySelectorAll('[data-closed]').forEach(p=>p.classList.toggle('active',!!l[p.dataset.closed]));
 
-  // ── HWC Status cards ──
-  lc.querySelectorAll('.hwc-card').forEach(c => {
-    const status = c.dataset.hwc;
-    c.classList.toggle('selected', l.hotWarmStatus === status);
-  });
+  const fb=card.querySelector('.tab-btn'); if(fb) switchTab('process',fb);
 
-  // ── Follow Up pills ──
-  const followUpMap = {tc:'Agent To Call', cb:'Lead Call Back', vm:'Voicemail', na:'No Answer'};
-  const closedMap = {nm:'No Mobile', dc:'Disconnected', ni:'Not Interested', duplicate:'Duplicate'};
-  lc.querySelectorAll('[data-followup]').forEach(p => p.classList.toggle('active', !!l[p.dataset.followup]));
-  lc.querySelectorAll('[data-closed]').forEach(p => p.classList.toggle('active', !!l[p.dataset.closed]));
-
-  // ── Default to first tab ──
-  const firstTabBtn = lc.querySelector('.tab-btn');
-  if (firstTabBtn) switchTab('process', firstTabBtn);
-
-  // Show card
-  document.getElementById('leadCard').style.display = 'block';
-  document.getElementById('app').style.display = 'none';
-  history.pushState({leadCard: true}, '');
+  document.getElementById('leadCard').style.display='block';
+  document.getElementById('app').style.display='none';
+  history.pushState({leadCard:true},'');
 }
 
 </script>
