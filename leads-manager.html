@@ -1316,10 +1316,10 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
     <!-- RIGHT COLUMN -->
     <div class="card-right">
       <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('process',this)"><span class="ti">⏱</span>48 Hrs Process</button>
-        <button class="tab-btn" onclick="switchTab('qualify',this)"><span class="ti">🏡</span>Qualifying</button>
-        <button class="tab-btn" onclick="switchTab('outcome',this)"><span class="ti">📊</span>Outcome</button>
-      <button class="tab-btn" onclick="switchTab('cfs',this)"><span class="ti">📋</span>Under CFS</button>
+        <button class="tab-btn active" onclick="cardSwitchTab('process',this)"><span class="ti">⏱</span>48 Hrs Process</button>
+        <button class="tab-btn" onclick="cardSwitchTab('qualify',this)"><span class="ti">🏡</span>Qualifying</button>
+        <button class="tab-btn" onclick="cardSwitchTab('outcome',this)"><span class="ti">📊</span>Outcome</button>
+      <button class="tab-btn" onclick="cardSwitchTab('cfs',this)"><span class="ti">📋</span>Under CFS</button>
       </div>
 
       <!-- 48 HRS -->
@@ -5339,6 +5339,16 @@ function fmtPhone(raw) {
 }
 
 
+
+function cardSwitchTab(name, btn) {
+  const card = document.getElementById('leadCard');
+  card.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  card.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('panel-' + name);
+  if (panel) panel.classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
 function openLeadCard(id) {
   const l = leads.find(x => String(x.id) === String(id));
   if (!l) return;
@@ -5400,7 +5410,7 @@ function openLeadCard(id) {
   card.querySelectorAll('[data-followup]').forEach(p=>p.classList.toggle('active',!!l[p.dataset.followup]));
   card.querySelectorAll('[data-closed]').forEach(p=>p.classList.toggle('active',!!l[p.dataset.closed]));
 
-  const fb=card.querySelector('.tab-btn'); if(fb) switchTab('process',fb);
+  cardSwitchTab('process', card.querySelector('.tab-btn'));
 
   document.getElementById('leadCard').style.display='block';
   document.getElementById('app').style.display='none';
