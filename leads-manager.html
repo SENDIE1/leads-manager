@@ -332,6 +332,173 @@
   .poc-modal-log{flex:1;overflow-y:auto;padding:16px 20px;min-height:80px;max-height:280px}
   .poc-modal-footer{padding:14px 20px;border-top:1px solid var(--border);flex-shrink:0}
 
+
+  /* ══ LEAD CARD ══ */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#002675;--gold:#83764F;--grey6:#A8A8A8;--grey2:#D5D4D3;
+  --navy-dk:#001A55;--navy-lt:#E8ECF5;--gold-lt:#F5F2EB;--gold-mid:#C4B88A;
+  --bg:#F4F3F1;--surface:#FFFFFF;--surface2:#F9F8F7;--border:#E2E0DC;
+  --ink:#1A1A1A;--muted:#7A7872;--red:#C0392B;--green:#1A6B3C;--orange:#B85C00;
+  --radius:10px;--shadow-lg:0 8px 40px rgba(0,38,117,0.14);
+  }
+body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px 64px}
+  #leadCard .card{width:100%;max-width:480px;background:var(--surface);border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden;border:1px solid var(--grey2)}
+  #leadCard .gold-rule{height:3px;background:linear-gradient(90deg,var(--gold) 0%,var(--gold-mid) 60%,transparent 100%)}
+
+/* HEADER */
+  #leadCard .card-header{background:var(--navy);padding:20px 22px 0;position:relative;overflow:hidden}
+  #leadCard .card-header::after{content:'';position:absolute;right:-24px;top:-24px;width:160px;height:160px;border-radius:50%;border:36px solid rgba(131,118,79,0.14);pointer-events:none}
+  #leadCard .card-header::before{content:'';position:absolute;right:80px;bottom:0;width:80px;height:80px;border-radius:50%;border:22px solid rgba(131,118,79,0.08);pointer-events:none}
+  #leadCard .header-eyebrow{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-mid);margin-bottom:8px;position:relative;z-index:1}
+  #leadCard .header-row-name{display:flex;align-items:flex-end;gap:14px;margin-bottom:12px;position:relative;z-index:1}
+  #leadCard .header-name{font-family:'Libre Baskerville',serif;font-size:24px;font-weight:700;color:#fff;line-height:1.1}
+  #leadCard .header-lead-no{font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:3px}
+  #leadCard .hwc-badge{font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;padding:5px 13px;border-radius:4px;color:#fff;flex-shrink:0}
+  #leadCard .hwc-badge.warm{background:var(--orange)}
+  #leadCard .hwc-badge.hot{background:#B91C1C}
+  #leadCard .hwc-badge.cold{background:#2563EB}
+  #leadCard .header-chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  #leadCard .chip{background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.75);font-size:11px;padding:4px 9px;border-radius:4px;border:1px solid rgba(255,255,255,0.12)}
+  #leadCard .chip.source{background:rgba(131,118,79,0.25);color:var(--gold-mid);border-color:rgba(131,118,79,0.3)}
+
+/* HEADER STAT STRIP */
+  #leadCard .header-contact{display:flex;gap:20px;flex-wrap:wrap;padding-top:12px;border-top:1px solid rgba(255,255,255,0.10);position:relative;z-index:1;padding-bottom:16px}
+  #leadCard .hci{display:flex;flex-direction:column;gap:2px}
+  #leadCard .hci-label{font-size:8px;font-weight:600;letter-spacing:.10em;text-transform:uppercase;color:var(--gold-mid)}
+  #leadCard .hci-value{font-family:inherit;font-size:12px;font-weight:500;color:#fff}
+  #leadCard .hci-value.green{color:#6EE7A0}
+
+/* MOBILE BODY */
+  #leadCard .card-body{padding:16px}
+  #leadCard .section{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;background:var(--surface)}
+  #leadCard .section-title{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--navy);padding:7px 14px}
+  #leadCard .field-row{display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);gap:8px}
+  #leadCard .field-row:last-child{border-bottom:none}
+  #leadCard .field-label{font-size:11px;color:var(--muted);width:130px;flex-shrink:0;line-height:1.3}
+  #leadCard .field-value{font-size:13px;color:var(--ink);flex:1;text-align:right;font-weight:500;line-height:1.4}
+  #leadCard .field-value.empty{color:var(--grey2);font-weight:400;font-style:italic}
+  #leadCard .field-value.mono{font-family:inherit;font-size:12px}
+  #leadCard .tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.04em;padding:2px 8px;border-radius:3px;text-transform:uppercase}
+  #leadCard .tag.green{background:#D1FAE5;color:var(--green)}
+  #leadCard .tag.orange{background:#FEF3C7;color:var(--orange)}
+  #leadCard .tag.navy{background:var(--navy-lt);color:var(--navy)}
+
+/* TABS */
+  #leadCard .tabs{display:flex;border-bottom:2px solid var(--grey2);background:var(--surface);position:sticky;top:0;z-index:10}
+  #leadCard .tab-btn{flex:1;padding:11px 4px 10px;font-family:'Aptos','DM Sans',sans-serif;font-size:11px;font-weight:500;color:var(--grey6);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:color .15s,border-color .15s;display:flex;flex-direction:column;align-items:center;gap:3px;letter-spacing:.02em;margin-bottom:-2px}
+  #leadCard .tab-btn .ti{font-size:15px}
+  #leadCard .tab-btn.active{color:var(--navy);border-bottom-color:var(--navy)}
+  #leadCard .tab-btn:hover:not(.active){color:var(--ink)}
+  #leadCard .tab-panel{display:none;padding:16px 16px 24px}
+  #leadCard .tab-panel.active{display:block}
+
+/* 48 HRS */
+  #leadCard .process-grid{display:flex;flex-direction:column}
+  #leadCard .process-item{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+  #leadCard .process-item:last-child{border-bottom:none}
+  #leadCard .process-num{width:18px;height:18px;border-radius:50%;background:var(--navy);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  #leadCard .process-label{font-size:9px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:var(--muted);flex:1}
+  #leadCard .process-status{display:flex;align-items:center;gap:6px}
+  #leadCard .process-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  #leadCard .process-dot.done{background:var(--green)}
+  #leadCard .process-dot.pending{background:var(--grey2)}
+  #leadCard .process-ts{font-family:inherit;font-size:11px;color:var(--ink)}
+  #leadCard .process-ts.pending{color:var(--grey2);font-style:italic}
+
+/* PILLS */
+  #leadCard .pills-row{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px}
+  #leadCard .pill{font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);color:var(--muted);background:var(--surface2)}
+  #leadCard .pill.active{background:var(--navy-lt);border-color:#B0BDE0;color:var(--navy);font-weight:600}
+
+/* COMMENTS */
+  #leadCard .comments-block{background:var(--surface)}
+  #leadCard .comments-header{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--navy);padding:8px 16px}
+  #leadCard .comments-input-row{display:flex;gap:8px;padding:12px 14px;border-bottom:1px solid var(--border);align-items:flex-end}
+  #leadCard .comments-textarea{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:'Aptos','DM Sans',sans-serif;color:var(--ink);outline:none;resize:none;min-height:42px;line-height:1.4;transition:border-color .15s}
+  #leadCard .comments-textarea:focus{border-color:var(--navy)}
+  #leadCard .comments-add-btn{background:var(--navy);color:#fff;border:none;border-radius:8px;width:42px;height:42px;font-size:20px;cursor:pointer;flex-shrink:0;transition:background .15s;display:flex;align-items:center;justify-content:center}
+  #leadCard .comments-add-btn:hover{background:var(--navy-dk)}
+  #leadCard .poc-entry{display:flex;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border)}
+  #leadCard .poc-entry:last-child{border-bottom:none}
+  #leadCard .poc-ts{font-family:inherit;font-size:10px;color:var(--gold);white-space:nowrap;padding-top:2px;width:72px;flex-shrink:0}
+  #leadCard .poc-author{font-size:10px;color:var(--muted);margin-top:2px}
+  #leadCard .poc-text{font-size:12px;color:var(--ink);line-height:1.5;flex:1}
+
+/* SIDEBAR — desktop only */
+  #leadCard .sidebar-section-title,.sidebar-stat{display:none}
+
+/* ═══════════ DESKTOP ≥769px ═══════════ */
+  @media(min-width:769px){
+  body{padding:40px 32px 64px}
+
+  #leadCard .card{
+    max-width:1000px;
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "rule"
+      "header"
+      "body";
+    border-radius:16px;
+    overflow:hidden;
+  }
+
+  #leadCard .gold-rule{grid-area:rule}
+  #leadCard .card-header{grid-area:header}
+  #leadCard .card-body{
+    grid-area:body;
+    display:grid;
+    grid-template-columns:340px 1fr;
+    padding:0;
+    align-items:start;
+  }
+
+  /* Left column */
+  #leadCard .card-left{
+    border-right:1px solid var(--grey2);
+    display:flex;
+    flex-direction:column;
+    background:var(--surface);
+  }
+  #leadCard .card-header{
+    border-bottom:3px solid var(--gold);
+    box-shadow:0 4px 12px rgba(0,38,117,0.15);
+  }
+
+  /* Right column */
+  #leadCard .card-right{
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* Sidebar tables */
+  #leadCard .sidebar-section-title{display:block;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--navy);padding:7px 14px}
+  #leadCard .sidebar-stat{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);gap:8px}
+  #leadCard .sidebar-stat:last-child{border-bottom:none}
+  #leadCard .sidebar-stat-label{font-size:11px;color:var(--muted);flex-shrink:0}
+  #leadCard .sidebar-stat-value{font-family:inherit;font-size:12px;font-weight:500;color:var(--ink);text-align:right}
+  #leadCard .sidebar-stat-value.green{color:var(--green)}
+  #leadCard .sidebar-stat-value.navy{color:var(--navy);font-family:'Aptos','DM Sans',sans-serif}
+
+  /* Comments fills rest of left col */
+  #leadCard .comments-block{flex:1;border-top:1px solid var(--border);display:flex;flex-direction:column}
+  #leadCard .comments-log{flex:1;overflow-y:auto;max-height:400px}
+
+  /* Tabs */
+  #leadCard .tabs{position:sticky;top:0}
+  #leadCard .tab-panel{padding:16px 20px 24px}
+
+  /* Mobile-only section hiding */
+  #leadCard .mobile-only{display:none}
+  }
+
+  @media(max-width:520px){
+  body{padding:0}
+  #leadCard .card{border-radius:0;box-shadow:none;max-width:100%;min-height:100vh;border:none}
+  }
+
 </style>
 
 <!-- ═══════════ LOGIN SCREEN ═══════════ -->
@@ -1038,6 +1205,195 @@
   </div>
 
 </div>
+<!-- ═══════════ LEAD CARD ═══════════ -->
+<div id="leadCard" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;padding:32px 16px 64px">
+<div class="card">
+
+  <div class="gold-rule"></div>
+
+  <!-- FULL WIDTH HEADER -->
+  <div class="card-header">
+    <div style="position:relative;z-index:2;margin-bottom:8px"><button onclick="closeLeadCard()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:12px;padding:5px 12px;border-radius:4px;cursor:pointer;font-family:'DM Sans',sans-serif">← Back to Leads</button></div>
+    <div class="header-eyebrow">Sapphire Land Estate · Rouse Hill</div>
+
+    <!-- Name + badges row -->
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;position:relative;z-index:1">
+      <div class="header-name">Varun Goyal</div>
+      <span class="hwc-badge warm">🟠 Warm</span>
+      <span class="chip source">Facebook</span>
+    </div>
+
+    <!-- Contact details row -->
+    <div class="header-contact">
+      <div class="hci">
+        <div class="hci-label">Lead #</div>
+        <div class="hci-value">72</div>
+      </div>
+      <div class="hci">
+        <div class="hci-label">Date</div>
+        <div class="hci-value">09-Mar-2026</div>
+      </div>
+      <div class="hci">
+        <div class="hci-label">Mobile</div>
+        <div class="hci-value">0413 564 814</div>
+      </div>
+      <div class="hci">
+        <div class="hci-label">Email</div>
+        <div class="hci-value" style="font-family:'Aptos','DM Sans',sans-serif;font-size:11px">varun@email.com</div>
+      </div>
+      <div class="hci">
+        <div class="hci-label">Agency</div>
+        <div class="hci-value" style="font-family:'Aptos','DM Sans',sans-serif">Ray White RH</div>
+      </div>
+      <div class="hci">
+        <div class="hci-label">Agent</div>
+        <div class="hci-value" style="font-family:'Aptos','DM Sans',sans-serif">M. Chen</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BODY: two columns on desktop, stacked on mobile -->
+  <div class="card-body">
+
+    <!-- LEFT COLUMN -->
+    <div class="card-left">
+
+
+      <!-- Lead Message -->
+      <div class="sidebar-section-title">Lead Message</div>
+      <div data-section="leadmsg" style="padding:10px 14px;font-size:12px;color:var(--muted);font-style:italic;line-height:1.5;border-bottom:1px solid var(--border)">—</div>
+
+      <!-- Comments — always visible -->
+      <div class="comments-block">
+        <div class="comments-header">💬 Comments / Interactions</div>
+        <div class="comments-input-row">
+          <textarea class="comments-textarea" id="comment-input" rows="1" oninput="autoGrow(this)" placeholder="Add a comment…"></textarea>
+          <button class="comments-add-btn" onclick="addComment()">＋</button>
+        </div>
+        <div class="comments-log" id="comments-list">
+          <div class="poc-entry">
+            <div><div class="poc-ts">10-Apr-2026</div><div class="poc-author">m.chen</div></div>
+            <div class="poc-text">Called Varun — spoke about timeline and budget. Keen but waiting on pre-approval. Follow up in 2 weeks.</div>
+          </div>
+          <div class="poc-entry">
+            <div><div class="poc-ts">02-Apr-2026</div><div class="poc-author">m.chen</div></div>
+            <div class="poc-text">Left voicemail. Sent follow-up SMS with estate overview brochure link.</div>
+          </div>
+          <div class="poc-entry">
+            <div><div class="poc-ts">09-Mar-2026</div><div class="poc-author">admin</div></div>
+            <div class="poc-text">1st call — no answer, called back 30 mins later. Double garage preferred.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile-only contact info -->
+      <div class="mobile-only section" style="margin:16px">
+        <div class="section-title">Contact &amp; Assignment</div>
+        <div class="field-row"><span class="field-label">Mobile</span><span class="field-value mono">0413 564 814</span></div>
+        <div class="field-row"><span class="field-label">Email</span><span class="field-value" style="font-size:12px">varun@email.com</span></div>
+        <div class="field-row"><span class="field-label">Agency</span><span class="field-value">Ray White RH</span></div>
+        <div class="field-row"><span class="field-label">Agent</span><span class="field-value">Michael Chen</span></div>
+      </div>
+
+    </div><!-- /card-left -->
+
+    <!-- RIGHT COLUMN -->
+    <div class="card-right">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('process',this)"><span class="ti">⏱</span>48 Hrs Process</button>
+        <button class="tab-btn" onclick="switchTab('qualify',this)"><span class="ti">🏡</span>Qualifying</button>
+        <button class="tab-btn" onclick="switchTab('outcome',this)"><span class="ti">📊</span>Outcome</button>
+      <button class="tab-btn" onclick="switchTab('cfs',this)"><span class="ti">📋</span>Under CFS</button>
+      </div>
+
+      <!-- 48 HRS -->
+      <div class="tab-panel active" id="panel-process">
+        <div class="section">
+          <div class="section-title">48 Hours Contact Process</div>
+          <div class="process-grid">
+            <div class="process-item"><span class="process-num">1</span><div class="process-label">ROI Email</div><div class="process-status"><div class="process-dot done"></div><span class="process-ts">09-Mar-2026</span></div></div>
+            <div class="process-item"><span class="process-num">2</span><div class="process-label">1st Call</div><div class="process-status"><div class="process-dot done"></div><span class="process-ts">09-Mar-2026</span></div></div>
+            <div class="process-item"><span class="process-num">3</span><div class="process-label">2nd Call</div><div class="process-status"><div class="process-dot done"></div><span class="process-ts">10-Mar-2026</span></div></div>
+            <div class="process-item"><span class="process-num">4</span><div class="process-label">Text Message (SMS)</div><div class="process-status"><div class="process-dot pending"></div><span class="process-ts pending">Not sent</span></div></div>
+            <div class="process-item"><span class="process-num">5</span><div class="process-label">Final Email</div><div class="process-status"><div class="process-dot pending"></div><span class="process-ts pending">Not sent</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUALIFYING -->
+      <div class="tab-panel" id="panel-qualify">
+        <div class="section">
+          <div class="section-title">Qualifying Questions</div>
+          <div class="field-row"><span class="field-label">How Did You Hear About Us?</span><span class="field-value empty">—</span></div>
+          <div class="field-row"><span class="field-label">Land Sales Office Visit</span><span class="field-value empty">—</span></div>
+          <div class="field-row"><span class="field-label">Buyer Type</span><span class="field-value empty">—</span></div>
+          <div class="field-row"><span class="field-label">Time To Buy</span><span class="field-value empty">—</span></div>
+          <div class="field-row"><span class="field-label">House &amp; Land Price</span><span class="field-value empty">—</span></div>
+          <div class="field-row"><span class="field-label">Land Price</span><span class="field-value empty">—</span></div>
+          <div class="field-row"><span class="field-label">Storey</span><span class="field-value empty">—</span></div>
+          <div class="field-row"><span class="field-label">Garage</span><span class="field-value empty">—</span></div>
+          <div class="field-row"><span class="field-label">Lot Type / Frontage</span><span class="field-value empty">—</span></div>
+          <div class="field-row"><span class="field-label">Area (m²)</span><span class="field-value empty">—</span></div>
+          <div class="field-row"><span class="field-label">Interested Lot Numbers</span><span class="field-value empty">—</span></div>
+          <div class="field-row"><span class="field-label">Deposit</span><span class="field-value"><span class="pill" data-deposit="deposit5" style="padding:2px 8px;font-size:10px">5%</span></span></div>
+          <div class="field-row"><span class="field-label">Postcode</span><span class="field-value empty">—</span></div>
+        </div>
+      </div>
+
+      <!-- CFS -->
+      <div class="tab-panel" id="panel-cfs">
+        <div class="section" style="margin-bottom:0">
+          <div class="section-title">Under CFS</div>
+          <div class="field-row"><span class="field-label">CFS Lot #</span><span class="field-value empty">—</span></div>
+          <div class="field-row"><span class="field-label">Under CFS</span><span class="field-value empty">—</span></div>
+        </div>
+      </div>
+
+      <!-- OUTCOME -->
+      <div class="tab-panel" id="panel-outcome">
+        <div class="section">
+          <div class="section-title">HWC Status</div>
+          <div style="display:flex;gap:10px;padding:14px">
+            <div style="flex:1;border-radius:8px;padding:12px;text-align:center;background:var(--surface2);border:2px solid var(--border)"><div style="font-size:20px;margin-bottom:4px">🔴</div><div style="font-size:11px;font-weight:600;color:var(--red)">Hot</div></div>
+            <div style="flex:1;border-radius:8px;padding:12px;text-align:center;background:var(--gold-lt);border:2px solid var(--gold)"><div style="font-size:20px;margin-bottom:4px">🟠</div><div style="font-size:11px;font-weight:600;color:var(--orange)">Warm</div></div>
+            <div style="flex:1;border-radius:8px;padding:12px;text-align:center;background:var(--surface2);border:2px solid var(--border)"><div style="font-size:20px;margin-bottom:4px">🔵</div><div style="font-size:11px;font-weight:600;color:#60a5fa">Cold</div></div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);padding:8px 14px;background:var(--gold-lt);border:1px solid #C4B88A;border-radius:6px;margin-bottom:10px;line-height:1.5">
+          Marking status <strong>Cold</strong> will move this lead to the Cold Leads tab.
+        </div>
+        <div class="section">
+          <div class="section-title">Follow Up</div>
+          <div class="pills-row">
+            <span class="pill" data-followup="tc">Agent To Call</span>
+            <span class="pill" data-followup="cb">Lead Call Back</span>
+            <span class="pill" data-followup="vm">Voicemail</span>
+            <span class="pill" data-followup="na">No Answer</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Closed</div>
+          <div style="font-size:11px;color:var(--muted);padding:8px 14px;line-height:1.5;border-bottom:1px solid var(--border)">Selecting any option below will move this lead to the Cold Leads tab.</div>
+          <div class="pills-row">
+            <span class="pill" data-closed="nm">No Mobile</span>
+            <span class="pill" data-closed="dc">Disconnected</span>
+            <span class="pill" data-closed="ni">Not Interested</span>
+            <span class="pill" data-closed="duplicate">Duplicate</span>
+          </div>
+        </div>
+        <div class="section" style="margin-bottom:0">
+          <div class="section-title">Settle Time OK</div>
+          <div class="field-row"><span class="field-label">Settle Time OK</span><span class="field-value"><span class="tag orange">Not Set</span></span></div>
+        </div>
+      </div>
+
+    </div><!-- /card-right -->
+
+  </div><!-- /card-body -->
+
+</div><!-- /card -->
+</div>
+
 
 <!-- ═══════════ CUSTOM FIELDS MODAL ═══════════ -->
 <div class="modal-ov" id="fieldsModal" onclick="if(event.target.id==='fieldsModal')closeFieldsModal()">
@@ -1570,6 +1926,7 @@ async function persist(opts) {
 
 // Intercept swipe-back / browser back — prevent navigating away from app
 window.addEventListener('popstate', function(e) {
+  if (document.getElementById('leadCard').style.display !== 'none') { closeLeadCard(); return; }
   if (document.getElementById('leadPage').style.display === 'flex') {
     // Lead page open — intercept and close it
     history.pushState({leadPage: true}, '');
@@ -2331,9 +2688,9 @@ function renderRow(l) {
   const ieSel = (lid,field,display,opts) => `<td class="ie-cell" style="font-size:11px;padding:7px 8px" data-lid="${lid}" data-field="${field}" data-ietype="select" data-opts="${encodeURIComponent(JSON.stringify(opts))}" onclick="ieDispatch(event,this)">${display||'—'}</td>`;
   const ieStamp = (lid,field,val,cls='') => `<td class="ie-cell${cls?' '+cls:''}" style="font-size:11px;padding:7px 8px" data-lid="${lid}" data-field="${field}" data-ietype="stamp" onclick="ieDispatch(event,this)">${val||'—'}</td>`;
   const iePills = (lid,field,display,opts) => `<td class="ie-cell" style="padding:7px 8px" data-lid="${lid}" data-field="${field}" data-ietype="pills" data-opts="${encodeURIComponent(JSON.stringify(opts))}" onclick="ieDispatch(event,this)">${display||'—'}</td>`;
-  return `<tr data-id="${l.id}" ondblclick="openLeadDrawer(${l.id})">
+  return `<tr data-id="${l.id}">
     <td style="padding:7px 8px">${canCheck ? `<input type="checkbox" class="rcb" data-id="${l.id}" onchange="updateSel()">` : ''}</td>
-    <td class="rn" style="padding:7px 8px">${l.id}</td>
+    <td class="rn" style="padding:7px 8px;cursor:pointer;color:var(--navy);font-weight:600;text-decoration:underline" onclick="openLeadCard(${l.id})">${l.id}</td>
     <td style="font-size:11px;color:var(--text2);padding:7px 8px">${fmtDate(l.date)}</td>
     ${ie(l.id,'name',l.name||'—','font-weight:500;color:var(--text)')}
     ${ie(l.id,'mobile',`${l.mobile||'—'}${!isMobileValid(l.mobile)&&l.mobile?' <span title="Invalid format" style="cursor:default">⚠</span>':''}`,'font-size:11px'+(!isMobileValid(l.mobile)&&l.mobile?';color:var(--red);font-weight:500':''))}
@@ -4914,6 +5271,181 @@ function hideIeDim() {
     });
   });
 }
+// ═══════════════════════════════════════════
+//  LEAD CARD
+// ═══════════════════════════════════════════
+
+
+function autoGrow(el){el.style.height='auto';el.style.height=el.scrollHeight+'px'}
+function getTodayDate(){
+  const d=new Date();
+  return String(d.getDate()).padStart(2,'0')+'-'+
+    ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]+'-'+d.getFullYear();
+}
+function addComment(){
+  const input=document.getElementById('comment-input');
+  const text=input.value.trim();
+  if(!text)return;
+  const list=document.getElementById('comments-list');
+  const e=document.createElement('div');
+  e.className='poc-entry';
+  e.innerHTML='<div><div class="poc-ts">'+getTodayDate()+'</div><div class="poc-author">you</div></div>'+
+    '<div class="poc-text">'+text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
+  list.prepend(e);
+  input.value='';input.style.height='';
+}
+
+
+function closeLeadCard() {
+  document.getElementById('leadCard').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  history.back();
+}
+
+function fmtCardDate(raw) {
+  if (!raw) return '—';
+  const d = new Date(raw);
+  if (isNaN(d)) return raw;
+  return String(d.getDate()).padStart(2,'0') + '-' +
+    ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()] + '-' + d.getFullYear();
+}
+
+function openLeadCard(id) {
+  const l = leads.find(x => String(x.id) === String(id));
+  if (!l) return;
+
+  const card = document.getElementById('leadCard');
+
+  // ── Header ──
+  card.querySelector('.header-eyebrow').textContent = 'Sapphire Land Estate · Rouse Hill';
+  card.querySelector('.header-name').textContent = l.name || '—';
+  card.querySelector('.header-lead-no').textContent = 'Lead #' + l.id;
+
+  // HWC badge
+  const badge = card.querySelector('.hwc-badge');
+  badge.className = 'hwc-badge ' + (l.hotWarmStatus ? l.hotWarmStatus.toLowerCase() : 'none');
+  badge.textContent = l.hotWarmStatus === 'Hot' ? '🔴 Hot' : l.hotWarmStatus === 'Warm' ? '🟠 Warm' : l.hotWarmStatus === 'Cold' ? '🔵 Cold' : '— Status';
+
+  // Source chip
+  const sourceChip = card.querySelector('.chip.source');
+  const sources = ['walkIns','facebook','instagram','tiktok','xtwitter','linkedin','sms','roi','rea','google','website','crf','crfAgency','edm'];
+  const sourceLabels = {walkIns:'Walk In',facebook:'Facebook',instagram:'Instagram',tiktok:'TikTok',xtwitter:'X (Twitter)',linkedin:'LinkedIn',sms:'SMS',roi:'ROI',rea:'REA',google:'Google',website:'Website',crf:'CRF',crfAgency:'CRF Agency',edm:'EDM'};
+  const activeSrc = sources.find(s => l[s]);
+  sourceChip.textContent = activeSrc ? sourceLabels[activeSrc] : '—';
+
+  // ── Header contact row ──
+  function setHci(label, value) {
+    const labels = card.querySelectorAll('.hci-label');
+    for (const el of labels) {
+      if (el.textContent.trim() === label) {
+        el.nextElementSibling.textContent = value || '—';
+        return;
+      }
+    }
+  }
+  setHci('Lead #', l.id);
+  setHci('Date', fmtCardDate(l.date));
+  setHci('Mobile', l.mobile || '—');
+  setHci('Email', l.email || '—');
+  setHci('Agency', (() => { const a = agencies.find(x => x.id === l.assignedAgency); return a ? a.name : '—'; })());
+  setHci('Agent', (() => { const a = agents.find(x => x.id === l.assignedAgent); return a ? a.name : '—'; })());
+
+  // ── Lead Message ──
+  const lmEl = card.querySelector('[data-section="leadmsg"]');
+  if (lmEl) lmEl.textContent = l.leadMsg || '—';
+
+  // ── Comments ──
+  const commentsList = card.getElementById ? card.getElementById('comments-list') : card.querySelector('#comments-list');
+  const cl = document.getElementById('leadCard').querySelector('#comments-list');
+  if (cl) {
+    let entries = [];
+    try { entries = l.pocComments ? JSON.parse(l.pocComments) : []; if (!Array.isArray(entries)) entries = [{ts:'',author:'',text:l.pocComments}]; }
+    catch(e) { entries = l.pocComments ? [{ts:'',author:'',text:l.pocComments}] : []; }
+    cl.innerHTML = entries.length
+      ? entries.map(en => '<div class="poc-entry"><div><div class="poc-ts">' + (en.ts||'') + '</div><div class="poc-author">' + (en.author||'') + '</div></div><div class="poc-text">' + (en.text||'').replace(/\n/g,'<br>') + '</div></div>').join('')
+      : '<div style="padding:12px 14px;font-size:12px;color:var(--muted);font-style:italic">No comments yet.</div>';
+  }
+
+  // ── Qualifying Questions ──
+  function setField(label, value) {
+    const lc = document.getElementById('leadCard');
+    const rows = lc.querySelectorAll('.field-row');
+    for (const row of rows) {
+      const lbl = row.querySelector('.field-label');
+      if (lbl && lbl.textContent.trim() === label) {
+        const val = row.querySelector('.field-value');
+        if (val) {
+          val.className = 'field-value' + (value ? '' : ' empty');
+          val.textContent = value || '—';
+        }
+        return;
+      }
+    }
+  }
+  setField('How Did You Hear About Us?', l.hearAboutUs);
+  setField('Land Sales Office Visit', l.lsoVisit);
+  setField('Buyer Type', l.buyerType === 'FHB' ? 'First Home Buyer' : l.buyerType);
+  setField('Time To Buy', l.timeToBuy);
+  setField('House & Land Price', l.priceHL);
+  setField('Land Price', l.priceLand);
+  setField('Storey', l.storey);
+  setField('Garage', l.garage);
+  setField('Lot Type / Frontage', l.lotType);
+  setField('Area (m²)', l.lotArea);
+  setField('Interested Lot Numbers', l.lotNumbers);
+  setField('Postcode', l.suburbPostcode);
+  setField('CFS Lot #', l.cfsLot);
+  setField('Under CFS', l.underCfs);
+  setField('Settle Time OK', l.settleOk ? '✓ Yes' : '—');
+
+  // ── Deposit pills ──
+  const lc = document.getElementById('leadCard');
+  lc.querySelectorAll('[data-deposit]').forEach(p => {
+    const key = p.dataset.deposit;
+    p.classList.toggle('active', !!l[key]);
+  });
+
+  // ── 48 Hrs Process stamps ──
+  function setStamp(label, val) {
+    const items = lc.querySelectorAll('.process-item');
+    for (const item of items) {
+      const lbl = item.querySelector('.process-label');
+      if (lbl && lbl.textContent.trim() === label) {
+        const dot = item.querySelector('.process-dot');
+        const ts = item.querySelector('.process-ts');
+        if (dot) dot.className = 'process-dot ' + (val ? 'done' : 'pending');
+        if (ts) { ts.className = 'process-ts' + (val ? '' : ' pending'); ts.textContent = val ? fmtCardDate(val) : 'Not sent'; }
+      }
+    }
+  }
+  setStamp('ROI Email', l.roiEmail);
+  setStamp('1st Call', l.call1);
+  setStamp('2nd Call', l.call2);
+  setStamp('Text Message (SMS)', l.sms);
+  setStamp('Final Email', l.finalEmail);
+
+  // ── HWC Status cards ──
+  lc.querySelectorAll('.hwc-card').forEach(c => {
+    const status = c.dataset.hwc;
+    c.classList.toggle('selected', l.hotWarmStatus === status);
+  });
+
+  // ── Follow Up pills ──
+  const followUpMap = {tc:'Agent To Call', cb:'Lead Call Back', vm:'Voicemail', na:'No Answer'};
+  const closedMap = {nm:'No Mobile', dc:'Disconnected', ni:'Not Interested', duplicate:'Duplicate'};
+  lc.querySelectorAll('[data-followup]').forEach(p => p.classList.toggle('active', !!l[p.dataset.followup]));
+  lc.querySelectorAll('[data-closed]').forEach(p => p.classList.toggle('active', !!l[p.dataset.closed]));
+
+  // ── Default to first tab ──
+  const firstTabBtn = lc.querySelector('.tab-btn');
+  if (firstTabBtn) switchTab('process', firstTabBtn);
+
+  // Show card
+  document.getElementById('leadCard').style.display = 'block';
+  document.getElementById('app').style.display = 'none';
+  history.pushState({leadCard: true}, '');
+}
+
 </script>
 </body>
 </html>
