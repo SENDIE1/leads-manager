@@ -2690,7 +2690,7 @@ function renderRow(l) {
   const iePills = (lid,field,display,opts) => `<td class="ie-cell" style="padding:7px 8px" data-lid="${lid}" data-field="${field}" data-ietype="pills" data-opts="${encodeURIComponent(JSON.stringify(opts))}" onclick="ieDispatch(event,this)">${display||'—'}</td>`;
   return `<tr data-id="${l.id}">
     <td style="padding:7px 8px">${canCheck ? `<input type="checkbox" class="rcb" data-id="${l.id}" onchange="updateSel()">` : ''}</td>
-    <td class="rn" style="padding:7px 8px;cursor:pointer;color:var(--navy);font-weight:600;text-decoration:underline" onclick="openLeadCard(${l.id})">${l.id}</td>
+    <td class="rn" style="padding:7px 8px;cursor:pointer;color:var(--navy);font-weight:600;text-decoration:underline" onclick="console.log('rn clicked', ${l.id}); openLeadCard(${l.id})">${l.id}</td>
     <td style="font-size:11px;color:var(--text2);padding:7px 8px">${fmtDate(l.date)}</td>
     ${ie(l.id,'name',l.name||'—','font-weight:500;color:var(--text)')}
     ${ie(l.id,'mobile',`${l.mobile||'—'}${!isMobileValid(l.mobile)&&l.mobile?' <span title="Invalid format" style="cursor:default">⚠</span>':''}`,'font-size:11px'+(!isMobileValid(l.mobile)&&l.mobile?';color:var(--red);font-weight:500':''))}
@@ -5311,15 +5311,16 @@ function fmtCardDate(raw) {
 }
 
 function openLeadCard(id) {
+  console.log('[openLeadCard] called with id:', id, typeof id);
   const l = leads.find(x => String(x.id) === String(id));
+  console.log('[openLeadCard] lead found:', l ? l.name : 'NOT FOUND', '| leads count:', leads.length);
   if (!l) return;
 
   const card = document.getElementById('leadCard');
 
   // ── Header ──
-  card.querySelector('.header-eyebrow').textContent = 'Sapphire Land Estate · Rouse Hill';
-  card.querySelector('.header-name').textContent = l.name || '—';
-  card.querySelector('.header-lead-no').textContent = 'Lead #' + l.id;
+  (function(){const _el=card.querySelector('.header-eyebrow');if(_el)_el.textContent='Sapphire Land Estate · Rouse Hill';})()
+  (function(){const _el=card.querySelector('.header-name');if(_el)_el.textContent=l.name || '—';})()
 
   // HWC badge
   const badge = card.querySelector('.hwc-badge');
