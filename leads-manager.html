@@ -4050,83 +4050,117 @@ function bulkUnassignDown() {
 //  LEAD DRAWER
 // ═══════════════════════════════════════════
 function openLeadDrawer(id) {
-  editLeadId = id ? String(id) : null;
-  // Clear all fields
-  document.querySelectorAll('#ldBody input,#ldBody select,#ldBody textarea').forEach(el=>{
-    if(el.type==='checkbox'||el.type==='radio') el.checked=false; else el.value='';
-  });
-  document.getElementById('f-note').value='';
-  document.querySelectorAll('.temp-card').forEach(c=>c.classList.remove('sel-hot','sel-warm','sel-cold'));
-
-  // Show/hide assignment section
-  document.getElementById('sec-agencyAssign').style.display = (me && me.role==='admin') ? 'flex' : 'none';
-  document.getElementById('sec-agentAssign').style.display  = (me && (me.role==='admin'||me.role==='agency')) ? 'block' : 'none';
-
-  // Populate agency dropdown
-  if (me && me.role==='admin') {
-    document.getElementById('f-agency').innerHTML =
-      '<option value="">— Unassigned —</option>' + agencies.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
-  }
-
-  if (id) {
-    const l = leads.find(x=>x.id===id);
-    if (!l) return;
-    document.getElementById('ldTitle').textContent = l.name || 'Edit Lead';
-    document.getElementById('ldSub').textContent   = `Lead #${l.id}`;
-    const txt = ['name','date','mobile','email','leadMsg',
-      'buyerType','timeToBuy','suburbPostcode','pocComments','priceLand','priceHL','storey','garage',
-      'lotType','lotArea','lotNumbers','cfsLot','underCfs','lsoVisit'];
-    txt.forEach(f=>{ const el=document.getElementById('f-'+f); if(el) el.value = f==='date' ? toInputDate(l[f]) : (l[f]||''); });
-    // Activity stamp fields — stored as raw stamp strings, load directly into hidden inputs
-    ['roiEmail','call1','call2','sms','finalEmail'].forEach(f => {
-      const el = document.getElementById('f-'+f);
-      if (el) el.value = l[f] || '';
+  try {
+    console.log('openLeadDrawer called with id:', id);
+    editLeadId = id ? String(id) : null;
+    console.log('editLeadId set to:', editLeadId);
+    
+    // Clear all fields
+    document.querySelectorAll('#ldBody input,#ldBody select,#ldBody textarea').forEach(el=>{
+      if(el.type==='checkbox'||el.type==='radio') el.checked=false; else el.value='';
     });
-    ['walkIns','social','roi','rea','reaAds','google','crf','crfAgency','edm','tba1','tba2','tba3',
-      'deposit5','deposit5plus5','deposit10','settleOk','isHot','isWarm','isCold','tc','cb','vm','na','nm','dc','ni','duplicate']
-      .forEach(f=>{ const el=document.getElementById('f-'+f); if(el) el.checked=!!l[f]; });
-    if (l.hotWarmStatus) {
-      const r=document.querySelector(`input[name="hw"][value="${l.hotWarmStatus}"]`);
-      if(r) { r.checked=true; updateTempCards(); }
-    }
+    console.log('Fields cleared');
+    
+    document.getElementById('f-note').value='';
+    document.querySelectorAll('.temp-card').forEach(c=>c.classList.remove('sel-hot','sel-warm','sel-cold'));
+
+    // Show/hide assignment section
+    document.getElementById('sec-agencyAssign').style.display = (me && me.role==='admin') ? 'flex' : 'none';
+    document.getElementById('sec-agentAssign').style.display  = (me && (me.role==='admin'||me.role==='agency')) ? 'block' : 'none';
+    console.log('Assignment sections configured');
+
+    // Populate agency dropdown
     if (me && me.role==='admin') {
-      document.getElementById('f-agency').value = l.assignedAgency||'';
-      syncAgentDropdown(l.assignedAgent);
-    } else if (me && me.role==='agency') {
-      syncAgentDropdown(l.assignedAgent);
+      document.getElementById('f-agency').innerHTML =
+        '<option value="">— Unassigned —</option>' + agencies.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
     }
-    renderNotes(l);
-    loadCustomFieldValues(l);
-  } else {
-    document.getElementById('ldTitle').textContent = 'New Lead';
-    document.getElementById('ldSub').textContent   = '';
-    document.getElementById('f-date').value = toInputDate(new Date().toISOString().split('T')[0]);
-    document.getElementById('notesBox').innerHTML = '<div class="no-notes">No notes yet.</div>';
-    if (me && me.role==='agency') syncAgentDropdown(null);
+    console.log('Agency dropdown populated');
+
+    if (id) {
+      console.log('Loading existing lead, leads array length:', leads ? leads.length : 'undefined');
+      const l = leads.find(x=>x.id===id);
+      if (!l) {
+        console.error('Lead not found with id:', id);
+        alert('Lead not found. Please try again.');
+        return;
+      }
+      console.log('Found lead:', l.name);
+      document.getElementById('ldTitle').textContent = l.name || 'Edit Lead';
+      document.getElementById('ldSub').textContent   = `Lead #${l.id}`;
+      const txt = ['name','date','mobile','email','leadMsg',
+        'buyerType','timeToBuy','suburbPostcode','pocComments','priceLand','priceHL','storey','garage',
+        'lotType','lotArea','lotNumbers','cfsLot','underCfs','lsoVisit'];
+      txt.forEach(f=>{ const el=document.getElementById('f-'+f); if(el) el.value = f==='date' ? toInputDate(l[f]) : (l[f]||''); });
+      // Activity stamp fields — stored as raw stamp strings, load directly into hidden inputs
+      ['roiEmail','call1','call2','sms','finalEmail'].forEach(f => {
+        const el = document.getElementById('f-'+f);
+        if (el) el.value = l[f] || '';
+      });
+      ['walkIns','social','roi','rea','reaAds','google','crf','crfAgency','edm','tba1','tba2','tba3',
+        'deposit5','deposit5plus5','deposit10','settleOk','isHot','isWarm','isCold','tc','cb','vm','na','nm','dc','ni','duplicate']
+        .forEach(f=>{ const el=document.getElementById('f-'+f); if(el) el.checked=!!l[f]; });
+      if (l.hotWarmStatus) {
+        const r=document.querySelector(`input[name="hw"][value="${l.hotWarmStatus}"]`);
+        if(r) { r.checked=true; updateTempCards(); }
+      }
+      if (me && me.role==='admin') {
+        document.getElementById('f-agency').value = l.assignedAgency||'';
+        syncAgentDropdown(l.assignedAgent);
+      } else if (me && me.role==='agency') {
+        syncAgentDropdown(l.assignedAgent);
+      }
+      renderNotes(l);
+      loadCustomFieldValues(l);
+    } else {
+      console.log('Creating new lead');
+      document.getElementById('ldTitle').textContent = 'New Lead';
+      document.getElementById('ldSub').textContent   = '';
+      document.getElementById('f-date').value = toInputDate(new Date().toISOString().split('T')[0]);
+      document.getElementById('notesBox').innerHTML = '<div class="no-notes">No notes yet.</div>';
+      if (me && me.role==='agency') syncAgentDropdown(null);
+    }
+
+    // Show/hide delete button (element doesn't exist in current HTML, skipping)
+    // const delBtn = document.getElementById('deleteLeadBtn');
+    // if (delBtn) delBtn.style.display = (me && me.role === 'admin' && editLeadId) ? 'flex' : 'none';
+    
+    console.log('About to call initialization functions');
+    renderCustomFieldsInForm();
+    console.log('renderCustomFieldsInForm completed');
+    initLeadSourcePills();
+    console.log('initLeadSourcePills completed');
+    initOutcomePills();
+    console.log('initOutcomePills completed');
+    initHWCPills(id ? leads.find(x=>x.id===id) || {} : {});
+    console.log('initHWCPills completed');
+    initStamps();
+    console.log('initStamps completed');
+    initPocLog(document.getElementById('f-pocComments').value);
+    console.log('initPocLog completed');
+    validateMobile(document.getElementById('f-mobile'));
+    console.log('validateMobile completed');
+    validateEmail(document.getElementById('f-email'));
+    console.log('validateEmail completed');
+    validatePostcode(document.getElementById('f-suburbPostcode'));
+    console.log('validatePostcode completed');
+
+    // Show the full page
+    leadDirty = false;
+    console.log('About to show lead page');
+    document.getElementById('leadPage').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+    console.log('Lead page displayed');
+
+    // Push a history entry so swipe-back triggers popstate instead of navigating away
+    history.pushState({leadPage: true}, '');
+    console.log('openLeadDrawer completed successfully');
+  } catch (error) {
+    console.error('Error in openLeadDrawer:', error);
+    alert('Error opening lead drawer: ' + error.message);
+    // Try to recover by showing the app again
+    document.getElementById('leadPage').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
   }
-
-  // Show/hide delete button (element doesn't exist in current HTML, skipping)
-  // const delBtn = document.getElementById('deleteLeadBtn');
-  // if (delBtn) delBtn.style.display = (me && me.role === 'admin' && editLeadId) ? 'flex' : 'none';
-  
-  renderCustomFieldsInForm();
-  initLeadSourcePills();
-  initOutcomePills();
-  initHWCPills(id ? leads.find(x=>x.id===id) || {} : {});
-  initStamps();
-  initPocLog(document.getElementById('f-pocComments').value);
-  validateMobile(document.getElementById('f-mobile'));
-  validateEmail(document.getElementById('f-email'));
-  validatePostcode(document.getElementById('f-suburbPostcode'));
-
-  // Show the full page
-  leadDirty = false;
-  document.getElementById('leadPage').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
-
-  // Push a history entry so swipe-back triggers popstate instead of navigating away
-  history.pushState({leadPage: true}, '');
-}
 
 function syncAgentDropdown(selectedAgentId) {
   const sel = document.getElementById('f-agent');
@@ -6293,13 +6327,10 @@ async function cardSaveField(lid, dbField, value) {
 
 
 // Stamp a 48hrs process item (click = stamp now, click again = clear)
-async 
 
 // Toggle a pill (follow up / closed)
-async 
 
 // Set HWC status (hot/warm/cold cards in outcome tab)
-async 
 
 // Attach all edit handlers to the card after it's populated
 
@@ -6357,9 +6388,6 @@ function fmtMoney(v) {
 
 
 
-async 
-
-async 
 
 
 
@@ -6372,7 +6400,10 @@ async
 
 
 
-async 
+
+
+
+
 
 
 // ══ INVENTORY CARD ══
