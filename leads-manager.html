@@ -1397,6 +1397,49 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
 }
 @keyframes ic-fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
 
+
+/* ══ LEAD CARD (template layout) ══ */
+.lc-tb.active { color: var(--navy, #002675) !important; border-bottom-color: var(--navy, #002675) !important; }
+.lc-panel { animation: lc-fadeIn 0.15s ease; }
+.lc-section { background: var(--surface2, #F9F8F7); border: 1px solid var(--border, #dde1e8); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.lc-section-title { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted, #7A7872); padding: 10px 14px 8px; border-bottom: 1px solid var(--border, #dde1e8); background: var(--surface, #fff); }
+.lc-field-row { display: flex; align-items: center; padding: 9px 14px; border-bottom: 1px solid var(--border, #dde1e8); gap: 8px; cursor: pointer; transition: background 0.1s; }
+.lc-field-row:last-child { border-bottom: none; }
+.lc-field-row:hover { background: var(--bg3, #f0f2f5); }
+.lc-field-label { font-size: 11px; color: var(--muted, #7A7872); width: 140px; min-width: 140px; flex-shrink: 0; }
+.lc-field-value { font-size: 13px; color: var(--ink, #1A1A1A); flex: 1; text-align: right; font-weight: 500; }
+.lc-field-value.empty { color: var(--text3, #9aa5b4); font-weight: 400; font-style: italic; }
+/* Process items */
+.lc-process-item { display: flex; align-items: center; padding: 11px 14px; border-bottom: 1px solid var(--border, #dde1e8); gap: 12px; cursor: pointer; transition: background 0.1s; }
+.lc-process-item:last-child { border-bottom: none; }
+.lc-process-item:hover { background: var(--bg3, #f0f2f5); }
+.lc-process-item:active { background: var(--navy-lt, #E8ECF5); }
+.lc-process-num { width: 24px; height: 24px; border-radius: 50%; background: var(--navy, #002675); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.lc-process-num.done { background: var(--green, #16a34a); }
+.lc-process-label { font-size: 12px; font-weight: 500; color: var(--ink, #1A1A1A); flex: 1; text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; }
+.lc-process-ts { font-size: 11px; color: var(--muted, #7A7872); font-family: var(--mono, monospace); }
+.lc-process-ts.done { color: var(--green, #16a34a); font-weight: 600; }
+/* HWC cards */
+.lc-hwc-card { flex: 1; border-radius: 10px; padding: 12px 8px; text-align: center; border: 2px solid var(--border, #dde1e8); cursor: pointer; transition: all 0.15s; background: var(--surface2, #F9F8F7); }
+.lc-hwc-card:hover { border-color: var(--navy, #002675); }
+.lc-hwc-card.selected-hot { border-color: #DC2626; background: #FEF2F2; }
+.lc-hwc-card.selected-warm { border-color: #D97706; background: #FFFBEB; }
+.lc-hwc-card.selected-cold { border-color: #2563EB; background: #EFF6FF; }
+/* Pills */
+.lc-pill { font-size: 12px; font-weight: 500; padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--border, #dde1e8); cursor: pointer; transition: all 0.15s; background: var(--surface, #fff); color: var(--ink, #1A1A1A); }
+.lc-pill.active { background: var(--navy-lt, #E8ECF5); border-color: var(--navy, #002675); color: var(--navy, #002675); font-weight: 600; }
+/* Comment entries */
+.lc-comment-entry { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border, #dde1e8); }
+.lc-comment-entry:last-child { border-bottom: none; }
+.lc-comment-date { font-family: var(--mono, monospace); font-size: 11px; font-weight: 500; color: var(--gold, #83764F); white-space: nowrap; padding-top: 1px; width: 80px; flex-shrink: 0; }
+.lc-comment-text { font-size: 13px; color: var(--ink, #1A1A1A); line-height: 1.5; flex: 1; }
+.lc-save-fab-visible { transform: translateY(0) !important; opacity: 1 !important; }
+@media (max-width: 768px) {
+  #leadCard > div { border-radius: 0 !important; box-shadow: none !important; max-width: 100% !important; min-height: 100vh; }
+  #leadCard { padding: 0 !important; }
+}
+@keyframes lc-fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+
 </style>
 
 <!-- ═══════════ LOGIN SCREEN ═══════════ -->
@@ -2108,278 +2151,126 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
 
 </div>
 <!-- ═══════════ LEAD CARD ═══════════ -->
-<div id="leadCard" style="display:none;pointer-events:none;position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;padding:32px 0 64px">
-<div class="card">
+<div id="leadCard" style="display:none;pointer-events:none;position:fixed;inset:0;z-index:300;overflow-y:auto;background:var(--bg,#f4f6f9);font-family:var(--sans,'Aptos',sans-serif)">
+  <div style="max-width:520px;margin:0 auto;background:var(--surface,#fff);border-radius:20px;box-shadow:0 8px 32px rgba(0,38,117,0.12);overflow:hidden">
 
-  <div class="gold-rule"></div>
+    <!-- ── HEADER ── -->
+    <div id="lc-header" style="background:var(--navy,#002675);padding:20px 20px 0;position:relative;overflow:hidden">
+      <!-- watermark circles -->
+      <div style="position:absolute;right:-30px;top:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.06);pointer-events:none"></div>
+      <div style="position:absolute;right:40px;bottom:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none"></div>
 
-  <!-- FULL WIDTH HEADER -->
-  <div class="card-header">
-    <div style="position:relative;z-index:2;margin-bottom:8px"><button onclick="closeLeadCard()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:12px;padding:5px 12px;border-radius:4px;cursor:pointer;font-family:'DM Sans',sans-serif">← Back to Leads</button></div>
-    <div class="header-eyebrow">Sapphire Land Estate · Rouse Hill</div>
+      <!-- back + HWC badge row -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;position:relative;z-index:1">
+        <button onclick="closeLeadCard()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.85);font-size:12px;padding:5px 12px;border-radius:6px;cursor:pointer;font-family:inherit">← Back to Leads</button>
+        <span id="lc-hwc-badge" style="display:none;font-size:11px;font-weight:600;padding:5px 11px;border-radius:20px;background:rgba(255,255,255,0.18);color:#fff;white-space:nowrap"></span>
+      </div>
 
-    <!-- Name + badges row -->
-    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;position:relative;z-index:1">
-      <div class="header-name">Varun Goyal</div>
-      <span class="hwc-badge warm">🟠 Warm</span>
-      <span class="chip source">Facebook</span>
+      <!-- eyebrow: agency · estate -->
+      <div id="lc-eyebrow" style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.55);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;position:relative;z-index:1"></div>
+
+      <!-- name (large title) -->
+      <div id="lc-name" style="font-size:22px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:2px;position:relative;z-index:1"></div>
+
+      <!-- lead message subtitle -->
+      <div id="lc-leadmsg" style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:12px;position:relative;z-index:1"></div>
+
+      <!-- stat chips: Lead#, Date, Buyer Type, Postcode -->
+      <div id="lc-chips" style="display:flex;gap:6px;flex-wrap:wrap;padding-bottom:16px;position:relative;z-index:1"></div>
     </div>
 
-    <!-- Contact details row -->
-    <div class="header-contact">
-      <div class="hci">
-        <div class="hci-label">Lead #</div>
-        <div class="hci-value">72</div>
+    <!-- ── CONTACT STRIP (like price hero) ── -->
+    <div style="background:var(--navy,#002675);display:flex;border-top:1px solid rgba(255,255,255,0.12)">
+      <div style="flex:1;text-align:center;padding:12px 6px">
+        <div style="font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:3px">MOBILE</div>
+        <div id="lc-mobile" style="font-family:var(--mono,monospace);font-size:13px;font-weight:500;color:#fff;cursor:pointer" title="Click to edit"></div>
       </div>
-      <div class="hci">
-        <div class="hci-label">Date</div>
-        <div class="hci-value">09-Mar-2026</div>
+      <div style="flex:1.5;text-align:center;padding:12px 6px;border-left:1px solid rgba(255,255,255,0.12)">
+        <div style="font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:3px">EMAIL</div>
+        <div id="lc-email" style="font-size:11px;font-weight:500;color:#fff;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="Click to edit"></div>
       </div>
-      <div class="hci">
-        <div class="hci-label">Mobile</div>
-        <div class="hci-value">0413 564 814</div>
-      </div>
-      <div class="hci">
-        <div class="hci-label">Email</div>
-        <div class="hci-value" style="font-family:'Aptos','DM Sans',sans-serif;font-size:11px">varun@email.com</div>
-      </div>
-      <div class="hci">
-        <div class="hci-label">Agency</div>
-        <div class="hci-value" style="font-family:'Aptos','DM Sans',sans-serif">Ray White RH</div>
-      </div>
-      <div class="hci">
-        <div class="hci-label">Agent</div>
-        <div class="hci-value" style="font-family:'Aptos','DM Sans',sans-serif">M. Chen</div>
+      <div style="flex:1;text-align:center;padding:12px 6px;border-left:1px solid rgba(255,255,255,0.12)">
+        <div style="font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:3px">LEAD #</div>
+        <div id="lc-leadnum" style="font-family:var(--mono,monospace);font-size:13px;font-weight:500;color:var(--gold-mid,#C4B88A)"></div>
       </div>
     </div>
-  </div>
 
-  <!-- BODY: two columns on desktop, stacked on mobile -->
-  <div class="card-body">
-
-    <!-- LEFT COLUMN -->
-    <div class="card-left">
-
-
-      <!-- Lead Message -->
-      <div class="sidebar-section-title">Lead Message</div>
-      <div data-section="leadmsg" style="padding:10px 14px;font-size:12px;color:var(--muted);font-style:italic;line-height:1.5;border-bottom:1px solid var(--border)">—</div>
-
-      <!-- Comments — always visible -->
-      <div class="comments-block">
-        <div class="comments-header">💬 Comments / Interactions</div>
-        <div class="comments-input-row">
-          <div class="comments-textarea" id="comment-input" contenteditable="true" role="textbox" data-placeholder="Add a comment…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addComment();}"></div>
-          <button class="comments-add-btn" onclick="addComment()">＋</button>
-        </div>
-        <div class="comments-log" id="comments-list">
-          <div class="poc-entry">
-            <div><div class="poc-ts">10-Apr-2026</div><div class="poc-author">m.chen</div></div>
-            <div class="poc-text">Called Varun — spoke about timeline and budget. Keen but waiting on pre-approval. Follow up in 2 weeks.</div>
-          </div>
-          <div class="poc-entry">
-            <div><div class="poc-ts">02-Apr-2026</div><div class="poc-author">m.chen</div></div>
-            <div class="poc-text">Left voicemail. Sent follow-up SMS with estate overview brochure link.</div>
-          </div>
-          <div class="poc-entry">
-            <div><div class="poc-ts">09-Mar-2026</div><div class="poc-author">admin</div></div>
-            <div class="poc-text">1st call — no answer, called back 30 mins later. Double garage preferred.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Mobile-only contact info -->
-      <div class="mobile-only section" style="margin:0;border-top:1px solid var(--border)">
-        <div class="section-title">Contact &amp; Assignment</div>
-        <div class="field-row"><span class="field-label">Mobile</span><span class="field-value mono">0413 564 814</span></div>
-        <div class="field-row"><span class="field-label">Email</span><span class="field-value" style="font-size:12px">varun@email.com</span></div>
-        <div class="field-row"><span class="field-label">Agency</span><span class="field-value">Ray White RH</span></div>
-        <div class="field-row"><span class="field-label">Agent</span><span class="field-value">Michael Chen</span></div>
-      </div>
-
-    </div><!-- /card-left -->
-
-    <!-- RIGHT COLUMN -->
-    <div class="card-right">
-      <div class="tabs">
-        <button class="tab-btn active" onclick="cardSwitchTab('process',this)"><span class="ti">⏱</span>48 Hrs Process</button>
-        <button class="tab-btn" onclick="cardSwitchTab('qualify',this)"><span class="ti">🏡</span>Qualifying</button>
-        <button class="tab-btn" onclick="cardSwitchTab('outcome',this)"><span class="ti">📊</span>Outcome</button>
-      <button class="tab-btn" onclick="cardSwitchTab('cfs',this)"><span class="ti">📋</span>Under CFS</button>
-      </div>
-
-      <!-- 48 HRS -->
-      <div class="tab-panel active" id="panel-process">
-        <div class="section">
-          <div class="section-title">48 Hours Contact Process</div>
-          <div class="process-grid">
-            <div class="process-item"><span class="process-num">1</span><div class="process-label">ROI Email</div><div class="process-status"><div class="process-dot done"></div><span class="process-ts">09-Mar-2026</span></div></div>
-            <div class="process-item"><span class="process-num">2</span><div class="process-label">1st Call</div><div class="process-status"><div class="process-dot done"></div><span class="process-ts">09-Mar-2026</span></div></div>
-            <div class="process-item"><span class="process-num">3</span><div class="process-label">2nd Call</div><div class="process-status"><div class="process-dot done"></div><span class="process-ts">10-Mar-2026</span></div></div>
-            <div class="process-item"><span class="process-num">4</span><div class="process-label">Text Message (SMS)</div><div class="process-status"><div class="process-dot pending"></div><span class="process-ts pending">Not sent</span></div></div>
-            <div class="process-item"><span class="process-num">5</span><div class="process-label">Final Email</div><div class="process-status"><div class="process-dot pending"></div><span class="process-ts pending">Not sent</span></div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- QUALIFYING -->
-      <div class="tab-panel" id="panel-qualify">
-        <div class="section">
-          <div class="section-title">Qualifying Questions</div>
-          <div class="field-row"><span class="field-label">How Did You Hear About Us?</span><span class="field-value empty">—</span></div>
-          <div class="field-row"><span class="field-label">Land Sales Office Visit</span><span class="field-value empty">—</span></div>
-          <div class="field-row"><span class="field-label">Buyer Type</span><span class="field-value empty">—</span></div>
-          <div class="field-row"><span class="field-label">Time To Buy</span><span class="field-value empty">—</span></div>
-          <div class="field-row"><span class="field-label">House &amp; Land Price</span><span class="field-value empty">—</span></div>
-          <div class="field-row"><span class="field-label">Land Price</span><span class="field-value empty">—</span></div>
-          <div class="field-row"><span class="field-label">Storey</span><span class="field-value empty">—</span></div>
-          <div class="field-row"><span class="field-label">Garage</span><span class="field-value empty">—</span></div>
-          <div class="field-row"><span class="field-label">Lot Type / Frontage</span><span class="field-value empty">—</span></div>
-          <div class="field-row"><span class="field-label">Area (m²)</span><span class="field-value empty">—</span></div>
-          <div class="field-row"><span class="field-label">Interested Lot Numbers</span><span class="field-value empty">—</span></div>
-          <div class="field-row"><span class="field-label">Deposit</span><span class="field-value"><span class="pill" data-deposit="deposit5" style="padding:2px 8px;font-size:10px">5%</span></span></div>
-          <div class="field-row"><span class="field-label">Postcode</span><span class="field-value empty">—</span></div>
-        </div>
-      </div>
-
-      <!-- CFS -->
-      <div class="tab-panel" id="panel-cfs">
-        <div class="section" style="margin-bottom:0">
-          <div class="section-title">Under CFS</div>
-          <div class="field-row"><span class="field-label">CFS Lot #</span><span class="field-value empty">—</span></div>
-          <div class="field-row"><span class="field-label">Under CFS</span><span class="field-value empty">—</span></div>
-        </div>
-      </div>
-
-      <!-- OUTCOME -->
-      <div class="tab-panel" id="panel-outcome">
-        <div class="section">
-          <div class="section-title">HWC Status</div>
-          <div style="display:flex;gap:10px;padding:14px">
-            <div class="hwc-card" data-hwc="Hot" style="flex:1;border-radius:8px;padding:12px;text-align:center;background:var(--surface2);border:2px solid var(--border)"><div style="font-size:20px;margin-bottom:4px">🔴</div><div style="font-size:11px;font-weight:600;color:var(--red)">Hot</div></div>
-            <div class="hwc-card" data-hwc="Warm" style="flex:1;border-radius:8px;padding:12px;text-align:center;background:var(--gold-lt);border:2px solid var(--gold)"><div style="font-size:20px;margin-bottom:4px">🟠</div><div style="font-size:11px;font-weight:600;color:var(--orange)">Warm</div></div>
-            <div class="hwc-card" data-hwc="Cold" style="flex:1;border-radius:8px;padding:12px;text-align:center;background:var(--surface2);border:2px solid var(--border)"><div style="font-size:20px;margin-bottom:4px">🔵</div><div style="font-size:11px;font-weight:600;color:#60a5fa">Cold</div></div>
-          </div>
-        </div>
-        <div style="font-size:11px;color:var(--muted);padding:8px 14px;background:var(--gold-lt);border:1px solid #C4B88A;border-radius:6px;margin-bottom:10px;line-height:1.5">
-          Marking status <strong>Cold</strong> will move this lead to the Cold Leads tab.
-        </div>
-        <div class="section">
-          <div class="section-title">Follow Up</div>
-          <div class="pills-row">
-            <span class="pill" data-followup="tc">Agent To Call</span>
-            <span class="pill" data-followup="cb">Lead Call Back</span>
-            <span class="pill" data-followup="vm">Voicemail</span>
-            <span class="pill" data-followup="na">No Answer</span>
-          </div>
-        </div>
-        <div class="section">
-          <div class="section-title">Closed</div>
-          <div style="font-size:11px;color:var(--muted);padding:8px 14px;line-height:1.5;border-bottom:1px solid var(--border)">Selecting any option below will move this lead to the Cold Leads tab.</div>
-          <div class="pills-row">
-            <span class="pill" data-closed="nm">No Mobile</span>
-            <span class="pill" data-closed="dc">Disconnected</span>
-            <span class="pill" data-closed="ni">Not Interested</span>
-            <span class="pill" data-closed="duplicate">Duplicate</span>
-          </div>
-        </div>
-        <div class="section" style="margin-bottom:0">
-          <div class="section-title">Settle Time OK</div>
-          <div class="field-row"><span class="field-label">Settle Time OK</span><span class="field-value"><span class="tag orange">Not Set</span></span></div>
-        </div>
-      </div>
-
-    </div><!-- /card-right -->
-
-  </div><!-- /card-body -->
-
-</div><!-- /card -->
-</div>
-<!-- ═══════════ CUSTOM FIELDS MODAL ═══════════ -->
-<div class="modal-ov" id="fieldsModal" onclick="if(event.target.id==='fieldsModal')closeFieldsModal()">
-  <div class="modal" style="width:680px;max-height:85vh;display:flex;flex-direction:column">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-shrink:0">
-      <div class="modal-title" style="margin:0">Custom Fields</div>
-      <button class="dc-btn" onclick="closeFieldsModal()">×</button>
+    <!-- ── TABS ── -->
+    <div style="display:flex;border-bottom:1px solid var(--border,#dde1e8);background:var(--surface,#fff);position:sticky;top:0;z-index:10">
+      <button class="lc-tb active" onclick="lcTab('process',this)" style="flex:1;padding:12px 4px 11px;font-size:11px;font-weight:500;color:var(--muted,#7A7872);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:-1px;font-family:inherit;transition:color .15s,border-color .15s"><span style="font-size:14px">⏱</span>48 Hrs</button>
+      <button class="lc-tb" onclick="lcTab('qualify',this)" style="flex:1;padding:12px 4px 11px;font-size:11px;font-weight:500;color:var(--muted,#7A7872);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:-1px;font-family:inherit;transition:color .15s,border-color .15s"><span style="font-size:14px">🏡</span>Qualifying</button>
+      <button class="lc-tb" onclick="lcTab('outcome',this)" style="flex:1;padding:12px 4px 11px;font-size:11px;font-weight:500;color:var(--muted,#7A7872);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:-1px;font-family:inherit;transition:color .15s,border-color .15s"><span style="font-size:14px">📊</span>Outcome</button>
+      <button class="lc-tb" onclick="lcTab('notes',this)" style="flex:1;padding:12px 4px 11px;font-size:11px;font-weight:500;color:var(--muted,#7A7872);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:-1px;font-family:inherit;transition:color .15s,border-color .15s"><span style="font-size:14px">💬</span>Comments</button>
     </div>
-    <div class="modal-sub" style="flex-shrink:0">Add custom sections, fields and options that appear on every lead form.</div>
-    <div id="fieldsModalBody" style="flex:1;overflow-y:auto;padding:4px 0"></div>
+
+    <!-- ══ 48 HRS PROCESS TAB ══ -->
+    <div class="lc-panel active" id="lc-panel-process" style="padding:16px">
+      <div class="lc-section">
+        <div class="lc-section-title">48 Hours Contact Process</div>
+        <div id="lc-process-list"></div>
+      </div>
+    </div>
+
+    <!-- ══ QUALIFYING TAB ══ -->
+    <div class="lc-panel" id="lc-panel-qualify" style="display:none;padding:16px">
+      <div class="lc-section">
+        <div class="lc-section-title">Buyer Profile</div>
+        <div id="lc-qualify-fields"></div>
+      </div>
+      <div class="lc-section">
+        <div class="lc-section-title">Property Requirements</div>
+        <div id="lc-property-fields"></div>
+      </div>
+      <div class="lc-section">
+        <div class="lc-section-title">Assignment</div>
+        <div id="lc-assign-fields"></div>
+      </div>
+    </div>
+
+    <!-- ══ OUTCOME TAB ══ -->
+    <div class="lc-panel" id="lc-panel-outcome" style="display:none;padding:16px">
+      <div class="lc-section">
+        <div class="lc-section-title">HWC Status</div>
+        <div id="lc-hwc-cards" style="display:flex;gap:10px;padding:12px 14px"></div>
+      </div>
+      <div class="lc-section">
+        <div class="lc-section-title">Follow Up</div>
+        <div id="lc-followup-pills" style="display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px"></div>
+      </div>
+      <div class="lc-section">
+        <div class="lc-section-title">Closed</div>
+        <div id="lc-closed-pills" style="display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px"></div>
+      </div>
+      <div class="lc-section">
+        <div class="lc-section-title">Under CFS</div>
+        <div id="lc-cfs-fields"></div>
+      </div>
+    </div>
+
+    <!-- ══ COMMENTS TAB ══ -->
+    <div class="lc-panel" id="lc-panel-notes" style="display:none;padding:16px">
+      <!-- Lead message editable -->
+      <div class="lc-section">
+        <div class="lc-section-title">Lead Message</div>
+        <div id="lc-leadmsg-edit" contenteditable="true" style="padding:12px 14px;font-size:13px;color:var(--ink,#1A1A1A);min-height:48px;outline:none;line-height:1.5"></div>
+      </div>
+      <!-- Notes add -->
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <textarea id="lc-note-input" rows="1" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+          style="flex:1;background:var(--surface2,#F9F8F7);border:1.5px solid var(--border,#dde1e8);border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;color:var(--ink,#1A1A1A);outline:none;resize:none;min-height:42px;line-height:1.4"></textarea>
+        <button onclick="lcAddComment()" style="background:var(--navy,#002675);color:#fff;border:none;border-radius:10px;width:42px;font-size:18px;cursor:pointer;flex-shrink:0">＋</button>
+      </div>
+      <div id="lc-comments-list"></div>
+    </div>
+
+    <!-- SAVE FAB -->
+    <button id="lc-save-fab" onclick="lcSave()" style="position:fixed;bottom:24px;right:24px;background:var(--navy,#002675);color:#fff;font-family:inherit;font-size:13px;font-weight:600;border:none;border-radius:24px;padding:12px 22px;display:flex;align-items:center;gap:6px;cursor:pointer;box-shadow:0 4px 20px rgba(0,38,117,0.3);transform:translateY(80px);opacity:0;transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s;z-index:50">
+      💾 Save Changes
+    </button>
+
   </div>
 </div>
 
-<!-- ═══════════ ENTITY DRAWER (agency or agent) ═══════════ -->
-<div class="overlay" id="entityOv" onclick="overlayClickDirty(event,'entityOv','closeEntityDrawer','entityDirty')">
-  <div class="drawer drawer-wide" id="entityDrawer">
-    <div id="entityUnsavedPrompt" style="display:none;background:#1e3a5f;color:#fff;padding:10px 16px;display:none;align-items:center;gap:10px;flex-shrink:0">
-      <span style="font-size:12px">Unsaved changes — save before closing?</span>
-      <div style="margin-left:auto;display:flex;gap:6px">
-        <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)" onclick="entityDirty=false;closeEntityDrawer()">Discard</button>
-        <button class="btn btn-primary btn-sm" onclick="saveEntity()">Save</button>
-      </div>
-    </div>
-    <div class="dh">
-      <div><div class="dt" id="edTitle">Add</div><div class="ds" id="edSub"></div></div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="btn btn-ghost btn-sm" onclick="closeEntityDrawer()">Cancel</button>
-        <button class="btn btn-primary btn-sm" onclick="saveEntity()">Save</button>
-        <button class="dc-btn" onclick="closeEntityDrawer()">×</button>
-      </div>
-    </div>
-    <div class="db" oninput="entityDirty=true" onchange="entityDirty=true">
-      <div class="fs" style="width:100%"><div class="fst" id="edFormTitle">Details</div>
-        <div style="display:flex;flex-direction:column;gap:14px;width:100%" id="edFormGrid">
-          <div class="ff" style="width:100%"><label id="edNameLabel">Name *</label><input type="text" id="ed-name" style="width:100%;box-sizing:border-box"></div>
-          <div class="ff" style="width:100%" id="ed-principalWrap"><label>Principal Name</label><input type="text" id="ed-principal" style="width:100%;box-sizing:border-box"></div>
-          <div class="ff" style="width:100%" id="ed-emailWrap"><label id="edEmailLabel">Login Email *</label><input type="email" id="ed-email" autocomplete="off" placeholder="email@example.com" style="width:100%;box-sizing:border-box"></div>
-        </div>
-      </div>
-    </div>
-    <div class="df" style="display:none">
-      <button class="btn btn-ghost" onclick="closeEntityDrawer()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveEntity()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- POC EXPAND MODAL -->
-<div class="modal-ov" id="pocExpandModal" onclick="if(event.target.id==='pocExpandModal')closePocExpand()">
-  <div class="modal" style="width:580px;max-height:80vh;display:flex;flex-direction:column">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-      <div class="modal-title" style="margin:0">Point of Contact Comments</div>
-      <button class="dc-btn" onclick="closePocExpand()">×</button>
-    </div>
-    <div class="modal-sub">All entries in chronological order</div>
-    <div id="pocExpandBody" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px 0"></div>
-  </div>
-</div>
-
-<!-- BULK ASSIGN MODAL -->
-<div class="modal-ov" id="bulkModal">
-  <div class="modal">
-    <div class="modal-title">Assign Leads</div>
-    <div class="modal-sub" id="bulkModalSub"></div>
-    <div class="ff" id="bulkAgencyField" style="margin-bottom:12px;display:none">
-      <label>Agency</label>
-      <select id="bulk-agency" style="background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px;color:var(--text);font-size:13px;outline:none;width:100%" onchange="bulkAgencyChanged()">
-        <option value="">— Unassigned —</option>
-      </select>
-    </div>
-    <div class="ff" id="bulkAgentField" style="display:none">
-      <label>Agent</label>
-      <select id="bulk-agent" style="background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px;color:var(--text);font-size:13px;outline:none;width:100%">
-        <option value="">— Unassigned —</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeBulkModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="confirmBulk()">Assign</button>
-    </div>
-  </div>
-</div>
-
-<div class="notif" id="notif"></div>
-<input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleImport(event)">
-<input type="file" id="restoreFile" accept=".json" style="display:none" onchange="handleRestore(event)">
 
 <!-- ═══════════ INVENTORY DRAWER ═══════════ -->
 <div class="overlay" id="invOv" onclick="overlayClickDirty(event,'invOv','closeInvDrawer','invDirty')">
@@ -6297,24 +6188,9 @@ function addComment(){
 }
 
 
-function closeLeadCard() {
-  const lc = document.getElementById('leadCard');
-  lc.style.display = 'none';
-  lc.style.pointerEvents = 'none';
-  document.getElementById('app').style.display = 'flex';
-  history.back();
-}
 
-function fmtCardDate(raw) {
-  if (!raw || raw === 'false') return '—';
-  if (raw === 'true' || raw === true) return '✓';
-  const ddmm = raw.match(/^(\d{2}-\d{2}-\d{4})/);
-  if (ddmm) return ddmm[1];
-  const d = new Date(raw);
-  if (isNaN(d)) return raw;
-  return String(d.getDate()).padStart(2,'0') + '-' +
-    ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()] + '-' + d.getFullYear();
-}
+
+
 
 function fmtPhone(raw) {
   if (!raw) return '—';
@@ -6358,430 +6234,23 @@ async function cardSaveField(lid, dbField, value) {
 }
 
 // Make a field-value editable inline
-function cardMakeEditable(el, lid, dbField, type, opts) {
-  if (el.dataset.editing) return;
-  el.dataset.editing = '1';
-  const orig = el.textContent.trim();
-  const origClass = el.className;
 
-  let input;
-  if (type === 'select') {
-    input = document.createElement('select');
-    input.style.cssText = 'width:100%;font-size:12px;padding:3px 6px;border:1.5px solid var(--navy);border-radius:4px;background:var(--surface);color:var(--ink);font-family:inherit';
-    (opts || []).forEach(o => {
-      const opt = document.createElement('option');
-      opt.value = o.value !== undefined ? o.value : o;
-      opt.textContent = o.label || o;
-      if (opt.value === orig || opt.textContent === orig) opt.selected = true;
-      input.appendChild(opt);
-    });
-  } else {
-    input = document.createElement('input');
-    input.type = 'text';
-    input.value = orig === '—' ? '' : orig;
-    input.style.cssText = 'width:100%;font-size:12px;padding:3px 6px;border:1.5px solid var(--navy);border-radius:4px;background:var(--surface);color:var(--ink);font-family:inherit;text-align:right';
-    input.autocomplete = 'off';
-  }
-
-  el.textContent = '';
-  el.appendChild(input);
-  input.focus();
-  if (input.type === 'text') input.select();
-
-  async function save() {
-    const val = input.value.trim();
-    delete el.dataset.editing;
-    el.className = origClass + (val ? '' : ' empty');
-    el.textContent = val || '—';
-    if (val !== orig && !(val === '' && orig === '—')) {
-      await cardSaveField(lid, dbField, val || null);
-    }
-  }
-
-  input.addEventListener('blur', save);
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
-    if (e.key === 'Escape') { delete el.dataset.editing; el.className = origClass; el.textContent = orig; }
-  });
-}
 
 // Stamp a 48hrs process item (click = stamp now, click again = clear)
-async function cardToggleStamp(lid, dbField, currentVal, dotEl, tsEl) {
-  let newVal;
-  if (currentVal && currentVal !== 'Not sent') {
-    // Already stamped — clear it
-    newVal = null;
-    dotEl.className = 'process-dot pending';
-    tsEl.className = 'process-ts pending';
-    tsEl.textContent = 'Not sent';
-  } else {
-    // Stamp with today's date
-    const now = new Date();
-    const dd = String(now.getDate()).padStart(2,'0');
-    const mm = String(now.getMonth()+1).padStart(2,'0');
-    const yyyy = now.getFullYear();
-    newVal = dd + '-' + mm + '-' + yyyy;
-    dotEl.className = 'process-dot done';
-    tsEl.className = 'process-ts';
-    tsEl.textContent = newVal;
-  }
-  await cardSaveField(lid, dbField, newVal);
-}
+async 
 
 // Toggle a pill (follow up / closed)
-async function cardTogglePill(lid, dbField, pill, isExclusive, groupSelector) {
-  const isActive = pill.classList.contains('active');
-  if (isExclusive && !isActive) {
-    // Deactivate all in group first
-    const card = document.getElementById('leadCard');
-    card.querySelectorAll(groupSelector).forEach(async p => {
-      if (p.classList.contains('active')) {
-        p.classList.remove('active');
-        await cardSaveField(lid, p.dataset.followup ? 'followup_'+p.dataset.followup : p.dataset.closed, false);
-      }
-    });
-  }
-  pill.classList.toggle('active', !isActive);
-  await cardSaveField(lid, dbField, !isActive);
-}
+async 
 
 // Set HWC status (hot/warm/cold cards in outcome tab)
-async function cardSetHWC(lid, status, card) {
-  // Update UI
-  card.querySelectorAll('.hwc-card').forEach(c => c.classList.remove('selected'));
-  const selected = card.querySelector('.hwc-card[data-hwc="'+status+'"]');
-  if (selected) selected.classList.add('selected');
-  // Update header badge
-  const badge = card.querySelector('.hwc-badge');
-  if (badge) {
-    badge.className = 'hwc-badge ' + status.toLowerCase();
-    badge.textContent = status === 'Hot' ? '🔴 Hot' : status === 'Warm' ? '🟠 Warm' : '🔵 Cold';
-  }
-  await cardSaveField(lid, 'hot_warm_status', status);
-  await cardSaveField(lid, 'is_hot', status === 'Hot');
-  await cardSaveField(lid, 'is_warm', status === 'Warm');
-  await cardSaveField(lid, 'is_cold', status === 'Cold');
-}
+async 
 
 // Attach all edit handlers to the card after it's populated
-function cardAttachEditors(lid) {
-  const card = document.getElementById('leadCard');
 
-  // ── Text fields in qualifying tab ──
-  const textFields = [
-    { label: 'Land Price',             db: 'price_land'       },
-    { label: 'Storey',                 db: 'storey'           },
-    { label: 'Garage',                 db: 'garage'           },
-    { label: 'Lot Type / Frontage',    db: 'lot_type'         },
-    { label: 'Area (m\u00b2)',         db: 'lot_area'         },
-    { label: 'Interested Lot Numbers', db: 'lot_numbers'      },
-    { label: 'Postcode',               db: 'suburb_postcode'  },
-    { label: 'CFS Lot #',              db: 'cfs_lot'          },
-    { label: 'Under CFS',              db: 'under_cfs'        },
-    { label: 'Settle Time OK',         db: 'settle_ok'        },
-  ];
-  textFields.forEach(({ label, db }) => {
-    card.querySelectorAll('.field-row').forEach(row => {
-      const lbl = row.querySelector('.field-label');
-      if (lbl && lbl.textContent.trim() === label) {
-        const val = row.querySelector('.field-value');
-        if (val) {
-          val.style.cursor = 'pointer';
-          val.title = 'Click to edit';
-          val.addEventListener('click', () => cardMakeEditable(val, lid, db, 'text'));
-        }
-      }
-    });
-  });
 
-  // ── Select fields ──
-  const selectFields = [
-    { label: 'How Did You Hear About Us?', db: 'hear_about_us', opts: ['','Facebook','Instagram','Google','REA','Walk In','Friend/Family','EDM','Other'] },
-    { label: 'Land Sales Office Visit',    db: 'lso_visit',     opts: ['','Yes','No'] },
-    { label: 'Buyer Type',                 db: 'buyer_type',    opts: ['','FHB','Investor','Upgrader','Downsizer','Other'] },
-    { label: 'Time To Buy',                db: 'time_to_buy',   opts: ['','0-3 months','3-6 months','6-12 months','12+ months'] },
-    { label: 'House & Land Price',         db: 'price_hl',      opts: ['','Under $700k','$700k-$900k','$900k-$1.1m','$1.1m-$1.3m','$1.3m+'] },
-  ];
-  selectFields.forEach(({ label, db, opts }) => {
-    card.querySelectorAll('.field-row').forEach(row => {
-      const lbl = row.querySelector('.field-label');
-      if (lbl && lbl.textContent.trim() === label) {
-        const val = row.querySelector('.field-value');
-        if (val) {
-          val.style.cursor = 'pointer';
-          val.title = 'Click to edit';
-          val.addEventListener('click', () => cardMakeEditable(val, lid, db, 'select', opts.map(o => ({value: o, label: o || '— Select —'}))));
-        }
-      }
-    });
-  });
 
-  // ── Deposit pills ──
-  card.querySelectorAll('[data-deposit]').forEach(pill => {
-    pill.style.cursor = 'pointer';
-    pill.addEventListener('click', async () => {
-      const key = pill.dataset.deposit;
-      const isActive = pill.classList.contains('active');
-      // Only one deposit active at a time
-      card.querySelectorAll('[data-deposit]').forEach(p => p.classList.remove('active'));
-      if (!isActive) {
-        pill.classList.add('active');
-        await cardSaveField(lid, 'deposit5', key === 'deposit5');
-        await cardSaveField(lid, 'deposit5plus5', key === 'deposit5plus5');
-        await cardSaveField(lid, 'deposit10', key === 'deposit10');
-      } else {
-        await cardSaveField(lid, 'deposit5', false);
-        await cardSaveField(lid, 'deposit5plus5', false);
-        await cardSaveField(lid, 'deposit10', false);
-      }
-    });
-  });
 
-  // ── 48 hrs stamps ──
-  const stampMap = {
-    'ROI Email':          'roi_email',
-    '1st Call':           'call1',
-    '2nd Call':           'call2',
-    'Text Message (SMS)': 'sms',
-    'Final Email':        'final_email',
-  };
-  card.querySelectorAll('.process-item').forEach(item => {
-    const lbl = item.querySelector('.process-label');
-    const dot = item.querySelector('.process-dot');
-    const ts  = item.querySelector('.process-ts');
-    if (!lbl || !dot || !ts) return;
-    const dbField = stampMap[lbl.textContent.trim()];
-    if (!dbField) return;
-    item.style.cursor = 'pointer';
-    item.title = 'Click to stamp / un-stamp';
-    item.addEventListener('click', () => {
-      const l = leads.find(x => String(x.id) === String(lid));
-      const jsKey = {roi_email:'roiEmail', call1:'call1', call2:'call2', sms:'sms', final_email:'finalEmail'}[dbField];
-      cardToggleStamp(lid, dbField, l ? l[jsKey] : null, dot, ts);
-    });
-  });
 
-  // ── Follow Up pills ──
-  card.querySelectorAll('[data-followup]').forEach(pill => {
-    pill.style.cursor = 'pointer';
-    pill.addEventListener('click', () => cardTogglePill(lid, pill.dataset.followup, pill, false, '[data-followup]'));
-  });
-
-  // ── Closed pills ──
-  card.querySelectorAll('[data-closed]').forEach(pill => {
-    pill.style.cursor = 'pointer';
-    pill.addEventListener('click', () => cardTogglePill(lid, pill.dataset.closed, pill, false, '[data-closed]'));
-  });
-
-  // ── HWC Status cards ──
-  card.querySelectorAll('.hwc-card').forEach(c => {
-    c.style.cursor = 'pointer';
-    c.addEventListener('click', () => cardSetHWC(lid, c.dataset.hwc, card));
-  });
-
-  // ── Lead Message ──
-  const lmEl = card.querySelector('[data-section="leadmsg"]');
-  if (lmEl) {
-    lmEl.contentEditable = 'true';
-    lmEl.style.cursor = 'text';
-    lmEl.style.outline = 'none';
-    lmEl.addEventListener('focus', () => lmEl.style.background = 'var(--surface2)');
-    lmEl.addEventListener('blur', async () => {
-      lmEl.style.background = '';
-      await cardSaveField(lid, 'lead_msg', lmEl.textContent.trim() || null);
-    });
-  }
-
-  // ── HCI contact row fields (mobile, email) ──
-  const hciEditFields = [
-    { label: 'Mobile', db: 'mobile' },
-    { label: 'Email',  db: 'email'  },
-  ];
-
-  // ── Agency dropdown ──
-  card.querySelectorAll('.hci-label').forEach(el => {
-    if (el.textContent.trim() === 'Agency' && el.nextElementSibling) {
-      const val = el.nextElementSibling;
-      val.style.cursor = 'pointer';
-      val.title = 'Click to edit';
-      val.addEventListener('click', () => {
-        if (val.dataset.editing) return;
-        val.dataset.editing = '1';
-        const orig = val.textContent.trim();
-        const sel = document.createElement('select');
-        sel.style.cssText = 'font-size:11px;padding:2px 4px;border:1.5px solid var(--navy);border-radius:4px;background:var(--surface);color:var(--navy);font-family:inherit';
-        sel.innerHTML = '<option value="">— Unassigned —</option>' +
-          agencies.map(a => `<option value="${a.id}" ${a.id === leads.find(x=>String(x.id)===String(lid))?.assignedAgency ? 'selected' : ''}>${a.name}</option>`).join('');
-        val.textContent = '';
-        val.appendChild(sel);
-        sel.focus();
-        async function saveAgency() {
-          delete val.dataset.editing;
-          const chosen = agencies.find(a => a.id === sel.value);
-          val.textContent = chosen ? chosen.name : '—';
-          // Also reset agent when agency changes
-          const agentVal = card.querySelectorAll('.hci-label').find ? null :
-            [...card.querySelectorAll('.hci-label')].find(e => e.textContent.trim() === 'Agent')?.nextElementSibling;
-          if (agentVal) agentVal.textContent = '—';
-          await cardSaveField(lid, 'assigned_agency', sel.value || null);
-          await cardSaveField(lid, 'assigned_agent', null);
-          // Update local lead
-          const idx = leads.findIndex(l => String(l.id) === String(lid));
-          if (idx >= 0) { leads[idx].assignedAgency = sel.value || null; leads[idx].assignedAgent = null; }
-        }
-        sel.addEventListener('blur', saveAgency);
-        sel.addEventListener('change', () => sel.blur());
-      });
-    }
-  });
-
-  // ── Agent dropdown (filtered by assigned agency) ──
-  card.querySelectorAll('.hci-label').forEach(el => {
-    if (el.textContent.trim() === 'Agent' && el.nextElementSibling) {
-      const val = el.nextElementSibling;
-      val.style.cursor = 'pointer';
-      val.title = 'Click to edit';
-      val.addEventListener('click', () => {
-        if (val.dataset.editing) return;
-        val.dataset.editing = '1';
-        const l = leads.find(x => String(x.id) === String(lid));
-        const agencyId = l ? l.assignedAgency : null;
-        const filtered = agencyId ? agents.filter(a => a.agencyId === agencyId) : agents;
-        const sel = document.createElement('select');
-        sel.style.cssText = 'font-size:11px;padding:2px 4px;border:1.5px solid var(--navy);border-radius:4px;background:var(--surface);color:var(--navy);font-family:inherit';
-        sel.innerHTML = '<option value="">— Unassigned —</option>' +
-          filtered.map(a => `<option value="${a.id}" ${a.id === l?.assignedAgent ? 'selected' : ''}>${a.name}</option>`).join('');
-        val.textContent = '';
-        val.appendChild(sel);
-        sel.focus();
-        async function saveAgent() {
-          delete val.dataset.editing;
-          const chosen = agents.find(a => a.id === sel.value);
-          val.textContent = chosen ? chosen.name : '—';
-          await cardSaveField(lid, 'assigned_agent', sel.value || null);
-          const idx = leads.findIndex(l => String(l.id) === String(lid));
-          if (idx >= 0) leads[idx].assignedAgent = sel.value || null;
-        }
-        sel.addEventListener('blur', saveAgent);
-        sel.addEventListener('change', () => sel.blur());
-      });
-    }
-  });
-  hciEditFields.forEach(({ label, db }) => {
-    card.querySelectorAll('.hci-label').forEach(el => {
-      if (el.textContent.trim() === label && el.nextElementSibling) {
-        const val = el.nextElementSibling;
-        val.style.cursor = 'pointer';
-        val.title = 'Click to edit';
-        val.addEventListener('click', () => {
-          if (val.dataset.editing) return;
-          val.dataset.editing = '1';
-          const orig = val.textContent.trim();
-          const input = document.createElement('input');
-          input.type = 'text';
-          input.value = orig === '—' ? '' : orig.replace(/\s/g, '');
-          input.autocomplete = 'off';
-          input.style.cssText = 'font-size:11px;padding:2px 4px;border:1.5px solid var(--navy);border-radius:4px;background:var(--surface);color:var(--navy);font-family:inherit;width:130px';
-          val.textContent = '';
-          val.appendChild(input);
-          input.focus(); input.select();
-          async function saveHci() {
-            delete val.dataset.editing;
-            const v = input.value.trim();
-            val.textContent = db === 'mobile' ? fmtPhone(v) : (v || '—');
-            if (v !== orig) await cardSaveField(lid, db, v || null);
-          }
-          input.addEventListener('blur', saveHci);
-          input.addEventListener('keydown', e => {
-            if (e.key === 'Enter') input.blur();
-            if (e.key === 'Escape') { delete val.dataset.editing; val.textContent = orig; }
-          });
-        });
-      }
-    });
-  });
-}
-
-function cardSwitchTab(name, btn) {
-  const card = document.getElementById('leadCard');
-  card.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  card.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  const panel = document.getElementById('panel-' + name);
-  if (panel) panel.classList.add('active');
-  if (btn) btn.classList.add('active');
-}
-
-function openLeadCard(id) {
-  const l = leads.find(x => String(x.id) === String(id));
-  if (!l) return;
-  const card = document.getElementById('leadCard');
-  const qs = s => card.querySelector(s);
-  const sa = (s,v) => { const e=qs(s); if(e) e.textContent=v; };
-
-  sa('.header-eyebrow','Sapphire Land Estate \u00b7 Rouse Hill');
-  sa('.header-name', l.name||'\u2014');
-
-  const badge = qs('.hwc-badge');
-  if(badge){ badge.className='hwc-badge '+(l.hotWarmStatus||'').toLowerCase(); badge.textContent=l.hotWarmStatus==='Hot'?'\ud83d\udd34 Hot':l.hotWarmStatus==='Warm'?'\ud83d\udfe0 Warm':l.hotWarmStatus==='Cold'?'\ud83d\udd35 Cold':'\u2014 Status'; }
-
-  const sc=qs('.chip.source');
-  const srcMap={walkIns:'Walk In',facebook:'Facebook',instagram:'Instagram',tiktok:'TikTok',xtwitter:'X',linkedin:'LinkedIn',sms:'SMS',roi:'ROI',rea:'REA',google:'Google',website:'Website',crf:'CRF',crfAgency:'CRF Agency',edm:'EDM'};
-  const as=Object.keys(srcMap).find(s=>l[s]);
-  if(sc) sc.textContent=as?srcMap[as]:'\u2014';
-
-  function setHci(lbl,val){ card.querySelectorAll('.hci-label').forEach(el=>{ if(el.textContent.trim()===lbl&&el.nextElementSibling) el.nextElementSibling.textContent=val||'\u2014'; }); }
-  setHci('Lead #',l.id);
-  setHci('Date',fmtCardDate(l.date));
-  setHci('Mobile',fmtPhone(l.mobile));
-  setHci('Email',l.email||'\u2014');
-  const ag=agencies&&agencies.find(x=>x.id===l.assignedAgency);
-  const at=agents&&agents.find(x=>x.id===l.assignedAgent);
-  setHci('Agency',ag?ag.name:'\u2014');
-  setHci('Agent',at?at.name:'\u2014');
-
-  const lm=qs('[data-section="leadmsg"]'); if(lm) lm.textContent=l.leadMsg||'\u2014';
-
-  const cl=card.querySelector('#comments-list');
-  if(cl){ let e=[]; try{e=l.pocComments?JSON.parse(l.pocComments):[];if(!Array.isArray(e))e=[{ts:'',author:'',text:l.pocComments}];}catch(x){e=l.pocComments?[{ts:'',author:'',text:l.pocComments}]:[]; } cl.innerHTML=e.length?e.map(n=>'<div class="poc-entry"><div><div class="poc-ts">'+(n.ts||'')+'</div><div class="poc-author">'+(n.author||'')+'</div></div><div class="poc-text">'+(n.text||'').replace(/\n/g,'<br>')+'</div></div>').join(''):'<div style="padding:12px 14px;font-size:12px;color:var(--muted);font-style:italic">No comments yet.</div>'; }
-
-  function setField(lbl,val){ card.querySelectorAll('.field-row').forEach(r=>{ const lb=r.querySelector('.field-label'); if(lb&&lb.textContent.trim()===lbl){ const v=r.querySelector('.field-value'); if(v){v.className='field-value'+(val?'':' empty');v.textContent=val||'\u2014';} } }); }
-  setField('How Did You Hear About Us?',l.hearAboutUs);
-  setField('Land Sales Office Visit',l.lsoVisit);
-  setField('Buyer Type',l.buyerType==='FHB'?'First Home Buyer':l.buyerType);
-  setField('Time To Buy',l.timeToBuy);
-  setField('House & Land Price',l.priceHL);
-  setField('Land Price',l.priceLand);
-  setField('Storey',l.storey);
-  setField('Garage',l.garage);
-  setField('Lot Type / Frontage',l.lotType);
-  setField('Area (m\u00b2)',l.lotArea);
-  setField('Interested Lot Numbers',l.lotNumbers);
-  setField('Deposit',l.deposit5?'5%':l.deposit5plus5?'5%+5%':l.deposit10?'10%':'\u2014');
-  setField('Postcode',l.suburbPostcode);
-  setField('CFS Lot #',l.cfsLot);
-  setField('Under CFS',l.underCfs);
-  setField('Settle Time OK',l.settleOk?'\u2713 Yes':'\u2014');
-
-  function setStamp(lbl,val){ card.querySelectorAll('.process-item').forEach(it=>{ const lb=it.querySelector('.process-label'); if(lb&&lb.textContent.trim()===lbl){ const d=it.querySelector('.process-dot'),t=it.querySelector('.process-ts'); if(d) d.className='process-dot '+(val?'done':'pending'); if(t){t.className='process-ts'+(val?'':' pending');t.textContent=val?fmtCardDate(val):'Not sent';} } }); }
-  setStamp('ROI Email',l.roiEmail);
-  setStamp('1st Call',l.call1);
-  setStamp('2nd Call',l.call2);
-  setStamp('Text Message (SMS)',l.sms);
-  setStamp('Final Email',l.finalEmail);
-
-  card.querySelectorAll('[data-followup]').forEach(p=>p.classList.toggle('active',!!l[p.dataset.followup]));
-  card.querySelectorAll('[data-closed]').forEach(p=>p.classList.toggle('active',!!l[p.dataset.closed]));
-
-  cardSwitchTab('process', card.querySelector('.tab-btn'));
-
-  // Attach edit handlers
-  cardAttachEditors(id);
-
-  document.getElementById('leadCard').style.display='block';
-  document.getElementById('leadCard').style.pointerEvents='auto';
-  document.getElementById('app').style.display='none';
-  history.pushState({leadCard:true},'');
-}
 
 window.addEventListener('resize', function() {
   const isMobile = window.innerWidth <= 768;
@@ -7005,6 +6474,350 @@ async function icSaveLot() {
     fab.style.background = '';
     fab.classList.remove('visible');
   }, 2000);
+}
+
+// ══ LEAD CARD (template layout) ══
+let _lcId = null;
+let _lcDirty = false;
+
+function lcTab(name, btn) {
+  document.querySelectorAll('#leadCard .lc-panel').forEach(p => { p.classList.remove('active'); p.style.display='none'; });
+  document.querySelectorAll('#leadCard .lc-tb').forEach(b => b.classList.remove('active'));
+  const p = document.getElementById('lc-panel-' + name);
+  if (p) { p.classList.add('active'); p.style.display='block'; }
+  if (btn) btn.classList.add('active');
+}
+
+function lcFmtDate(raw) {
+  if (!raw) return '';
+  const m = raw.match(/^(\d{2})-(\d{2})-(\d{4})/);
+  if (m) return m[1]+'-'+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m[2])-1]+'-'+m[3].slice(2);
+  const d = new Date(raw);
+  if (!isNaN(d)) return String(d.getDate()).padStart(2,'0')+'-'+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]+'-'+String(d.getFullYear()).slice(2);
+  return raw;
+}
+
+function lcFmtPhone(raw) {
+  if (!raw) return '';
+  const d = raw.replace(/\D/g,'');
+  return d.length===10 ? d.slice(0,4)+' '+d.slice(4,7)+' '+d.slice(7) : raw;
+}
+
+function lcFieldRow(label, value, dbField, type, opts) {
+  const val = value || '';
+  const empty = !val;
+  return `<div class="lc-field-row" data-field="${dbField}" data-type="${type||'text'}" data-opts='${opts?JSON.stringify(opts):""}'>
+    <span class="lc-field-label">${label}</span>
+    <span class="lc-field-value${empty?' empty':''}">${val||'—'}</span>
+  </div>`;
+}
+
+function openLeadCard(id) {
+  const l = leads.find(x => String(x.id) === String(id));
+  if (!l) return;
+  _lcId = id;
+  _lcDirty = false;
+
+  const card = document.getElementById('leadCard');
+
+  // ── Header ──
+  const agObj = agencies.find(a => a.id === l.assignedAgency);
+  const agName = agObj ? agObj.name : '';
+  document.getElementById('lc-eyebrow').textContent = (agName || 'Lead #'+l.id) + (l.date ? ' · ' + lcFmtDate(l.date) : '');
+  document.getElementById('lc-name').textContent = l.name || '—';
+  document.getElementById('lc-leadmsg').textContent = l.leadMsg || '';
+
+  // HWC badge
+  const hwcBadge = document.getElementById('lc-hwc-badge');
+  if (l.hotWarmStatus) {
+    hwcBadge.style.display = 'inline-block';
+    hwcBadge.textContent = l.hotWarmStatus === 'Hot' ? '🔴 Hot' : l.hotWarmStatus === 'Warm' ? '🟠 Warm' : '🔵 Cold';
+    hwcBadge.style.background = l.hotWarmStatus === 'Hot' ? 'rgba(220,38,38,0.7)' : l.hotWarmStatus === 'Warm' ? 'rgba(217,119,6,0.7)' : 'rgba(37,99,235,0.6)';
+  } else {
+    hwcBadge.style.display = 'none';
+  }
+
+  // Chips
+  const chips = [];
+  if (l.buyerType)      chips.push('<span style="background:rgba(255,255,255,0.14);color:rgba(255,255,255,0.9);font-size:11px;padding:4px 10px;border-radius:6px;display:inline-flex;align-items:center;gap:4px"><span style="color:rgba(255,255,255,0.5)">Buyer</span> '+l.buyerType+'</span>');
+  if (l.timeToBuy)      chips.push('<span style="background:rgba(255,255,255,0.14);color:rgba(255,255,255,0.9);font-size:11px;padding:4px 10px;border-radius:6px;display:inline-flex;align-items:center;gap:4px"><span style="color:rgba(255,255,255,0.5)">Timeline</span> '+l.timeToBuy+'</span>');
+  if (l.suburbPostcode) chips.push('<span style="background:rgba(255,255,255,0.14);color:rgba(255,255,255,0.9);font-size:11px;padding:4px 10px;border-radius:6px;display:inline-flex;align-items:center;gap:4px"><span style="color:rgba(255,255,255,0.5)">Postcode</span> '+l.suburbPostcode+'</span>');
+  if (l.cfsLot)         chips.push('<span style="background:rgba(255,255,255,0.14);color:rgba(255,255,255,0.9);font-size:11px;padding:4px 10px;border-radius:6px;display:inline-flex;align-items:center;gap:4px"><span style="color:rgba(255,255,255,0.5)">CFS Lot</span> '+l.cfsLot+'</span>');
+  document.getElementById('lc-chips').innerHTML = chips.join('');
+
+  // Contact strip
+  document.getElementById('lc-mobile').textContent = lcFmtPhone(l.mobile) || '—';
+  document.getElementById('lc-email').textContent = l.email || '—';
+  document.getElementById('lc-leadnum').textContent = '#' + l.id;
+
+  // ── 48 Hrs Process ──
+  const processItems = [
+    { label: 'ROI Email',           key: 'roiEmail',    field: 'roi_email' },
+    { label: '1st Call',            key: 'call1',       field: 'call1' },
+    { label: '2nd Call',            key: 'call2',       field: 'call2' },
+    { label: 'Text Message (SMS)',  key: 'sms',         field: 'sms' },
+    { label: 'Final Email',         key: 'finalEmail',  field: 'final_email' },
+  ];
+  document.getElementById('lc-process-list').innerHTML = processItems.map((item, i) => {
+    const val = l[item.key];
+    const done = val && val !== 'false';
+    return '<div class="lc-process-item" onclick="lcToggleStamp(\'' + item.field + '\',\'' + item.key + '\',this)">' +
+      '<div class="lc-process-num ' + (done?'done':'') + '">' + (done?'&#10003;':i+1) + '</div>' +
+      '<span class="lc-process-label">' + item.label + '</span>' +
+      '<span class="lc-process-ts ' + (done?'done':'') + '">' + (done ? lcFmtDate(val) : 'Not sent') + '</span>' +
+      '</div>';
+  }).join('');
+
+  // ── Qualifying ──
+  document.getElementById('lc-qualify-fields').innerHTML = [
+    lcFieldRow('How Did You Hear',   l.hearAboutUs, 'hear_about_us'),
+    lcFieldRow('LSO Visit',          l.lsoVisit,    'lso_visit', 'select', ['Yes','No']),
+    lcFieldRow('Buyer Type',         l.buyerType,   'buyer_type', 'select', ['FHB','Investor','Upgrader','Downsizer','Other']),
+    lcFieldRow('Time To Buy',        l.timeToBuy,   'time_to_buy', 'select', ['0-3 months','3-6 months','6-12 months','12+ months']),
+    lcFieldRow('H&L Price',          l.priceHL,     'price_hl', 'select', ['Under $700k','$700k-$900k','$900k-$1.1m','$1.1m-$1.3m','$1.3m+']),
+  ].join('');
+  document.getElementById('lc-property-fields').innerHTML = [
+    lcFieldRow('Land Price',         l.priceLand,   'price_land'),
+    lcFieldRow('Storey',             l.storey,      'storey'),
+    lcFieldRow('Garage',             l.garage,      'garage'),
+    lcFieldRow('Lot Type/Frontage',  l.lotType,     'lot_type'),
+    lcFieldRow('Area (m²)',          l.lotArea,     'lot_area'),
+    lcFieldRow('Interested Lots',    l.lotNumbers,  'lot_numbers'),
+    lcFieldRow('Deposit',            l.deposit5?'5%':l.deposit5plus5?'5%+5%':l.deposit10?'10%':'', 'deposit5'),
+    lcFieldRow('Postcode',           l.suburbPostcode, 'suburb_postcode'),
+  ].join('');
+
+  const agentObj = agents.find(a => a.id === l.assignedAgent);
+  document.getElementById('lc-assign-fields').innerHTML = [
+    lcFieldRow('Agency',  agName,                   'assigned_agency', 'agency'),
+    lcFieldRow('Agent',   agentObj ? agentObj.name : '', 'assigned_agent', 'agent'),
+  ].join('');
+
+  // ── Outcome ──
+  // HWC cards
+  const hwcStatus = l.hotWarmStatus || '';
+  document.getElementById('lc-hwc-cards').innerHTML = [
+    {label:'🔴 Hot',  key:'Hot',  cls:'selected-hot'},
+    {label:'🟠 Warm', key:'Warm', cls:'selected-warm'},
+    {label:'🔵 Cold', key:'Cold', cls:'selected-cold'},
+  ].map(h => `<div class="lc-hwc-card ${hwcStatus===h.key?h.cls:''}" onclick="lcSetHWC('${h.key}',this)">
+    <div style="font-size:20px;margin-bottom:4px">${h.label.split(' ')[0]}</div>
+    <div style="font-size:11px;font-weight:600;color:var(--ink,#1A1A1A)">${h.key}</div>
+  </div>`).join('');
+
+  // Follow up pills
+  const fuPills = [
+    {label:'Agent To Call', key:'tc', field:'tc'},
+    {label:'Lead Call Back', key:'cb', field:'cb'},
+    {label:'Voicemail', key:'vm', field:'vm'},
+    {label:'No Answer', key:'na', field:'na'},
+  ];
+  document.getElementById('lc-followup-pills').innerHTML = fuPills.map(p =>
+    `<span class="lc-pill ${l[p.key]?'active':''}" onclick="lcTogglePill('${p.field}',this)">${p.label}</span>`
+  ).join('');
+
+  // Closed pills
+  const clPills = [
+    {label:'No Mobile', key:'nm', field:'nm'},
+    {label:'Disconnected', key:'dc', field:'dc'},
+    {label:'Not Interested', key:'ni', field:'ni'},
+    {label:'Duplicate', key:'duplicate', field:'duplicate'},
+  ];
+  document.getElementById('lc-closed-pills').innerHTML = clPills.map(p =>
+    `<span class="lc-pill ${l[p.key]?'active':''}" onclick="lcTogglePill('${p.field}',this)">${p.label}</span>`
+  ).join('');
+
+  // CFS fields
+  document.getElementById('lc-cfs-fields').innerHTML = [
+    lcFieldRow('CFS Lot #',    l.cfsLot,    'cfs_lot'),
+    lcFieldRow('Under CFS',    l.underCfs,  'under_cfs'),
+    lcFieldRow('Settle Time OK', l.settleOk ? '✓ Yes' : '', 'settle_ok'),
+  ].join('');
+
+  // ── Comments ──
+  const lmEdit = document.getElementById('lc-leadmsg-edit');
+  lmEdit.textContent = l.leadMsg || '';
+  lmEdit.dataset.lid = id;
+  lmEdit.onblur = async () => {
+    if (lmEdit.textContent !== l.leadMsg) {
+      await cardSaveField(id, 'lead_msg', lmEdit.textContent.trim() || null);
+    }
+  };
+
+  // Render comments log
+  lcRenderComments(l.pocComments || '');
+
+  // Pre-fill comment input with today's date
+  const d = new Date(), mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('lc-note-input').value = String(d.getDate()).padStart(2,'0')+'-'+mo[d.getMonth()]+' - ';
+
+  // Attach inline edit to field rows
+  lcAttachFieldEdits(id);
+
+  // Start on process tab
+  lcTab('process', card.querySelector('.lc-tb'));
+
+  // Show card
+  card.style.display = 'block';
+  card.style.pointerEvents = 'auto';
+  document.getElementById('app').style.display = 'none';
+  history.pushState({leadCard:true}, '');
+}
+
+function lcRenderComments(raw) {
+  const list = document.getElementById('lc-comments-list');
+  if (!list) return;
+  let entries = [];
+  try { entries = raw ? JSON.parse(raw) : []; } catch(e) { entries = raw ? [{ts:'',author:'',text:raw}] : []; }
+  if (!Array.isArray(entries)) entries = [];
+  list.innerHTML = entries.map(e =>
+    `<div class="lc-comment-entry">
+      <span class="lc-comment-date">${e.ts||''}</span>
+      <span class="lc-comment-text">${(e.author?(e.author+': '):'') + (e.text||'')}</span>
+    </div>`
+  ).join('') || '<div style="font-size:12px;color:var(--muted,#7A7872);font-style:italic;padding:8px 0">No comments yet</div>';
+}
+
+async function lcAddComment() {
+  const ni = document.getElementById('lc-note-input');
+  const text = ni.value.trim();
+  if (!text || !_lcId) return;
+  const l = leads.find(x => String(x.id) === String(_lcId));
+  if (!l) return;
+  const d = new Date(), mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const ts = String(d.getDate()).padStart(2,'0')+'-'+mo[d.getMonth()]+'-'+d.getFullYear();
+  let entries = [];
+  try { entries = l.pocComments ? JSON.parse(l.pocComments) : []; } catch(e) { entries = []; }
+  const newEntry = {ts, author: me?.username||'', text};
+  entries.push(newEntry);
+  const newPoc = JSON.stringify(entries);
+  await cardSaveField(_lcId, 'poc_comments', newPoc);
+  l.pocComments = newPoc;
+  lcRenderComments(newPoc);
+  ni.value = ts.slice(0,6)+'-'+ts.slice(6) + '... ';
+  const tod = String(d.getDate()).padStart(2,'0')+'-'+mo[d.getMonth()]+' - ';
+  ni.value = tod;
+  ni.style.height = 'auto';
+}
+
+function lcAttachFieldEdits(lid) {
+  document.querySelectorAll('#leadCard .lc-field-row').forEach(row => {
+    row.addEventListener('click', () => {
+      if (row.dataset.editing) return;
+      const dbField = row.dataset.field;
+      const type = row.dataset.type;
+      const valEl = row.querySelector('.lc-field-value');
+      const orig = valEl.classList.contains('empty') ? '' : valEl.textContent.trim();
+      row.dataset.editing = '1';
+      row.style.background = 'var(--navy-lt,#E8ECF5)';
+
+      let input;
+      const opts = row.dataset.opts ? JSON.parse(row.dataset.opts) : null;
+      if (type === 'select' && opts) {
+        input = document.createElement('select');
+        input.style.cssText = 'flex:1;text-align:right;font-size:13px;font-weight:500;color:var(--ink,#1A1A1A);background:transparent;border:none;outline:none;font-family:inherit';
+        input.innerHTML = '<option value="">—</option>' + opts.map(o=>`<option value="${o}"${o===orig?' selected':''}>${o}</option>`).join('');
+      } else if (type === 'agency') {
+        input = document.createElement('select');
+        input.style.cssText = 'flex:1;text-align:right;font-size:13px;font-weight:500;color:var(--ink,#1A1A1A);background:transparent;border:none;outline:none;font-family:inherit';
+        const l = leads.find(x=>String(x.id)===String(lid));
+        input.innerHTML = '<option value="">— Unassigned —</option>' + agencies.map(a=>`<option value="${a.id}"${a.id===l?.assignedAgency?' selected':''}>${a.name}</option>`).join('');
+      } else if (type === 'agent') {
+        input = document.createElement('select');
+        input.style.cssText = 'flex:1;text-align:right;font-size:13px;font-weight:500;color:var(--ink,#1A1A1A);background:transparent;border:none;outline:none;font-family:inherit';
+        const l = leads.find(x=>String(x.id)===String(lid));
+        const filtered = l?.assignedAgency ? agents.filter(a=>a.agencyId===l.assignedAgency) : agents;
+        input.innerHTML = '<option value="">— Unassigned —</option>' + filtered.map(a=>`<option value="${a.id}"${a.id===l?.assignedAgent?' selected':''}>${a.name}</option>`).join('');
+      } else {
+        input = document.createElement('input');
+        input.type = 'text';
+        input.value = orig === '—' ? '' : orig;
+        input.autocomplete = 'off';
+        input.style.cssText = 'flex:1;text-align:right;font-size:13px;font-weight:500;color:var(--ink,#1A1A1A);background:transparent;border:none;outline:none;font-family:inherit;width:0;min-width:0';
+      }
+
+      valEl.replaceWith(input);
+      input.focus();
+      if (input.tagName === 'INPUT') input.select();
+
+      async function save() {
+        delete row.dataset.editing;
+        row.style.background = '';
+        const newVal = input.value.trim();
+        const span = document.createElement('span');
+        span.className = 'lc-field-value' + (newVal?'':' empty');
+        if (type==='agency') { const a=agencies.find(x=>x.id===newVal); span.textContent=a?a.name:'—'; }
+        else if (type==='agent') { const a=agents.find(x=>x.id===newVal); span.textContent=a?a.name:'—'; }
+        else span.textContent = newVal || '—';
+        input.replaceWith(span);
+        if (newVal !== orig) {
+          await cardSaveField(lid, dbField, newVal || null);
+          if (type==='agency') { await cardSaveField(lid,'assigned_agent',null); }
+        }
+      }
+      input.addEventListener('blur', save);
+      input.addEventListener('keydown', e => { if(e.key==='Enter'){e.preventDefault();input.blur();} if(e.key==='Escape'){delete row.dataset.editing;row.style.background='';input.replaceWith(valEl);} });
+      input.addEventListener('change', ()=>input.blur());
+    });
+  });
+}
+
+async function lcToggleStamp(dbField, jsKey, itemEl) {
+  const l = leads.find(x => String(x.id) === String(_lcId));
+  if (!l) return;
+  const numEl = itemEl.querySelector('.lc-process-num');
+  const tsEl = itemEl.querySelector('.lc-process-ts');
+  const curr = l[jsKey];
+  let newVal;
+  if (curr && curr !== 'false') {
+    newVal = null;
+    numEl.className = 'lc-process-num';
+    numEl.textContent = (parseInt(numEl.textContent)||0);
+    tsEl.className = 'lc-process-ts';
+    tsEl.textContent = 'Not sent';
+  } else {
+    const d = new Date();
+    newVal = String(d.getDate()).padStart(2,'0')+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear();
+    numEl.className = 'lc-process-num done';
+    numEl.textContent = '✓';
+    tsEl.className = 'lc-process-ts done';
+    tsEl.textContent = lcFmtDate(newVal);
+  }
+  await cardSaveField(_lcId, dbField, newVal);
+}
+
+async function lcTogglePill(dbField, pillEl) {
+  const isActive = pillEl.classList.contains('active');
+  pillEl.classList.toggle('active', !isActive);
+  await cardSaveField(_lcId, dbField, !isActive);
+}
+
+async function lcSetHWC(status, cardEl) {
+  document.querySelectorAll('#leadCard .lc-hwc-card').forEach(c => c.className='lc-hwc-card');
+  cardEl.classList.add('selected-'+status.toLowerCase());
+  const badge = document.getElementById('lc-hwc-badge');
+  badge.style.display = 'inline-block';
+  badge.textContent = status==='Hot'?'🔴 Hot':status==='Warm'?'🟠 Warm':'🔵 Cold';
+  badge.style.background = status==='Hot'?'rgba(220,38,38,0.7)':status==='Warm'?'rgba(217,119,6,0.7)':'rgba(37,99,235,0.6)';
+  await cardSaveField(_lcId, 'hot_warm_status', status);
+  await cardSaveField(_lcId, 'is_hot', status==='Hot');
+  await cardSaveField(_lcId, 'is_warm', status==='Warm');
+  await cardSaveField(_lcId, 'is_cold', status==='Cold');
+}
+
+async function lcSave() {
+  const fab = document.getElementById('lc-save-fab');
+  fab.innerHTML = '✓ Saved';
+  fab.style.background = 'var(--green,#16a34a)';
+  setTimeout(()=>{fab.innerHTML='💾 Save Changes';fab.style.background='';fab.classList.remove('lc-save-fab-visible');},2000);
+}
+
+function closeLeadCard() {
+  const lc = document.getElementById('leadCard');
+  lc.style.display = 'none';
+  lc.style.pointerEvents = 'none';
+  document.getElementById('app').style.display = 'flex';
+  _lcId = null;
 }
 
 </script>
