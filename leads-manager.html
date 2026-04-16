@@ -1458,6 +1458,22 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
     .overlay { align-items: flex-end !important; }
   }
 
+
+  /* ── Header slim layout ── */
+  .hdr-search { display:none; }
+  @media (min-width: 769px) {
+    .hdr-search { display:block; width:200px; flex-shrink:0; }
+  }
+  .hdr-avatar-wrap { position:relative; }
+  .hdr-avatar {
+    width:32px; height:32px; border-radius:50%;
+    background:rgba(255,255,255,0.18); border:1.5px solid rgba(255,255,255,0.3);
+    color:#fff; font-size:12px; font-weight:600; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--sans); transition:background .15s;
+  }
+  .hdr-avatar:hover { background:rgba(255,255,255,0.28); }
+
 </style>
 
 <!-- ═══════════ LOGIN SCREEN ═══════════ -->
@@ -1501,6 +1517,8 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
       <div class="stat-pill">🟠 <b id="s-warm">0</b></div>
       <div class="stat-pill">🔵 <b id="s-cold">0</b></div>
     </div>
+    <!-- Search hidden on mobile, shown in filter bar instead -->
+    <input class="search-box" type="text" placeholder="Search…" id="searchInput" autocomplete="off" oninput="applyFilters()">
     <div class="hdr-actions">
       <input class="search-box" type="text" placeholder="Search…" id="searchInput" autocomplete="off" oninput="applyFilters()">
       <div class="dropdown" id="exportDrop" style="display:none">
@@ -2160,8 +2178,11 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
 
       <!-- back + HWC badge row -->
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;position:relative;z-index:1">
-        <button onclick="closeLeadCard()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.85);font-size:12px;padding:5px 12px;border-radius:6px;cursor:pointer;font-family:inherit">← Back to Leads</button>
-        <span id="lc-hwc-badge" style="display:none;font-size:11px;font-weight:600;padding:5px 11px;border-radius:20px;background:rgba(255,255,255,0.18);color:#fff;white-space:nowrap"></span>
+        <button onclick="closeLeadCard()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.85);font-size:12px;padding:5px 12px;border-radius:6px;cursor:pointer;font-family:inherit">← Back</button>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button id="lc-edit-btn" onclick="lcOpenEdit()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.85);font-size:12px;padding:5px 12px;border-radius:6px;cursor:pointer;font-family:inherit;display:none">✏ Edit Lead</button>
+          <span id="lc-hwc-badge" style="display:none;font-size:11px;font-weight:600;padding:5px 11px;border-radius:20px;background:rgba(255,255,255,0.18);color:#fff;white-space:nowrap"></span>
+        </div>
       </div>
 
       <!-- eyebrow: agency · estate -->
@@ -2871,6 +2892,14 @@ function enterApp() {
   buildDynFilters();
   renderLeads();
   switchToLeads();
+  // Set avatar initials
+  const initEl = document.getElementById('avatarInitials');
+  if (initEl && me.username) {
+    const parts = me.username.trim().split(/\s+/);
+    initEl.textContent = parts.length >= 2
+      ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
+      : me.username.slice(0,2).toUpperCase();
+  }
 }
 
 async function doLogout() {
@@ -6651,7 +6680,7 @@ function openLeadCard(id) {
     {label:'🔴 Hot',  key:'Hot',  cls:'selected-hot'},
     {label:'🟠 Warm', key:'Warm', cls:'selected-warm'},
     {label:'🔵 Cold', key:'Cold', cls:'selected-cold'},
-  ].map(h => `<div class="lc-hwc-card ${hwcStatus===h.key?h.cls:''}" onclick="lcSetHWC('${h.key}',this)">
+  ].map(h => `<div class="lc-hwc-card ${hwcStatus===h.key?h.cls:''}" onclick="${h.key==='Cold'?'lcConfirmCold(this)':"lcSetHWC('"+h.key+"',this)"}">
     <div style="font-size:20px;margin-bottom:4px">${h.label.split(' ')[0]}</div>
     <div style="font-size:11px;font-weight:600;color:var(--ink,#1A1A1A)">${h.key}</div>
   </div>`).join('');
@@ -6712,6 +6741,9 @@ function openLeadCard(id) {
   card.style.display = 'block';
   card.style.pointerEvents = 'auto';
   document.getElementById('app').style.display = 'none';
+  // Show edit button for admins
+  const editBtn = document.getElementById('lc-edit-btn');
+  if (editBtn) editBtn.style.display = me && me.role === 'admin' ? 'inline-flex' : 'none';
   history.pushState({leadCard:true}, '');
 }
 
@@ -6844,6 +6876,40 @@ async function lcTogglePill(dbField, pillEl) {
   await cardSaveField(_lcId, dbField, !isActive);
 }
 
+async function lcConfirmCold(cardEl) {
+  // Remove existing tip if toggling
+  const existing = document.getElementById('lc-cold-confirm');
+  if (existing) { existing.remove(); return; }
+  const tip = document.createElement('div');
+  tip.id = 'lc-cold-confirm';
+  tip.style.cssText = 'position:absolute;background:var(--navy,#002675);color:#fff;font-size:12px;padding:12px 14px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.25);z-index:200;left:50%;transform:translateX(-50%);bottom:calc(100% + 10px);width:210px;text-align:center;line-height:1.5';
+  const cancelBtn = document.createElement('button');
+  cancelBtn.textContent = 'Cancel';
+  cancelBtn.style.cssText = 'flex:1;padding:6px;border:1px solid rgba(255,255,255,0.3);background:transparent;color:#fff;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit';
+  cancelBtn.onclick = function(e) { e.stopPropagation(); tip.remove(); };
+  const confirmBtn = document.createElement('button');
+  confirmBtn.textContent = 'Move to Cold';
+  confirmBtn.style.cssText = 'flex:1;padding:6px;background:#fff;color:var(--navy,#002675);border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit';
+  confirmBtn.onclick = function(e) { e.stopPropagation(); tip.remove(); lcSetHWC('Cold', cardEl); };
+  const msg = document.createElement('div');
+  msg.style.marginBottom = '10px';
+  msg.innerHTML = 'This will move the lead to the <b>Cold Leads</b> tab.';
+  const btns = document.createElement('div');
+  btns.style.cssText = 'display:flex;gap:6px';
+  btns.appendChild(cancelBtn);
+  btns.appendChild(confirmBtn);
+  tip.appendChild(msg);
+  tip.appendChild(btns);
+  cardEl.style.position = 'relative';
+  cardEl.appendChild(tip);
+  // Close if clicking outside
+  setTimeout(() => {
+    document.addEventListener('click', function handler(e) {
+      if (!tip.contains(e.target)) { tip.remove(); document.removeEventListener('click', handler); }
+    });
+  }, 0);
+}
+
 async function lcSetHWC(status, cardEl) {
   document.querySelectorAll('#leadCard .lc-hwc-card').forEach(c => c.className='lc-hwc-card');
   cardEl.classList.add('selected-'+status.toLowerCase());
@@ -6879,6 +6945,12 @@ function closeLeadCard() {
   lc.style.pointerEvents = 'none';
   document.getElementById('app').style.display = 'flex';
   _lcId = null;
+}
+
+function lcOpenEdit() {
+  if (!_lcId) return;
+  closeLeadCard();
+  openLeadDrawer(_lcId);
 }
 
 function showToast(msg, duration=3000) {
