@@ -2684,25 +2684,25 @@ function hwMismatch(l) {
 
 function renderRow(l) {
   const canCheck = me.role !== 'agent';
-  const ie = (lid,field,val,style='font-size:11px') => `<td class="ie-cell" style="${style};padding:7px 8px" data-lid="${lid}" data-field="${field}" data-ietype="text" onclick="ieDispatch(event,this)">${val||'—'}</td>`;
-  const ieSel = (lid,field,display,opts) => `<td class="ie-cell" style="font-size:11px;padding:7px 8px" data-lid="${lid}" data-field="${field}" data-ietype="select" data-opts="${encodeURIComponent(JSON.stringify(opts))}" onclick="ieDispatch(event,this)">${display||'—'}</td>`;
-  const ieStamp = (lid,field,val,cls='') => `<td class="ie-cell${cls?' '+cls:''}" style="font-size:11px;padding:7px 8px" data-lid="${lid}" data-field="${field}" data-ietype="stamp" onclick="ieDispatch(event,this)">${val||'—'}</td>`;
-  const iePills = (lid,field,display,opts) => `<td class="ie-cell" style="padding:7px 8px" data-lid="${lid}" data-field="${field}" data-ietype="pills" data-opts="${encodeURIComponent(JSON.stringify(opts))}" onclick="ieDispatch(event,this)">${display||'—'}</td>`;
+  const ie = (lid,field,val,style='font-size:11px') => `<td class="ie-cell" style="${style};padding:7px 8px" data-lid="${lid}" data-field="${field}" data-ietype="text" onclick="ieDispatch(event,this)" ondblclick="ieDispatch(event,this)">${val||'—'}</td>`;
+  const ieSel = (lid,field,display,opts) => `<td class="ie-cell" style="font-size:11px;padding:7px 8px" data-lid="${lid}" data-field="${field}" data-ietype="select" data-opts="${encodeURIComponent(JSON.stringify(opts))}" onclick="ieDispatch(event,this)" ondblclick="ieDispatch(event,this)">${display||'—'}</td>`;
+  const ieStamp = (lid,field,val,cls='') => `<td class="ie-cell${cls?' '+cls:''}" style="font-size:11px;padding:7px 8px" data-lid="${lid}" data-field="${field}" data-ietype="stamp" onclick="ieDispatch(event,this)" ondblclick="ieDispatch(event,this)">${val||'—'}</td>`;
+  const iePills = (lid,field,display,opts) => `<td class="ie-cell" style="padding:7px 8px" data-lid="${lid}" data-field="${field}" data-ietype="pills" data-opts="${encodeURIComponent(JSON.stringify(opts))}" onclick="ieDispatch(event,this)" ondblclick="ieDispatch(event,this)">${display||'—'}</td>`;
   return `<tr data-id="${l.id}">
     <td style="padding:7px 8px">${canCheck ? `<input type="checkbox" class="rcb" data-id="${l.id}" onchange="updateSel()">` : ''}</td>
-    <td class="rn" style="padding:7px 8px;cursor:pointer;color:var(--navy);font-weight:600;text-decoration:underline" onclick="console.log('rn clicked', ${l.id}); openLeadCard(${l.id})">${l.id}</td>
+    <td class="rn" style="padding:7px 8px;cursor:pointer;color:var(--navy);font-weight:600;text-decoration:underline" onclick="openLeadCard(${l.id})">${l.id}</td>
     <td style="font-size:11px;color:var(--text2);padding:7px 8px">${fmtDate(l.date)}</td>
     ${ie(l.id,'name',l.name||'—','font-weight:500;color:var(--text)')}
     ${ie(l.id,'mobile',`${l.mobile||'—'}${!isMobileValid(l.mobile)&&l.mobile?' <span title="Invalid format" style="cursor:default">⚠</span>':''}`,'font-size:11px'+(!isMobileValid(l.mobile)&&l.mobile?';color:var(--red);font-weight:500':''))}
     ${ie(l.id,'email',`${l.email||'—'}${!isEmailValid(l.email)&&l.email?' <span title="Invalid email" style="cursor:default">⚠</span>':''}`,'font-size:11px'+(!isEmailValid(l.email)&&l.email?';color:var(--red);font-weight:500':';color:var(--accent)'))}
-    <td class="ie-cell" style="font-size:11px;color:var(--text2);padding:7px 8px" data-popup="Lead Message" data-popup-text="${(l.leadMsg||'').replace(/"/g,'&quot;')}" onmouseenter="showCellPopup(event,this)" onmouseleave="hideCellPopup()" data-lid="${l.id}" data-field="leadMsg" data-ietype="text" onclick="ieDispatch(event,this)">${l.leadMsg?l.leadMsg.substring(0,30)+(l.leadMsg.length>30?'…':''):'—'}</td>
-    <td class="ie-cell" style="font-size:11px;color:var(--text2);padding:7px 8px" data-popup="Comments / Interactions" data-popup-text="${(l.pocComments||'').replace(/"/g,'&quot;')}" onmouseenter="showCellPopup(event,this)" onmouseleave="hideCellPopup()" data-lid="${l.id}" data-field="pocComments" data-ietype="text" onclick="ieDispatch(event,this)">${l.pocComments?l.pocComments.substring(0,30)+(l.pocComments.length>30?'…':''):'—'}</td>
+    <td class="ie-cell" style="font-size:11px;color:var(--text2);padding:7px 8px" data-popup="Lead Message" data-popup-text="${(l.leadMsg||'').replace(/"/g,'&quot;')}" onmouseenter="showCellPopup(event,this)" onmouseleave="hideCellPopup()" data-lid="${l.id}" data-field="leadMsg" data-ietype="text" onclick="ieDispatch(event,this)" ondblclick="ieDispatch(event,this)">${l.leadMsg?l.leadMsg.substring(0,30)+(l.leadMsg.length>30?'…':''):'—'}</td>
+    <td class="ie-cell" style="font-size:11px;color:var(--text2);padding:7px 8px" data-popup="Comments / Interactions" data-popup-text="${(l.pocComments||'').replace(/"/g,'&quot;')}" onmouseenter="showCellPopup(event,this)" onmouseleave="hideCellPopup()" data-lid="${l.id}" data-field="pocComments" data-ietype="text" onclick="ieDispatch(event,this)" ondblclick="ieDispatch(event,this)">${l.pocComments?l.pocComments.substring(0,30)+(l.pocComments.length>30?'…':''):'—'}</td>
     ${ieStamp(l.id,'roiEmail',l.roiEmail?'<span style="color:var(--green);font-weight:600">✓</span>':'—',isBackdated(l.roiEmail)?'bd-cell':'')}
     ${ieStamp(l.id,'call1',l.call1?'<span style="color:var(--green);font-weight:600">✓</span>':'—',isBackdated(l.call1)?'bd-cell':'')}
     ${ieStamp(l.id,'call2',l.call2?'<span style="color:var(--green);font-weight:600">✓</span>':'—',isBackdated(l.call2)?'bd-cell':'')}
     ${ieStamp(l.id,'sms',l.sms?'<span style="color:var(--green);font-weight:600">✓</span>':'—',isBackdated(l.sms)?'bd-cell':'')}
     ${ieStamp(l.id,'finalEmail',l.finalEmail?'<span style="color:var(--green);font-weight:600">✓</span>':'—',isBackdated(l.finalEmail)?'bd-cell':'')}
-    <td class="ie-cell" style="font-size:11px;padding:7px 8px" data-lid="${l.id}" data-ietype="leadsource" onclick="ieDispatch(event,this)">${getLeadSource(l)||'—'}</td>
+    <td class="ie-cell" style="font-size:11px;padding:7px 8px" data-lid="${l.id}" data-ietype="leadsource" onclick="ieDispatch(event,this)" ondblclick="ieDispatch(event,this)">${getLeadSource(l)||'—'}</td>
     ${ie(l.id,'hearAboutUs',l.hearAboutUs?l.hearAboutUs.substring(0,20)+(l.hearAboutUs.length>20?'…':''):'—')}
     ${ieSel(l.id,'lsoVisit',l.lsoVisit?`<span class="${l.lsoVisit==='Y'?'cy':l.lsoVisit==='N'?'cn':'cu'}">${l.lsoVisit==='Y'?'Yes':l.lsoVisit==='N'?'No':'Not Sure'}</span>`:'—',[{v:'',t:'— Select —'},{v:'Y',t:'Yes'},{v:'N',t:'No'},{v:'Unsure',t:'Not Sure'}])}
     ${ieSel(l.id,'buyerType',l.buyerType?`<span class="tag">${{FHB:'First Home Buyer',INV:'Investor',UG:'Upgrader',DS:'Downsizer'}[l.buyerType]||l.buyerType}</span>`:'—',[{v:'',t:'— Select —'},{v:'FHB',t:'FHB — First Home Buyer'},{v:'INV',t:'INV — Investor'},{v:'UG',t:'UG — Upgrader'},{v:'DS',t:'DS — Downsizer'}])}
@@ -2809,6 +2809,7 @@ function ieClosePillPopup(e) {
 function ieDispatch(e, td) {
   e.stopPropagation();
   hideCellPopup();
+  if (e.type === 'dblclick') { const lid = td.dataset.lid; if (lid) { openLeadCard(lid); return; } }
   if (window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768) return;
   if (td === _ieActive) return;
   if (_ieActive) {
@@ -5311,9 +5312,7 @@ function fmtCardDate(raw) {
 }
 
 function openLeadCard(id) {
-  console.log('[openLeadCard] called with id:', id, typeof id);
   const l = leads.find(x => String(x.id) === String(id));
-  console.log('[openLeadCard] lead found:', l ? l.name : 'NOT FOUND', '| leads count:', leads.length);
   if (!l) return;
 
   const card = document.getElementById('leadCard');
