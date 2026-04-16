@@ -1446,6 +1446,18 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
   header .dark-toggle { background:rgba(255,255,255,0.1)!important; border-color:rgba(255,255,255,0.22)!important; color:rgba(255,255,255,0.8)!important; }
   .gold-rule { height:2px; background:linear-gradient(90deg,var(--gold,#83764F) 0%,var(--gold-mid,#C4B88A) 60%,transparent 100%); flex-shrink:0; }
 
+
+  /* ── Lead drawer mobile grid fix ── */
+  @media (max-width: 600px) {
+    .lp-grid-3, .fg3, .fg { grid-template-columns: 1fr !important; }
+    .lp-sec-body { padding: 10px 12px !important; }
+    .lp-field { margin-bottom: 6px !important; }
+    /* Drawer header fix on small screens */
+    .dh { flex-wrap: wrap; gap: 6px; padding: 10px 12px !important; }
+    .drawer { width: 100% !important; max-width: 100% !important; border-radius: 0 !important; height: 100% !important; }
+    .overlay { align-items: flex-end !important; }
+  }
+
 </style>
 
 <!-- ═══════════ LOGIN SCREEN ═══════════ -->
@@ -1671,7 +1683,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
   </div>
 
   <!-- Header -->
-  <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:0 32px;height:54px;display:flex;align-items:center;gap:16px;flex-shrink:0">
+  <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;min-height:54px;display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap">
     <button onclick="leadDirty ? showUnsavedPrompt(() => { leadDirty=false; closeLeadDrawer(); }) : closeLeadDrawer()" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:13px;padding:6px 10px;border-radius:4px;display:flex;align-items:center;gap:6px;border:1px solid var(--border2)" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
       ← Back to Leads
     </button>
@@ -1679,12 +1691,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
     <div style="font-size:15px;font-weight:600;color:var(--text)" id="ldTitle">New Lead</div>
     <div style="font-size:11px;color:var(--text3);padding:2px 10px;background:var(--bg3);border-radius:20px;border:1px solid var(--border)" id="ldSub"></div>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-      <button class="btn btn-danger" id="deleteLeadBtn" onclick="event.stopPropagation();showDeleteConfirm()" style="display:none">🗑 Move to Cold Leads</button>
-      <div id="deleteConfirm" style="display:none;align-items:center;gap:8px">
-        <span style="font-size:12px;color:var(--red)">Move to Cold Leads?</span>
-        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteLead()">Yes</button>
-        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();hideDeleteConfirm()">Cancel</button>
-      </div>
+
       <button class="btn btn-ghost" onclick="leadDirty ? showUnsavedPrompt(() => { leadDirty=false; closeLeadDrawer(); }) : closeLeadDrawer()">Cancel</button>
       <button class="btn btn-primary" onclick="saveLead()">Save Lead</button>
     </div>
@@ -1751,13 +1758,13 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
         <div class="lp-sec-body">
           <div class="ff lp-field">
             <label>Comments / Interactions</label>
-            <div class="poc-log" id="pocLog" onclick="expandPocLog()" title="Click to expand"><div class="no-notes" style="font-size:11px">No comments yet.</div></div>
-            <div style="margin-top:8px">
-              <textarea id="f-pocNew" autocomplete="off" placeholder="Add a comment… (Ctrl+Enter to save)" style="width:100%;min-height:56px;resize:vertical" onkeydown="if(event.ctrlKey&&event.key==='Enter'){event.preventDefault();addPocComment()}"></textarea>
-              <div style="display:flex;justify-content:flex-end;margin-top:6px">
-                <button class="stamp-btn" style="border-radius:4px" onclick="addPocComment()">+ Add</button>
-              </div>
+            <!-- Add new comment FIRST -->
+            <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:10px">
+              <textarea id="f-pocNew" autocomplete="off" placeholder="Add a comment…" style="flex:1;min-height:52px;resize:vertical;font-size:12px;padding:7px 10px;border:1px solid var(--border2);border-radius:4px;font-family:var(--sans);outline:none" onkeydown="if(event.ctrlKey&&event.key==='Enter'){event.preventDefault();addPocComment()}"></textarea>
+              <button class="btn btn-primary btn-sm" onclick="addPocComment()" style="height:36px;white-space:nowrap">+ Add</button>
             </div>
+            <!-- Log below - newest first -->
+            <div class="poc-log" id="pocLog"><div class="no-notes" style="font-size:11px">No comments yet.</div></div>
             <input type="hidden" id="f-pocComments">
           </div>
         </div>
@@ -1774,74 +1781,54 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
             </div>
           </div>
           <div class="lp-help-panel" id="help-activity">
-            Record when each contact attempt was made.<br>
-            <ul>
-              <li><strong>Stamp Now</strong> — Records current date &amp; time instantly</li>
-              <li><strong>✎ Backdate</strong> — Enter a past date (shown in orange)</li>
-              <li><strong>✕</strong> — Clears the timestamp</li>
-            </ul>
+            Record when each contact attempt was made. Tick to stamp with today's date, untick to clear.
           </div>
         </div>
         <div class="lp-sec-body">
           <div style="display:flex;flex-direction:column;gap:10px;max-width:720px">
-            <div class="contact-row">
-              <div class="contact-row-label">Reg. of Interest Email</div>
-              <div class="contact-row-stamp" id="stamp-roiEmail">—</div>
-              <button class="stamp-btn" onclick="stampField('roiEmail')">Stamp Now</button>
-              <button class="stamp-backdate" onclick="toggleBackdate('roiEmail')" title="Backdate">✎</button>
-              <div class="backdate-wrap" id="bd-roiEmail" style="display:none">
-                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-roiEmail" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('roiEmail')">
-                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('roiEmail')">Set</button>
-              </div>
-              <button class="stamp-clear" onclick="clearStamp('roiEmail')" title="Clear">✕</button>
+            <div class="contact-row" style="align-items:center;gap:12px">
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1">
+                <input type="checkbox" id="cb-roiEmail" style="width:18px;height:18px;cursor:pointer;accent-color:var(--navy,#002675)"
+                  onchange="toggleStampCheckbox('roiEmail', this.checked)">
+                <span class="contact-row-label" style="margin:0">Reg. of Interest Email</span>
+              </label>
+              <div class="contact-row-stamp" id="stamp-roiEmail" style="font-size:11px;color:var(--text3,#9aa5b4)">—</div>
               <input type="hidden" id="f-roiEmail">
             </div>
-            <div class="contact-row">
-              <div class="contact-row-label">1st Call</div>
-              <div class="contact-row-stamp" id="stamp-call1">—</div>
-              <button class="stamp-btn" onclick="stampField('call1')">Stamp Now</button>
-              <button class="stamp-backdate" onclick="toggleBackdate('call1')" title="Backdate">✎</button>
-              <div class="backdate-wrap" id="bd-call1" style="display:none">
-                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-call1" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('call1')">
-                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('call1')">Set</button>
-              </div>
-              <button class="stamp-clear" onclick="clearStamp('call1')" title="Clear">✕</button>
+            <div class="contact-row" style="align-items:center;gap:12px">
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1">
+                <input type="checkbox" id="cb-call1" style="width:18px;height:18px;cursor:pointer;accent-color:var(--navy,#002675)"
+                  onchange="toggleStampCheckbox('call1', this.checked)">
+                <span class="contact-row-label" style="margin:0">1st Call</span>
+              </label>
+              <div class="contact-row-stamp" id="stamp-call1" style="font-size:11px;color:var(--text3,#9aa5b4)">—</div>
               <input type="hidden" id="f-call1">
             </div>
-            <div class="contact-row">
-              <div class="contact-row-label">2nd Call</div>
-              <div class="contact-row-stamp" id="stamp-call2">—</div>
-              <button class="stamp-btn" onclick="stampField('call2')">Stamp Now</button>
-              <button class="stamp-backdate" onclick="toggleBackdate('call2')" title="Backdate">✎</button>
-              <div class="backdate-wrap" id="bd-call2" style="display:none">
-                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-call2" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('call2')">
-                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('call2')">Set</button>
-              </div>
-              <button class="stamp-clear" onclick="clearStamp('call2')" title="Clear">✕</button>
+            <div class="contact-row" style="align-items:center;gap:12px">
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1">
+                <input type="checkbox" id="cb-call2" style="width:18px;height:18px;cursor:pointer;accent-color:var(--navy,#002675)"
+                  onchange="toggleStampCheckbox('call2', this.checked)">
+                <span class="contact-row-label" style="margin:0">2nd Call</span>
+              </label>
+              <div class="contact-row-stamp" id="stamp-call2" style="font-size:11px;color:var(--text3,#9aa5b4)">—</div>
               <input type="hidden" id="f-call2">
             </div>
-            <div class="contact-row">
-              <div class="contact-row-label">Text Message (SMS)</div>
-              <div class="contact-row-stamp" id="stamp-sms">—</div>
-              <button class="stamp-btn" onclick="stampField('sms')">Stamp Now</button>
-              <button class="stamp-backdate" onclick="toggleBackdate('sms')" title="Backdate">✎</button>
-              <div class="backdate-wrap" id="bd-sms" style="display:none">
-                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-sms" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('sms')">
-                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('sms')">Set</button>
-              </div>
-              <button class="stamp-clear" onclick="clearStamp('sms')" title="Clear">✕</button>
+            <div class="contact-row" style="align-items:center;gap:12px">
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1">
+                <input type="checkbox" id="cb-sms" style="width:18px;height:18px;cursor:pointer;accent-color:var(--navy,#002675)"
+                  onchange="toggleStampCheckbox('sms', this.checked)">
+                <span class="contact-row-label" style="margin:0">Text Message (SMS)</span>
+              </label>
+              <div class="contact-row-stamp" id="stamp-sms" style="font-size:11px;color:var(--text3,#9aa5b4)">—</div>
               <input type="hidden" id="f-sms">
             </div>
-            <div class="contact-row">
-              <div class="contact-row-label">Final Email</div>
-              <div class="contact-row-stamp" id="stamp-finalEmail">—</div>
-              <button class="stamp-btn" onclick="stampField('finalEmail')">Stamp Now</button>
-              <button class="stamp-backdate" onclick="toggleBackdate('finalEmail')" title="Backdate">✎</button>
-              <div class="backdate-wrap" id="bd-finalEmail" style="display:none">
-                <input type="text" class="backdate-input" placeholder="dd-mm-yyyy hh:mm" id="bd-val-finalEmail" onblur="expandDate(this)" onkeydown="if(event.key==='Enter')applyBackdate('finalEmail')">
-                <button class="stamp-btn" style="border-radius:4px;padding:3px 10px" onclick="applyBackdate('finalEmail')">Set</button>
-              </div>
-              <button class="stamp-clear" onclick="clearStamp('finalEmail')" title="Clear">✕</button>
+            <div class="contact-row" style="align-items:center;gap:12px">
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1">
+                <input type="checkbox" id="cb-finalEmail" style="width:18px;height:18px;cursor:pointer;accent-color:var(--navy,#002675)"
+                  onchange="toggleStampCheckbox('finalEmail', this.checked)">
+                <span class="contact-row-label" style="margin:0">Final Email</span>
+              </label>
+              <div class="contact-row-stamp" id="stamp-finalEmail" style="font-size:11px;color:var(--text3,#9aa5b4)">—</div>
               <input type="hidden" id="f-finalEmail">
             </div>
           </div>
@@ -3181,6 +3168,26 @@ function applyBackdate(field) {
   leadDirty = true;
 }
 
+
+function toggleStampCheckbox(field, checked) {
+  const hiddenEl = document.getElementById('f-' + field);
+  const stampEl  = document.getElementById('stamp-' + field);
+  if (checked) {
+    const now = new Date();
+    const val = String(now.getDate()).padStart(2,'0') + '-' +
+                String(now.getMonth()+1).padStart(2,'0') + '-' +
+                now.getFullYear() + ' ' +
+                String(now.getHours()).padStart(2,'0') + ':' +
+                String(now.getMinutes()).padStart(2,'0');
+    if (hiddenEl) hiddenEl.value = val;
+    if (stampEl)  stampEl.textContent = String(now.getDate()).padStart(2,'0') + '-' +
+                  String(now.getMonth()+1).padStart(2,'0') + '-' + now.getFullYear();
+  } else {
+    if (hiddenEl) hiddenEl.value = '';
+    if (stampEl)  stampEl.textContent = '—';
+  }
+  leadDirty = true;
+}
 function stampField(field) {
   const now = new Date();
   const dateStr = `${String(now.getDate()).padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()}`;
@@ -3213,6 +3220,8 @@ function initStamps() {
   ['roiEmail','call1','call2','sms','finalEmail'].forEach(field => {
     const raw = document.getElementById('f-'+field).value;
     const display = document.getElementById('stamp-'+field);
+    const cb = document.getElementById('cb-'+field);
+    if (cb) cb.checked = !!raw;
     if (!display) return;
     if (raw) {
       const isBD = raw.endsWith('|BD');
@@ -3847,8 +3856,13 @@ function renderMobileLeads() {
   const tw = document.querySelector('.table-wrap');
   // Always sync display state based on width
   container.style.display = isMobile ? 'flex' : 'none';
-  container.style.flexDirection = 'column';
+  container.style.flexDirection = isMobile ? 'column' : '';
   if (tw) tw.style.display = isMobile ? 'none' : '';
+  // On desktop, ensure leadsView is shown (may have been hidden)
+  if (!isMobile) {
+    const lv = document.getElementById('leadsView');
+    if (lv && lv.style.display === 'none') lv.style.display = 'flex';
+  }
   // Always populate so data is ready when user resizes to mobile
   // (don't bail early - just skip if not needed)
   const rows = getVisible();
@@ -3895,15 +3909,24 @@ function renderMobileLeads() {
       '</div>';
   }).join('');
 
-  // Single tap on mobile — delegated click + touchend for instant response
+  // Single tap — track movement, only open card if user didn't scroll
+  let _mlTouchY = 0, _mlScrolled = false;
+  container.addEventListener('touchstart', function(e) {
+    _mlTouchY = e.touches[0].clientY;
+    _mlScrolled = false;
+  }, {passive:true});
+  container.addEventListener('touchmove', function() {
+    _mlScrolled = true;
+  }, {passive:true});
+  container.addEventListener('touchend', function(e) {
+    if (_mlScrolled) return;
+    const row = e.target.closest('[data-lead-id]');
+    if (row) { e.preventDefault(); openLeadCard(row.dataset.leadId); }
+  }, {passive:false});
   container.onclick = function(e) {
     const row = e.target.closest('[data-lead-id]');
     if (row) openLeadCard(row.dataset.leadId);
   };
-  container.addEventListener('touchend', function(e) {
-    const row = e.target.closest('[data-lead-id]');
-    if (row) { e.preventDefault(); openLeadCard(row.dataset.leadId); }
-  }, { passive: false });
 }
 
 
@@ -4083,10 +4106,8 @@ function openLeadDrawer(id) {
   }
 
   // Show/hide delete button
-  const delBtn = document.getElementById('deleteLeadBtn');
-  delBtn.style.display = (me && me.role === 'admin' && editLeadId) ? 'flex' : 'none';
-  document.getElementById('deleteConfirm').style.display = 'none';
-
+  const delBtn =   delBtn.style.display = (me && me.role === 'admin' && editLeadId) ? 'flex' : 'none';
+  
   renderCustomFieldsInForm();
   initLeadSourcePills();
   initOutcomePills();
@@ -4213,14 +4234,8 @@ function updateTempCards() {
   if (val === 'Cold') document.getElementById('tc-cold').classList.add('sel-cold');
 }
 
-function showDeleteConfirm() {
-  document.getElementById('deleteLeadBtn').style.display = 'none';
-  document.getElementById('deleteConfirm').style.display = 'flex';
-}
-function hideDeleteConfirm() {
-  document.getElementById('deleteLeadBtn').style.display = 'flex';
-  document.getElementById('deleteConfirm').style.display = 'none';
-}
+
+
 
 function deleteLead() {
   console.log('deleteLead called, editLeadId:', editLeadId, 'leads count:', leads.length);
@@ -4276,7 +4291,7 @@ function hideUnsavedPrompt() {
   document.getElementById('unsavedPrompt').style.display = 'none';
 }
 
-function saveLead() {
+async function saveLead() {
   const name    = document.getElementById('f-name').value.trim();
   const mobile  = document.getElementById('f-mobile').value.trim();
   const email   = document.getElementById('f-email').value.trim();
@@ -4400,7 +4415,15 @@ function saveLead() {
   persist(); closeLeadDrawer(); renderLeads();
   saveCustomFieldValues(lead);
   leadDirty = false;
-  notify(isNew ? 'Lead saved ✓' : 'Lead updated ✓');
+  // Auto-move to Cold Leads if marked Cold
+  if (lead.hotWarmStatus === 'Cold' && !isNew) {
+    await sb.from('leads').update({is_deleted: true}).eq('id', lead.id);
+    lead.isDeleted = true;
+    renderLeads();
+    showToast('Lead moved to Cold Leads');
+  } else {
+    notify(isNew ? 'Lead saved ✓' : 'Lead updated ✓');
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -6284,8 +6307,10 @@ async
 
 
 
+let _resizeTimer;
 window.addEventListener('resize', function() {
-  renderMobileLeads();
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(renderMobileLeads, 100);
 });
 
 // ── Session restore on page load ──
@@ -6586,10 +6611,11 @@ function openLeadCard(id) {
   document.getElementById('lc-process-list').innerHTML = processItems.map((item, i) => {
     const val = l[item.key];
     const done = val && val !== 'false';
-    return '<div class="lc-process-item" onclick="lcToggleStamp(\'' + item.field + '\',\'' + item.key + '\',this)">' +
-      '<div class="lc-process-num ' + (done?'done':'') + '">' + (done?'&#10003;':i+1) + '</div>' +
-      '<span class="lc-process-label">' + item.label + '</span>' +
-      '<span class="lc-process-ts ' + (done?'done':'') + '">' + (done ? lcFmtDate(val) : 'Not sent') + '</span>' +
+    const cbId = 'lc-cb-' + item.key;
+    return '<div class="lc-process-item" style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border,#dde1e8);cursor:pointer" onclick="lcToggleStamp(\'' + item.field + '\',\'' + item.key + '\',this)">' +
+      '<input type="checkbox" id="' + cbId + '" ' + (done?'checked':'') + ' style="width:18px;height:18px;cursor:pointer;accent-color:var(--navy,#002675);flex-shrink:0" onclick="event.stopPropagation();lcToggleStamp(\'' + item.field + '\',\'' + item.key + '\',this.closest(\'.lc-process-item\'))">' +
+      '<label for="' + cbId + '" style="flex:1;font-size:13px;font-weight:500;color:var(--ink,#1A1A1A);cursor:pointer">' + item.label + '</label>' +
+      '<span style="font-size:11px;font-family:var(--mono,monospace);color:' + (done?'var(--navy,#002675)':'var(--muted,#7A7872)') + '">' + (done ? lcFmtDate(val) : '—') + '</span>' +
       '</div>';
   }).join('');
 
@@ -6790,25 +6816,26 @@ function lcAttachFieldEdits(lid) {
 async function lcToggleStamp(dbField, jsKey, itemEl) {
   const l = leads.find(x => String(x.id) === String(_lcId));
   if (!l) return;
-  const numEl = itemEl.querySelector('.lc-process-num');
-  const tsEl = itemEl.querySelector('.lc-process-ts');
+  const cb   = itemEl ? itemEl.querySelector('input[type="checkbox"]') : null;
+  const tsEl = itemEl ? itemEl.querySelector('span:last-child') : null;
   const curr = l[jsKey];
   let newVal;
   if (curr && curr !== 'false') {
+    // Un-stamp
     newVal = null;
-    numEl.className = 'lc-process-num';
-    numEl.textContent = (parseInt(numEl.textContent)||0);
-    tsEl.className = 'lc-process-ts';
-    tsEl.textContent = 'Not sent';
+    if (cb) cb.checked = false;
+    if (tsEl) { tsEl.textContent = '\u2014'; tsEl.style.color = 'var(--muted,#7A7872)'; }
   } else {
+    // Stamp with today
     const d = new Date();
     newVal = String(d.getDate()).padStart(2,'0')+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear();
-    numEl.className = 'lc-process-num done';
-    numEl.textContent = '✓';
-    tsEl.className = 'lc-process-ts done';
-    tsEl.textContent = lcFmtDate(newVal);
+    if (cb) cb.checked = true;
+    if (tsEl) { tsEl.textContent = newVal; tsEl.style.color = 'var(--navy,#002675)'; }
   }
-  await cardSaveField(_lcId, dbField, newVal);
+  l[jsKey] = newVal;
+  cardSaveField(_lcId, dbField, newVal);
+  _lcDirty = true;
+  document.getElementById('lc-save-fab').classList.add('visible');
 }
 
 async function lcTogglePill(dbField, pillEl) {
@@ -6828,6 +6855,15 @@ async function lcSetHWC(status, cardEl) {
   await cardSaveField(_lcId, 'is_hot', status==='Hot');
   await cardSaveField(_lcId, 'is_warm', status==='Warm');
   await cardSaveField(_lcId, 'is_cold', status==='Cold');
+  // Auto-move to Cold Leads when marked Cold
+  if (status === 'Cold') {
+    await cardSaveField(_lcId, 'is_deleted', true);
+    const l = leads.find(x => String(x.id) === String(_lcId));
+    if (l) { l.isDeleted = true; l.hotWarmStatus = 'Cold'; }
+    closeLeadCard();
+    renderLeads();
+    showToast('Lead moved to Cold Leads');
+  }
 }
 
 async function lcSave() {
@@ -6843,6 +6879,20 @@ function closeLeadCard() {
   lc.style.pointerEvents = 'none';
   document.getElementById('app').style.display = 'flex';
   _lcId = null;
+}
+
+function showToast(msg, duration=3000) {
+  let t = document.getElementById('appToast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'appToast';
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--navy,#002675);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.style.opacity = '0'; }, duration);
 }
 
 </script>
