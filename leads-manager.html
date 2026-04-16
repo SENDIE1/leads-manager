@@ -417,6 +417,8 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
   #leadCard .comments-header{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--navy);padding:8px 16px}
   #leadCard .comments-input-row{display:flex;gap:8px;padding:12px 14px;border-bottom:1px solid var(--border);align-items:flex-end}
   #leadCard .comments-textarea{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:'Aptos','DM Sans',sans-serif;color:var(--ink);outline:none;resize:none;min-height:42px;line-height:1.4;transition:border-color .15s}
+  #leadCard .comments-textarea[contenteditable]:empty::before{content:attr(data-placeholder);color:var(--grey6);pointer-events:none}
+  #leadCard .comments-textarea[contenteditable]:focus{border-color:var(--navy)}
   #leadCard .comments-textarea:focus{border-color:var(--navy)}
   #leadCard .comments-add-btn{background:var(--navy);color:#fff;border:none;border-radius:8px;width:42px;height:42px;font-size:20px;cursor:pointer;flex-shrink:0;transition:background .15s;display:flex;align-items:center;justify-content:center}
   #leadCard .comments-add-btn:hover{background:var(--navy-dk)}
@@ -507,7 +509,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
     <div class="login-logo">LEADS<span>/</span>MGR</div>
     <div class="login-sub">Property Lead Management · v4</div>
     <div class="login-field"><label>Email</label><input type="email" id="lu" placeholder="your@email.com" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="login-field"><label>Password</label><input type="password" id="lp" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="login-field"><label>Password</label><input type="password" id="lp" placeholder="Password" autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
     <div class="login-err" id="lerr"></div>
   </div>
@@ -1267,7 +1269,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
       <div class="comments-block">
         <div class="comments-header">💬 Comments / Interactions</div>
         <div class="comments-input-row">
-          <textarea class="comments-textarea" id="comment-input" rows="1" oninput="autoGrow(this)" placeholder="Add a comment…" autocomplete="new-password" name="lead-comment"></textarea>
+          <div class="comments-textarea" id="comment-input" contenteditable="true" role="textbox" data-placeholder="Add a comment…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addComment();}"></div>
           <button class="comments-add-btn" onclick="addComment()">＋</button>
         </div>
         <div class="comments-log" id="comments-list">
@@ -1981,7 +1983,7 @@ document.addEventListener('DOMContentLoaded', async function handleAuthRedirect(
       document.getElementById('lerr').textContent = sessionErr.message;
       return;
     }
-    document.getElementById('loginScreen').style.display = 'none';
+    (function(){ const ls=document.getElementById('loginScreen'); if(ls) ls.remove(); })();
     document.getElementById('setPasswordScreen').style.display = 'flex';
     document.getElementById('newPw').focus();
   }
@@ -2045,7 +2047,8 @@ async function doLogin() {
 }
 
 function enterApp() {
-  document.getElementById('loginScreen').style.display = 'none';
+  (function(){ const ls=document.getElementById('loginScreen'); if(ls) ls.remove(); })();
+  (function(){ const sp=document.getElementById('setPasswordScreen'); if(sp) sp.remove(); })();
   document.getElementById('app').style.display = 'flex';
   // Push 2 history entries so swipe-back never reaches login
   history.pushState({app: true}, '');
@@ -5285,7 +5288,7 @@ function getTodayDate(){
 }
 function addComment(){
   const input=document.getElementById('comment-input');
-  const text=input.value.trim();
+  const text=(input.tagName==='TEXTAREA'?input.value:input.innerText).trim();
   if(!text)return;
   const list=document.getElementById('comments-list');
   const e=document.createElement('div');
@@ -5293,7 +5296,7 @@ function addComment(){
   e.innerHTML='<div><div class="poc-ts">'+getTodayDate()+'</div><div class="poc-author">you</div></div>'+
     '<div class="poc-text">'+text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
   list.prepend(e);
-  input.value='';input.style.height='';
+  if(input.tagName==='TEXTAREA'){input.value='';input.style.height='';}else{input.innerText='';}
 }
 
 
