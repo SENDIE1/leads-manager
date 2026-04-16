@@ -63,17 +63,18 @@
   .stat-pill b{color:var(--text)}
   .hdr-actions{display:flex;gap:8px;margin-left:auto;align-items:center}
 
-  /* MOBILE HEADER — keep +New Lead and Sign Out on same row */
+  /* MOBILE HEADER — keep everything on same row */
   @media (max-width: 640px) {
-    header{flex-wrap:wrap;height:auto;min-height:52px;padding:6px 10px;gap:6px}
-    .logo{font-size:14px}
+    header{padding:6px 8px;gap:4px;height:auto;min-height:52px}
+    .logo{font-size:13px}
+    .role-badge{padding:2px 6px;font-size:9px}
     .breadcrumb{display:none}
-    .stat-row{order:3;flex-basis:100%;margin-left:0;justify-content:flex-start}
-    .stat-pill{padding:3px 8px;font-size:10px}
-    .hdr-actions{order:2;margin-left:auto;gap:6px;flex-wrap:nowrap}
+    .stat-row{margin-left:2px;gap:1px}
+    .stat-pill{padding:2px 6px;font-size:9px}
+    .hdr-actions{gap:4px;margin-left:auto}
     .hdr-actions .search-box{display:none}
     .hdr-actions .dark-toggle{display:none}
-    .hdr-actions .btn{padding:5px 10px;font-size:11px}
+    .hdr-actions .btn{padding:4px 8px;font-size:10px}
   }
   .btn{padding:6px 14px;border-radius:4px;border:none;cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:500;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
   .btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
@@ -4102,7 +4103,8 @@ function openLeadDrawer(id) {
   }
 
   // Show/hide delete button
-  const delBtn =   delBtn.style.display = (me && me.role === 'admin' && editLeadId) ? 'flex' : 'none';
+  const delBtn = document.getElementById('deleteLeadBtn');
+  if (delBtn) delBtn.style.display = (me && me.role === 'admin' && editLeadId) ? 'flex' : 'none';
   
   renderCustomFieldsInForm();
   initLeadSourcePills();
@@ -6922,7 +6924,11 @@ function closeLeadCard() {
 
 function lcOpenEdit() {
   if (!_lcId) return;
-  closeLeadCard();
+  // Close lead card without showing main app
+  const lc = document.getElementById('leadCard');
+  lc.style.display = 'none';
+  lc.style.pointerEvents = 'none';
+  // Don't show main app - go directly to edit drawer
   openLeadDrawer(_lcId);
 }
 
