@@ -344,7 +344,7 @@
   --radius:10px;--shadow-lg:0 8px 40px rgba(0,38,117,0.14);
   }
 body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px 64px}
-  #leadCard .card{width:100%;max-width:480px;background:var(--surface);border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden;border:1px solid var(--grey2)}
+  #leadCard .card{width:100%;max-width:100%;background:var(--surface);border-radius:0;box-shadow:none;overflow:hidden;border:none}
   #leadCard .gold-rule{height:3px;background:linear-gradient(90deg,var(--gold) 0%,var(--gold-mid) 60%,transparent 100%)}
 
 /* HEADER */
@@ -371,7 +371,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
   #leadCard .hci-value.green{color:#6EE7A0}
 
 /* MOBILE BODY */
-  #leadCard .card-body{padding:16px}
+  #leadCard .card-body{padding:0}
   #leadCard .section{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;background:var(--surface)}
   #leadCard .section-title{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--navy);padding:7px 14px}
   #leadCard .field-row{display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);gap:8px}
@@ -623,6 +623,768 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
     overflow: visible !important;
     height: auto !important;
   }
+
+
+  /* ══ LEAD CARD MOBILE ≤768px ══ */
+  @media (max-width: 768px) {
+    /* Overlay fills screen edge-to-edge */
+    #leadCard {
+      padding: 0 !important;
+    }
+    /* Card fills full width, no border-radius */
+    #leadCard .card {
+      width: 100% !important;
+      max-width: 100% !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      border: none !important;
+      min-height: 100vh;
+      display: flex !important;
+      flex-direction: column !important;
+      grid-template-areas: unset !important;
+      grid-template-columns: unset !important;
+    }
+    /* Header full width */
+    #leadCard .card-header {
+      padding: 14px 16px 0;
+      width: 100%;
+    }
+    /* Card body stacks vertically */
+    #leadCard .card-body {
+      display: flex !important;
+      flex-direction: column !important;
+      grid-template-columns: unset !important;
+      width: 100%;
+    }
+    /* Left column full width */
+    #leadCard .card-left {
+      border-right: none !important;
+      border-bottom: 2px solid var(--grey2);
+      width: 100%;
+    }
+    /* Right column full width */
+    #leadCard .card-right {
+      width: 100%;
+    }
+    /* Hide desktop sidebar on mobile */
+    #leadCard .sidebar-section-title,
+    #leadCard .sidebar-stat,
+    #leadCard .sidebar-actions {
+      display: none !important;
+    }
+    /* Show mobile-only section */
+    #leadCard .mobile-only {
+      display: block !important;
+    }
+    /* Header contact row wraps */
+    #leadCard .header-contact {
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      padding-bottom: 14px;
+    }
+    /* Tabs scroll horizontally */
+    #leadCard .tabs {
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+    #leadCard .tab-btn {
+      flex-shrink: 0;
+      min-width: 72px;
+    }
+    /* Sections full width */
+    #leadCard .section,
+    #leadCard .tab-panel {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    /* Comments full width */
+    #leadCard .comments-block {
+      width: 100%;
+    }
+  }
+
+  /* Header */
+  #invCard .ic-header {
+    background: var(--inv-green);
+    padding: 18px 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  #invCard .ic-header::after {
+    content: '';
+    position: absolute;
+    right: -30px; top: -30px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    border: 36px solid rgba(255,255,255,0.07);
+    pointer-events: none;
+  }
+  #invCard .ic-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 1;
+  }
+  #invCard .ic-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Libre Baskerville', serif;
+    line-height: 1.15;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 3px;
+  }
+  #invCard .ic-subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  /* Stat chips row */
+  #invCard .ic-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  #invCard .ic-chip {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+  }
+  #invCard .ic-chip b {
+    color: #fff;
+    font-weight: 600;
+  }
+  /* Deposit badge */
+  #invCard .ic-deposit-badge {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: rgba(255,255,255,0.15);
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 2;
+  }
+  #invCard .ic-deposit-badge .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #fff;
+  }
+  /* Price strip */
+  #invCard .ic-prices {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    margin: 0 -20px;
+    position: relative;
+    z-index: 1;
+  }
+  #invCard .ic-price-item {
+    padding: 12px 16px;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.12);
+  }
+  #invCard .ic-price-item:last-child { border-right: none; }
+  #invCard .ic-price-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 4px;
+  }
+  #invCard .ic-price-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: -.02em;
+  }
+  #invCard .ic-price-value.highlight { color: #6EE7A0; }
+  /* Sales condition badge */
+  #invCard .ic-condition {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  #invCard .ic-condition.available   { background:#D1FAE5; color:#065F46; }
+  #invCard .ic-condition.under-offer { background:#FEF3C7; color:#92400E; }
+  #invCard .ic-condition.exchanged   { background:#DBEAFE; color:#1E40AF; }
+  #invCard .ic-condition.settled     { background:#F3F4F6; color:#374151; }
+
+  /* Tabs */
+  #invCard .ic-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  #invCard .ic-tab-btn {
+    flex: 1;
+    padding: 12px 4px 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text3);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    margin-bottom: -2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    transition: color .15s, border-color .15s;
+  }
+  #invCard .ic-tab-btn .ti { font-size: 16px; }
+  #invCard .ic-tab-btn.active { color: var(--inv-green); border-bottom-color: var(--inv-green); }
+  #invCard .ic-tab-panel { display: none; padding: 16px 20px 32px; }
+  #invCard .ic-tab-panel.active { display: block; }
+
+  /* Field rows */
+  #invCard .ic-section { margin-bottom: 20px; }
+  #invCard .ic-section-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--inv-green);
+    padding: 6px 14px;
+    border-radius: 6px 6px 0 0;
+    margin-bottom: 0;
+  }
+  #invCard .ic-fields {
+    border: 1px solid var(--border);
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+  }
+  #invCard .ic-field {
+    display: flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+  }
+  #invCard .ic-field:last-child { border-bottom: none; }
+  #invCard .ic-field-label {
+    font-size: 11px;
+    color: var(--text3);
+    width: 160px;
+    flex-shrink: 0;
+  }
+  #invCard .ic-field-val {
+    font-size: 12px;
+    color: var(--text);
+    flex: 1;
+    text-align: right;
+    font-weight: 500;
+  }
+  #invCard .ic-field-val.empty { color: var(--text3); font-weight: 400; font-style: italic; }
+  #invCard .ic-field-val input,
+  #invCard .ic-field-val select {
+    width: 100%;
+    text-align: right;
+    font-size: 12px;
+    font-family: inherit;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    outline: none;
+    padding: 0;
+  }
+  #invCard .ic-field-val input:focus,
+  #invCard .ic-field-val select:focus {
+    background: var(--bg2);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+
+  /* Notes tab */
+  #invCard .ic-notes-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+  #invCard .ic-notes-input {
+    flex: 1;
+    background: var(--bg2);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    outline: none;
+  }
+  #invCard .ic-notes-input:focus { border-color: var(--inv-green); }
+  #invCard .ic-notes-add-btn {
+    background: var(--inv-green);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 44px; height: 44px;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  #invCard .ic-note-entry {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  #invCard .ic-note-entry:last-child { border-bottom: none; }
+  #invCard .ic-note-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--inv-green);
+    white-space: nowrap;
+    flex-shrink: 0;
+    width: 56px;
+    padding-top: 1px;
+  }
+  #invCard .ic-note-text {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  /* Linked leads */
+  #invCard .ic-linked-lead {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--inv-green-lt);
+    color: var(--inv-green-dk);
+    border: 1px solid rgba(45,106,79,0.3);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    margin: 3px;
+  }
+
+  /* Back button */
+  #invCard .ic-back {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    margin-bottom: 10px;
+    display: inline-block;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Save bar */
+  #invCard .ic-save-bar {
+    position: sticky;
+    bottom: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  #invCard .ic-save-bar .ic-saved {
+    font-size: 12px;
+    color: var(--text3);
+    margin-right: auto;
+  }
+
+  @media (max-width: 768px) {
+    #invCard { padding: 0; }
+    #invCard .ic-wrap { max-width: 100%; border-radius: 0; box-shadow: none; min-height: 100vh; }
+    #invCard .ic-title { font-size: 20px; }
+    #invCard .ic-prices { grid-template-columns: 1fr 1fr 1fr; }
+    #invCard .ic-price-value { font-size: 16px; }
+  }
+
+
+/* ══ INVENTORY CARD ══ */
+#invCard {
+  display: none;
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 302;
+  overflow-y: auto;
+  background: var(--bg);
+  font-family: var(--sans);
+}
+#invCard .ic-card {
+  width: 100%;
+  max-width: 480px;
+  margin: 24px auto 48px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(28,26,22,0.12);
+  overflow: hidden;
+}
+#invCard .ic-header {
+  background: var(--navy);
+  padding: 20px 20px 0;
+  position: relative;
+  overflow: hidden;
+}
+#invCard .ic-header::after {
+  content: '';
+  position: absolute;
+  right: -30px; top: -30px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  pointer-events: none;
+}
+#invCard .ic-header::before {
+  content: '';
+  position: absolute;
+  right: 40px; bottom: -20px;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  pointer-events: none;
+}
+#invCard .ic-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+#invCard .ic-lot-number {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+#invCard .ic-lot-address {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.25;
+}
+#invCard .ic-lot-suburb {
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  margin-top: 2px;
+}
+#invCard .ic-condition-badge {
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+#invCard .ic-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding-bottom: 16px;
+}
+#invCard .ic-chip {
+  background: rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.85);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+#invCard .ic-chip-label { color: rgba(255,255,255,0.5); margin-right: 2px; }
+#invCard .ic-price-hero {
+  background: var(--navy);
+  padding: 0 20px 20px;
+  display: flex;
+  gap: 0;
+}
+#invCard .ic-price-item { flex: 1; text-align: center; }
+#invCard .ic-price-item + .ic-price-item { border-left: 1px solid rgba(255,255,255,0.12); }
+#invCard .ic-price-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+#invCard .ic-price-value {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+}
+#invCard .ic-price-value.hl { color: var(--gold-mid); }
+#invCard .ic-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+#invCard .ic-tab-btn {
+  flex: 1;
+  padding: 12px 4px 11px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: -1px;
+}
+#invCard .ic-tab-btn .tbi { font-size: 14px; }
+#invCard .ic-tab-btn.active { color: var(--navy); border-bottom-color: var(--navy); }
+#invCard .ic-panel { display: none; padding: 16px; }
+#invCard .ic-panel.active { display: block; }
+/* Re-skin the existing .fs sections inside invCard */
+#invCard .fs {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+#invCard .fst {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+}
+#invCard .fg { display: block; }
+#invCard .ff {
+  display: flex;
+  align-items: center;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+#invCard .ff:last-child { border-bottom: none; }
+#invCard .ff:hover { background: var(--surface2); }
+#invCard .ff label {
+  font-size: 11px;
+  color: var(--muted);
+  width: 160px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+#invCard .ff input,
+#invCard .ff select,
+#invCard .ff textarea {
+  font-size: 13px;
+  color: var(--ink);
+  flex: 1;
+  text-align: right;
+  font-weight: 500;
+  font-family: var(--sans);
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+#invCard .ff input[type="number"],
+#invCard .ff input[type="date"] { text-align: right; }
+#invCard .ff input:focus,
+#invCard .ff select:focus {
+  background: var(--navy-lt);
+  border-radius: 6px;
+  padding: 2px 8px;
+  border: 1.5px solid var(--navy);
+  cursor: text;
+}
+/* Person cards for People tab */
+#invCard .ic-person {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+#invCard .ic-person-role {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+#invCard .ic-person-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+#invCard .ic-contact-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-top: 1px solid var(--border);
+}
+#invCard .ic-contact-icon { font-size: 13px; width: 20px; text-align: center; flex-shrink: 0; }
+#invCard .ic-contact-val { font-size: 12px; color: var(--ink); flex: 1; }
+/* Notes */
+#invCard .ic-notes-add {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+#invCard .ic-notes-ta {
+  flex: 1;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: var(--sans);
+  color: var(--ink);
+  outline: none;
+  resize: none;
+  min-height: 42px;
+  line-height: 1.4;
+}
+#invCard .ic-notes-ta:focus { border-color: var(--navy); }
+#invCard .ic-notes-btn {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  width: 42px;
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+#invCard .ic-note-entry {
+  display: flex;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+#invCard .ic-note-entry:last-child { border-bottom: none; }
+#invCard .ic-note-date {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--navy);
+  white-space: nowrap;
+  padding-top: 1px;
+  width: 52px;
+  flex-shrink: 0;
+}
+#invCard .ic-note-text {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.5;
+  flex: 1;
+}
+/* Save FAB */
+#invCard .ic-save-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--navy);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 22px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,38,117,0.3);
+  transform: translateY(80px);
+  opacity: 0;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s;
+  z-index: 50;
+}
+#invCard .ic-save-fab.visible { transform: translateY(0); opacity: 1; }
+/* Back button */
+#invCard .ic-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 6px;
+  padding: 5px 11px;
+  cursor: pointer;
+  font-family: var(--sans);
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 2;
+}
+@media (max-width: 520px) {
+  #invCard .ic-card { margin: 0; border-radius: 0; box-shadow: none; max-width: 100%; min-height: 100vh; }
+  #invCard { padding: 0; }
+}
+@keyframes ic-fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
 
 </style>
 
@@ -1335,7 +2097,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
 
 </div>
 <!-- ═══════════ LEAD CARD ═══════════ -->
-<div id="leadCard" style="display:none;pointer-events:none;position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;padding:32px 16px 64px">
+<div id="leadCard" style="display:none;pointer-events:none;position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;padding:32px 0 64px">
 <div class="card">
 
   <div class="gold-rule"></div>
@@ -1416,7 +2178,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
       </div>
 
       <!-- Mobile-only contact info -->
-      <div class="mobile-only section" style="margin:16px">
+      <div class="mobile-only section" style="margin:0;border-top:1px solid var(--border)">
         <div class="section-title">Contact &amp; Assignment</div>
         <div class="field-row"><span class="field-label">Mobile</span><span class="field-value mono">0413 564 814</span></div>
         <div class="field-row"><span class="field-label">Email</span><span class="field-value" style="font-size:12px">varun@email.com</span></div>
@@ -1522,8 +2284,6 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
 
 </div><!-- /card -->
 </div>
-
-
 <!-- ═══════════ CUSTOM FIELDS MODAL ═══════════ -->
 <div class="modal-ov" id="fieldsModal" onclick="if(event.target.id==='fieldsModal')closeFieldsModal()">
   <div class="modal" style="width:680px;max-height:85vh;display:flex;flex-direction:column">
@@ -2061,6 +2821,8 @@ async function persist(opts) {
 // Intercept swipe-back / browser back — prevent navigating away from app
 window.addEventListener('popstate', function(e) {
   if (document.getElementById('leadCard').style.display !== 'none') { closeLeadCard(); return; }
+  if (document.getElementById('invCard')?.style.display === 'block') { closeInvCard(); return; }
+  if (document.getElementById('invCard').classList.contains('open')) { closeInvCard(); return; }
   if (document.getElementById('leadPage').style.display === 'flex') {
     // Lead page open — intercept and close it
     history.pushState({leadPage: true}, '');
@@ -2376,6 +3138,7 @@ function toggle48hr(el) {
 function applyFilters() { fSearch = document.getElementById('searchInput').value; renderLeads(); }
 
 function getVisible() {
+  if (!me) return [];
   let data = [...leads];
   // scope by role
   if (me.role === 'agency') data = data.filter(l => l.assignedAgency === me.agencyId);
@@ -3155,6 +3918,7 @@ document.addEventListener('click', e => {
 
 function renderMobileLeads() {
   if (window.innerWidth > 768) return;
+  if (!me) return;
   const container = document.getElementById('mobileLeadsList');
   if (!container) return;
   const rows = getVisible();
@@ -3165,23 +3929,20 @@ function renderMobileLeads() {
 
   function fmtShortDate(raw) {
     if (!raw) return '\u2014';
-    // Already DD-MM-YYYY format
     const m = raw.match(/^(\d{2})-(\d{2})-(\d{4})/);
     if (m) return m[1] + '-' + m[2] + '-' + m[3].slice(2);
-    // ISO format fallback
     const d = new Date(raw);
     if (!isNaN(d)) return String(d.getDate()).padStart(2,'0') + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getFullYear()).slice(2);
     return raw;
   }
 
-  function getLastComment(pocComments) {
-    if (!pocComments) return '';
+  function getLastComment(poc) {
+    if (!poc) return '';
     try {
-      const entries = JSON.parse(pocComments);
-      if (!Array.isArray(entries) || !entries.length) return '';
-      const last = entries[entries.length - 1];
-      return last.text || '';
-    } catch(e) { return typeof pocComments === 'string' ? pocComments : ''; }
+      const e = JSON.parse(poc);
+      if (!Array.isArray(e) || !e.length) return '';
+      return e[e.length-1].text || '';
+    } catch(e) { return typeof poc === 'string' ? poc : ''; }
   }
 
   container.innerHTML = rows.map(l => {
@@ -3189,19 +3950,26 @@ function renderMobileLeads() {
     const emoji = status==='hot'?'\ud83d\udd34':status==='warm'?'\ud83d\udfe0':status==='cold'?'\ud83d\udd35':'';
     const dateStr = fmtShortDate(l.date);
     const lastComment = getLastComment(l.pocComments);
-
-    return '<div onclick="openLeadCard(\'' + l.id + '\')" style="display:flex;align-items:flex-start;padding:12px 14px;border-bottom:1px solid var(--border);gap:10px;cursor:pointer;background:var(--surface);box-sizing:border-box;width:100%;overflow:hidden">' +
+    return '<div data-lead-id="' + l.id + '" style="display:flex;align-items:flex-start;padding:12px 14px;border-bottom:1px solid var(--border);gap:10px;cursor:pointer;background:var(--surface);box-sizing:border-box;width:100%;overflow:hidden">' +
       '<div style="flex-shrink:0;width:60px;padding-top:1px">' +
         '<div style="font-size:11px;color:var(--text3);white-space:nowrap">' + dateStr + '</div>' +
         '<div style="font-size:15px;margin-top:4px">' + emoji + '</div>' +
       '</div>' +
       '<div style="flex:1;min-width:0;overflow:hidden">' +
         '<div style="font-size:14px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px">' + (l.name||'\u2014') + '</div>' +
-        (lastComment ? '<div style="font-size:11px;color:var(--text3);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical">' + lastComment.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' : '<div style="font-size:11px;color:var(--text3);font-style:italic">No comments yet</div>') +
+        (lastComment
+          ? '<div style="font-size:11px;color:var(--text3);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical">' + lastComment.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>'
+          : '<div style="font-size:11px;color:var(--text3);font-style:italic">No comments yet</div>') +
       '</div>' +
       '<span style="color:#bbb;font-size:16px;flex-shrink:0;padding-top:2px">\u203a</span>' +
       '</div>';
   }).join('');
+
+  // Use delegated click — no inline onclick needed, avoids escaping issues
+  container.onclick = function(e) {
+    const row = e.target.closest('[data-lead-id]');
+    if (row) openLeadCard(row.dataset.leadId);
+  };
 }
 
 
@@ -4735,7 +5503,7 @@ function refreshInvTable() {
             }).join('');
             const td  = (v, opts='') => `<td style="padding:6px 8px;border-right:1px solid var(--border);white-space:nowrap;font-size:11px;vertical-align:middle;${opts}">${v||'—'}</td>`;
             const tdc = (v)           => `<td style="padding:6px 8px;border-right:1px solid var(--border);vertical-align:middle">${v}</td>`;
-            return `<tr style="background:${i%2===0?'var(--bg2)':'var(--bg3)'};border-bottom:1px solid var(--border);cursor:pointer" ondblclick="openInvDrawer('${lot.id}')">
+            return `<tr style="background:${i%2===0?'var(--bg2)':'var(--bg3)'};border-bottom:1px solid var(--border);cursor:pointer" ondblclick="openInvCard('${lot.id}')">
               <td style="padding:6px 8px;border-right:1px solid var(--border);font-size:10px;color:var(--text3);text-align:right;white-space:nowrap">${i+1}</td>
               <td style="padding:6px 8px;border-right:1px solid var(--border);font-size:10px;color:var(--text3);white-space:nowrap">${lot.id}</td>
               ${td(lot.projectName,'font-weight:600;color:var(--text)')}
@@ -5996,7 +6764,7 @@ function openLeadCard(id) {
   cardSwitchTab('process', card.querySelector('.tab-btn'));
 
   // Attach edit handlers
-  cardAttachEditors(lid);
+  cardAttachEditors(id);
 
   document.getElementById('leadCard').style.display='block';
   document.getElementById('leadCard').style.pointerEvents='auto';
@@ -6012,6 +6780,477 @@ window.addEventListener('resize', function() {
   if (ml) { ml.style.display = isMobile ? 'flex' : 'none'; if (isMobile) renderMobileLeads(); }
 });
 
+// ── Session restore on page load ──
+(async function() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return; // No session — show login screen
+  const { data: userRows } = await sb.from('users').select('*').eq('id', session.user.id);
+  const userRow = userRows?.[0];
+  if (!userRow) return;
+  me = { role: userRow.role, username: userRow.username, agencyId: userRow.agency_id||null, agentId: userRow.agent_id||null };
+  await loadData();
+  enterApp();
+})();
+
+// ═══════════════════════════════════════════
+//  INVENTORY CARD
+// ═══════════════════════════════════════════
+
+
+
+function fmtMoney(v) {
+  if (!v) return '—';
+  const n = parseFloat(String(v).replace(/[^0-9.-]/g,''));
+  if (isNaN(n)) return v;
+  return '$' + n.toLocaleString('en-AU');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+async 
+
+async 
+
+
+
+
+
+
+
+
+
+
+
+
+async 
+
+// ══ INVENTORY CARD ══
+
+
+
+
+
+
+
+
+
+
+async 
+
+// ══ INVENTORY CARD ══
+
+
+
+
+
+
+
+
+
+
+async 
+
+// ══ INVENTORY CARD ══
+function icTab(name, btn) {
+  document.querySelectorAll('#invCard .ic-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#invCard .ic-tab-btn').forEach(b => b.classList.remove('active'));
+  const p = document.getElementById('ic-panel-' + name);
+  if (p) p.classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+function icFmt(v) {
+  if (!v) return '—';
+  const n = parseFloat(String(v).replace(/[^0-9.-]/g,''));
+  return isNaN(n) ? String(v) : '$' + n.toLocaleString('en-AU');
+}
+
+function icSet(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val || '—';
+}
+
+function openInvCard(id) {
+  // Populate the existing form fields via openInvDrawer then hide the drawer
+  openInvDrawer(id);
+  closeInvDrawer();
+
+  const lot = inventory.find(x => x.id === id);
+  if (!lot) return;
+
+  // Header
+  document.getElementById('ic-lot-number').textContent =
+    'Lot ' + (lot.lotNum || lot.lotId || '') + (lot.projectName ? ' · ' + lot.projectName : '');
+  document.getElementById('ic-lot-address').textContent = lot.address || '—';
+  document.getElementById('ic-lot-suburb').textContent = '';
+
+  // Condition badge
+  const badge = document.getElementById('ic-cond-badge');
+  const condText = document.getElementById('ic-cond-text');
+  if (lot.salesCondition) {
+    condText.textContent = lot.salesCondition;
+    badge.style.display = 'inline-flex';
+  } else {
+    badge.style.display = 'none';
+  }
+
+  // Chips
+  const chips = [];
+  if (lot.stage)        chips.push('<span class="ic-chip"><span class="ic-chip-label">Stage</span>' + lot.stage + '</span>');
+  if (lot.lotArea)      chips.push('<span class="ic-chip"><span class="ic-chip-label">Area</span>' + lot.lotArea + ' m²</span>');
+  if (lot.propertyType) chips.push('<span class="ic-chip"><span class="ic-chip-label">Type</span>' + lot.propertyType + '</span>');
+  if (lot.salesChannel) chips.push('<span class="ic-chip"><span class="ic-chip-label">Channel</span>' + lot.salesChannel + '</span>');
+  document.getElementById('ic-chips').innerHTML = chips.join('');
+
+  // Prices
+  document.getElementById('ic-p-list').textContent   = icFmt(lot.list);
+  document.getElementById('ic-p-cfs').textContent    = icFmt(lot.cfsIssuedPrice);
+  document.getElementById('ic-p-rebate').textContent = icFmt(lot.rebate || lot.offerRebate);
+
+  // People tab
+  icSet('ic-p1-name',   lot.p1Name);
+  icSet('ic-p1-mobile', lot.p1Mobile);
+  icSet('ic-p1-email',  lot.p1Email);
+  icSet('ic-p2-name',   lot.p2Name);
+  icSet('ic-p2-mobile', lot.p2Mobile);
+  icSet('ic-p2-email',  lot.p2Email);
+  icSet('ic-sol-name',  lot.pSolicitor);
+  icSet('ic-sol-phone', lot.pSolicitorPhone);
+  icSet('ic-p-suburb',  (lot.pSuburb || '') + (lot.pPostcode ? ' ' + lot.pPostcode : ''));
+  icSet('ic-p-type',    lot.purchaserType);
+  icSet('ic-va-agency', lot.vendorsAgency);
+  icSet('ic-va-agent',  lot.vendorsAgent);
+  icSet('ic-va-mobile', lot.agentMobile);
+  icSet('ic-va-email',  lot.agentEmail);
+
+  // Notes log — read from the iv-notes field (populated by openInvDrawer)
+  const notesRaw = document.getElementById('iv-notes')?.value || lot.notes || '';
+  icRenderNotes(notesRaw);
+
+  // Pre-fill note input
+  document.getElementById('ic-note-input').value = icTodayPrefix() + ' - ';
+
+  // Default tab
+  icTab('summary', document.querySelector('#invCard .ic-tab-btn'));
+
+  // Show card
+  const card = document.getElementById('invCard');
+  card.style.display = 'block';
+  card.style.pointerEvents = 'auto';
+  document.getElementById('app').style.display = 'none';
+  history.pushState({ invCard: true }, '');
+}
+
+function closeInvCard() {
+  document.getElementById('invCard').style.display = 'none';
+  document.getElementById('invCard').style.pointerEvents = 'none';
+  document.getElementById('app').style.display = 'flex';
+}
+
+function icTodayPrefix() {
+  const d = new Date();
+  const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return String(d.getDate()).padStart(2,'0') + '-' + mo[d.getMonth()];
+}
+
+function icRenderNotes(raw) {
+  const list = document.getElementById('ic-notes-list');
+  if (!list) return;
+  const lines = (raw || '').split('\n').filter(l => l.trim());
+  list.innerHTML = lines.map(line => {
+    const m = line.match(/^(\d{1,2}-[A-Za-z]{3})\s*[-\u2014]\s*(.*)/);
+    const date = m ? m[1] : '';
+    const text = m ? m[2] : line;
+    return `<div class="ic-note-entry"><span class="ic-note-date">${date}</span><span class="ic-note-text">${text}</span></div>`;
+  }).join('') || '<div style="font-size:12px;color:var(--muted);font-style:italic;padding:8px 0">No notes yet</div>';
+}
+
+function icNotesGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+function icAddNote() {
+  const input = document.getElementById('ic-note-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Parse date from text (e.g. "10-Apr - note")
+  const match = text.match(/^(\d{1,2}-[A-Za-z]{3})\s*[-\u2014]\s*(.+)/);
+  const date = match ? match[1] : icTodayPrefix();
+  const body = match ? match[2].trim() : text;
+
+  // Prepend to notes list
+  const list = document.getElementById('ic-notes-list');
+  const entry = document.createElement('div');
+  entry.className = 'ic-note-entry';
+  entry.style.animation = 'ic-fadeIn 0.2s ease';
+  entry.innerHTML = `<span class="ic-note-date">${date}</span><span class="ic-note-text">${body.replace(/</g,'&lt;')}</span>`;
+  list.insertBefore(entry, list.firstChild);
+
+  // Save to iv-notes textarea
+  const ta = document.getElementById('iv-notes');
+  if (ta) { ta.value = date + ' - ' + body + (ta.value ? '\n' + ta.value : ''); invDirty = true; }
+
+  input.value = icTodayPrefix() + ' - ';
+  input.style.height = 'auto';
+
+  // Show save FAB
+  document.getElementById('ic-save-fab').classList.add('visible');
+}
+
+async function icSaveLot() {
+  // Commit any open inline edits
+  await saveInvLot();
+  const fab = document.getElementById('ic-save-fab');
+  fab.innerHTML = '<span>✓</span> Saved';
+  fab.style.background = '#1D5A8A';
+  setTimeout(() => {
+    fab.innerHTML = '<span>💾</span> Save Changes';
+    fab.style.background = '';
+    fab.classList.remove('visible');
+  }, 2000);
+}
+
 </script>
+
+
+<!-- ═══════════ INVENTORY CARD ═══════════ -->
+<div id="invCard">
+  <div class="ic-card">
+
+    <!-- HEADER -->
+    <div class="ic-header">
+      <button class="ic-back" onclick="closeInvCard()">← Back</button>
+      <div class="ic-header-top">
+        <div>
+          <div class="ic-lot-number" id="ic-lot-number">—</div>
+          <div class="ic-lot-address" id="ic-lot-address">—</div>
+          <div class="ic-lot-suburb" id="ic-lot-suburb"></div>
+        </div>
+        <div class="ic-condition-badge" id="ic-cond-badge" style="display:none">⬤ <span id="ic-cond-text">—</span></div>
+      </div>
+      <div class="ic-chips" id="ic-chips"></div>
+    </div>
+
+    <!-- PRICE HERO -->
+    <div class="ic-price-hero">
+      <div class="ic-price-item">
+        <div class="ic-price-label">List</div>
+        <div class="ic-price-value" id="ic-p-list">—</div>
+      </div>
+      <div class="ic-price-item">
+        <div class="ic-price-label">CfS Issued</div>
+        <div class="ic-price-value hl" id="ic-p-cfs">—</div>
+      </div>
+      <div class="ic-price-item">
+        <div class="ic-price-label">Rebate</div>
+        <div class="ic-price-value" id="ic-p-rebate">—</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="ic-tabs">
+      <button class="ic-tab-btn active" onclick="icTab('summary',this)"><span class="tbi">📋</span>Summary</button>
+      <button class="ic-tab-btn" onclick="icTab('dates',this)"><span class="tbi">📅</span>Dates</button>
+      <button class="ic-tab-btn" onclick="icTab('people',this)"><span class="tbi">👤</span>People</button>
+      <button class="ic-tab-btn" onclick="icTab('notes',this)"><span class="tbi">📝</span>Notes</button>
+    </div>
+
+    <!-- SUMMARY TAB -->
+    <div class="ic-panel active" id="ic-panel-summary">
+<div class="fs"><div class="fst">Sales Condition & Status</div>
+        <div class="fg">
+          <div class="ff"><label>Sales Condition</label>
+            <select id="iv-salesCondition">
+              <option value="">—</option>
+              <option>Available</option><option>Under Offer</option><option>Conditional</option>
+              <option>Unconditional</option><option>Settled</option><option>Withdrawn</option><option>Hold</option>
+            </select>
+          </div>
+          <div class="ff"><label>Pending S/A Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-pendingSADate"></div>
+          <div class="ff"><label>Pending S/A Days</label><input type="number" id="iv-pendingSADays" placeholder="0"></div>
+          <div class="ff"><label>Pending S/A Agency</label><input type="text" id="iv-pendingSAAgency"></div>
+        </div>
+      </div>
+
+      <!-- SECTION: Linked Leads -->
+<div class="fs"><div class="fst">Project & Lot Identity</div>
+        <div class="fg">
+          <div class="ff"><label>Project Name</label><input type="text" id="iv-projectName" placeholder="e.g. Merrifield Estate"></div>
+          <div class="ff"><label>Lot ID</label><input type="text" id="iv-lotId" placeholder="e.g. MLT-042"></div>
+          <div class="ff"><label>Property Address</label><input type="text" id="iv-address" placeholder="Full address"></div>
+          <div class="ff"><label>Stage</label><input type="text" id="iv-stage" placeholder="e.g. Stage 3"></div>
+          <div class="ff"><label>Lot #</label><input type="text" id="iv-lotNum" placeholder="e.g. 42"></div>
+          <div class="ff"><label>Property Type</label><select id="iv-propertyType"><option value="">—</option><option>Residential</option><option>Townhouse</option><option>Apartment</option><option>Land Only</option><option>H&L Package</option></select></div>
+          <div class="ff"><label>CfS Type</label><input type="text" id="iv-cfsType" placeholder="e.g. Standard / Sunset"></div>
+          <div class="ff"><label>Product Line</label><input type="text" id="iv-productLine"></div>
+          <div class="ff"><label>Product Type</label><input type="text" id="iv-productType"></div>
+          <div class="ff"><label>Lot Area (m²)</label><input type="number" id="iv-lotArea" placeholder="0"></div>
+          <div class="ff"><label>Lot Frontage / Width (m)</label><input type="number" id="iv-lotFrontage" placeholder="0" step="0.1"></div>
+        </div>
+      </div>
+
+      <!-- SECTION: Sales Condition & Status -->
+<div class="fs"><div class="fst">Linked Leads</div>
+        <div id="iv-linkedLeadsWrap" style="background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px;min-height:44px;margin-bottom:10px">
+          <div id="iv-linkedLeadsTags" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+        <div class="ff">
+          <label>Search & Add Lead</label>
+          <input type="text" id="iv-leadSearch" placeholder="Type lead name…" oninput="filterLeadPicker()" autocomplete="off">
+          <div id="iv-leadPickerDropdown" style="background:var(--bg2);border:1px solid var(--border2);border-radius:4px;max-height:180px;overflow-y:auto;display:none;margin-top:2px;box-shadow:0 4px 12px rgba(0,0,0,.12)"></div>
+        </div>
+      </div>
+
+      <!-- SECTION: Channel & Market -->
+<div class="fs"><div class="fst">Channel & Market</div>
+        <div class="fg">
+          <div class="ff"><label>Channel Market</label><input type="text" id="iv-channelMarket"></div>
+          <div class="ff"><label>Sales Channel</label><input type="text" id="iv-salesChannel"></div>
+          <div class="ff"><label>Channel Partner</label><input type="text" id="iv-channelPartner"></div>
+          <div class="ff"><label>Swap to/from Channel Partner</label><input type="text" id="iv-channelSwap"></div>
+          <div class="ff"><label>Allocation Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-allocationDate"></div>
+          <div class="ff"><label>Allocation Days</label><input type="number" id="iv-allocationDays" placeholder="0"></div>
+          <div class="ff"><label>Allocation Period (days)</label><input type="number" id="iv-allocationPeriod" placeholder="0"></div>
+          <div class="ff"><label>Allocation Expiry Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-allocationExpiry"></div>
+        </div>
+      </div>
+
+      <!-- SECTION: Pricing -->
+<div class="fs"><div class="fst">Pricing</div>
+        <div class="fg">
+          <div class="ff"><label>$VAL</label><input type="text" id="iv-valuation" placeholder="$0"></div>
+          <div class="ff"><label>$BASE</label><input type="text" id="iv-base" placeholder="$0"></div>
+          <div class="ff"><label>$LIST</label><input type="text" id="iv-list" placeholder="$0"></div>
+          <div class="ff"><label>Land Tax Per Lot Value</label><input type="text" id="iv-landTaxVal" placeholder="$0"></div>
+          <div class="ff"><label>Land Tax $Uplift / $Shortfall</label><input type="text" id="iv-landTaxUplift" placeholder="$0"></div>
+          <div class="ff"><label>March Campaign</label><input type="text" id="iv-marchCampaign"></div>
+          <div class="ff"><label>OFFER Rebate</label><input type="text" id="iv-offerRebate" placeholder="$0"></div>
+          <div class="ff"><label>SETTLE Rebate</label><input type="text" id="iv-settleRebate" placeholder="$0"></div>
+        </div>
+        <div class="fg" style="margin-top:10px">
+          <div class="ff"><label>H&L $House (S/S)</label><input type="text" id="iv-hlHouseSS" placeholder="$0"></div>
+          <div class="ff"><label>$H&L Total (S/S)</label><input type="text" id="iv-hlTotalSS" placeholder="$0"></div>
+          <div class="ff"><label>H&L $House (D/S)</label><input type="text" id="iv-hlHouseDS" placeholder="$0"></div>
+          <div class="ff"><label>$H&L Total (D/S)</label><input type="text" id="iv-hlTotalDS" placeholder="$0"></div>
+        </div>
+      </div>
+
+      <!-- SECTION: Contract & Exchange -->
+    </div>
+
+    <!-- DATES TAB -->
+    <div class="ic-panel" id="ic-panel-dates">
+<div class="fs"><div class="fst">Contract & Exchange Dates</div>
+        <div class="fg">
+          <div class="ff"><label>Sales Advice Received Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-saReceivedDate"></div>
+          <div class="ff"><label>Sales Advice Sent To Legal Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-saSentLegalDate"></div>
+          <div class="ff"><label>Contract Issued Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-contractIssuedDate"></div>
+          <div class="ff"><label>Days From CfS Issued</label><input type="number" id="iv-daysFromCfs" placeholder="0"></div>
+          <div class="ff"><label>CfS Issued Price</label><input type="text" id="iv-cfsIssuedPrice" placeholder="$0"></div>
+          <div class="ff"><label>Cooling Off Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-coolingOffDate"></div>
+          <div class="ff"><label>Proposed Exchanged Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-proposedExchangeDate"></div>
+          <div class="ff"><label>Exchanged Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-exchangedDate"></div>
+          <div class="ff"><label>CfS Exchanged Price ($)</label><input type="text" id="iv-cfsExchangedPrice" placeholder="$0"></div>
+        </div>
+      </div>
+
+      <!-- SECTION: Settlement -->
+<div class="fs"><div class="fst">Settlement</div>
+        <div class="fg">
+          <div class="ff"><label>Proposed Settled Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-proposedSettledDate"></div>
+          <div class="ff"><label>Settled Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-settledDate"></div>
+          <div class="ff"><label>Settled Month</label>
+            <select id="iv-settledMonth"><option value="">—</option>
+              <option>January</option><option>February</option><option>March</option><option>April</option>
+              <option>May</option><option>June</option><option>July</option><option>August</option>
+              <option>September</option><option>October</option><option>November</option><option>December</option>
+            </select>
+          </div>
+          <div class="ff"><label>Settled Year</label><input type="number" id="iv-settledYear" placeholder="2026" min="2020" max="2040"></div>
+          <div class="ff"><label>CfS Settled Price ($)</label><input type="text" id="iv-cfsSettledPrice" placeholder="$0"></div>
+          <div class="ff"><label>Rebate</label><input type="text" id="iv-rebate" placeholder="$0"></div>
+          <div class="ff"><label>Deposit %</label><input type="text" id="iv-depositPct" placeholder="e.g. 10%"></div>
+          <div class="ff"><label>FIRB Approval</label><select id="iv-firbApproval"><option value="">—</option><option>Required</option><option>Approved</option><option>Not Required</option><option>Pending</option></select></div>
+        </div>
+      </div>
+
+      <!-- SECTION: March Campaign & Comments -->
+    </div>
+
+    <!-- PEOPLE TAB -->
+    <div class="ic-panel" id="ic-panel-people">
+      <div class="ic-person">
+        <div class="ic-person-role">Purchaser 1</div>
+        <div class="ic-person-name" id="ic-p1-name">—</div>
+        <div class="ic-contact-row"><span class="ic-contact-icon">📱</span><span class="ic-contact-val" id="ic-p1-mobile">—</span></div>
+        <div class="ic-contact-row"><span class="ic-contact-icon">✉️</span><span class="ic-contact-val" id="ic-p1-email">—</span></div>
+      </div>
+      <div class="ic-person">
+        <div class="ic-person-role">Purchaser 2</div>
+        <div class="ic-person-name" id="ic-p2-name">—</div>
+        <div class="ic-contact-row"><span class="ic-contact-icon">📱</span><span class="ic-contact-val" id="ic-p2-mobile">—</span></div>
+        <div class="ic-contact-row"><span class="ic-contact-icon">✉️</span><span class="ic-contact-val" id="ic-p2-email">—</span></div>
+      </div>
+      <div class="ic-person">
+        <div class="ic-person-role">Purchaser's Solicitor</div>
+        <div class="ic-person-name" id="ic-sol-name">—</div>
+        <div class="ic-contact-row"><span class="ic-contact-icon">📞</span><span class="ic-contact-val" id="ic-sol-phone">—</span></div>
+      </div>
+      <div class="ic-person">
+        <div class="ic-person-role">Purchaser Details</div>
+        <div class="ic-contact-row"><span class="ic-contact-icon">📍</span><span class="ic-contact-val" id="ic-p-suburb">—</span></div>
+        <div class="ic-contact-row"><span class="ic-contact-icon">🏠</span><span class="ic-contact-val" id="ic-p-type">—</span></div>
+      </div>
+      <div class="ic-person">
+        <div class="ic-person-role">Vendors Agency</div>
+        <div class="ic-person-name" id="ic-va-agency">—</div>
+        <div class="ic-contact-row"><span class="ic-contact-icon">👤</span><span class="ic-contact-val" id="ic-va-agent">—</span></div>
+        <div class="ic-contact-row"><span class="ic-contact-icon">📱</span><span class="ic-contact-val" id="ic-va-mobile">—</span></div>
+        <div class="ic-contact-row"><span class="ic-contact-icon">✉️</span><span class="ic-contact-val" id="ic-va-email">—</span></div>
+      </div>
+    </div>
+
+    <!-- NOTES TAB -->
+    <div class="ic-panel" id="ic-panel-notes">
+      <div class="ic-notes-add">
+        <textarea class="ic-notes-ta" id="ic-note-input" rows="1"
+          placeholder="16-Apr - " oninput="icNotesGrow(this)"></textarea>
+        <button class="ic-notes-btn" onclick="icAddNote()">＋</button>
+      </div>
+      <div id="ic-notes-list"></div>
+<div class="fs"><div class="fst">Campaign & Comments</div>
+        <div class="fg3">
+          <div class="ff"><label>March Campaign</label><input type="text" id="iv-marchCampaign2"></div>
+        </div>
+        <div class="fg1" style="margin-top:10px">
+          <div class="ff"><label>Notes</label><textarea id="iv-notes" style="min-height:60px"></textarea></div>
+          <div class="ff" style="margin-top:8px"><label>Comments</label><textarea id="iv-comments" style="min-height:60px"></textarea></div>
+          <div class="ff" style="margin-top:8px"><label>Special Conditions / Variations</label><textarea id="iv-specialConditions" style="min-height:60px"></textarea></div>
+        </div>
+      </div>
+
+      <!-- SECTION: Vendor's Agency -->
+    </div>
+
+    <!-- SAVE FAB -->
+    <button class="ic-save-fab" id="ic-save-fab" onclick="icSaveLot()">
+      <span>💾</span> Save Changes
+    </button>
+
+  </div>
+</div>
+
 </body>
 </html>
