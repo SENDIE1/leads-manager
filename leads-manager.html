@@ -1194,14 +1194,14 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
 #invCard .ic-panel { display: none; padding: 16px; }
 #invCard .ic-panel.active { display: block; }
 /* Re-skin the existing .fs sections inside invCard */
-#invCard .fs {
+#invCard .ic-fs {
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 12px;
   margin-bottom: 10px;
   overflow: hidden;
 }
-#invCard .fst {
+#invCard .ic-fst {
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -1211,8 +1211,8 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
   border-bottom: 1px solid var(--border);
   background: #fff;
 }
-#invCard .fg { display: block; }
-#invCard .ff {
+#invCard .ic-fg { display: block; }
+#invCard .ic-ff {
   display: flex;
   align-items: center;
   padding: 9px 14px;
@@ -1221,39 +1221,50 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
   cursor: pointer;
   transition: background 0.1s;
 }
-#invCard .ff:last-child { border-bottom: none; }
-#invCard .ff:hover { background: var(--surface2); }
-#invCard .ff label {
+#invCard .ic-ff:last-child { border-bottom: none; }
+#invCard .ic-ff:hover { background: var(--surface2); }
+#invCard .ic-ff label {
   font-size: 11px;
   color: var(--muted);
   width: 160px;
   flex-shrink: 0;
   cursor: pointer;
 }
-#invCard .ff input,
-#invCard .ff select,
-#invCard .ff textarea {
-  font-size: 13px;
-  color: var(--ink);
-  flex: 1;
-  text-align: right;
-  font-weight: 500;
-  font-family: var(--sans);
-  background: transparent;
+#invCard .ic-ff input,
+#invCard .ic-ff select,
+#invCard .ic-ff textarea {
+  font-size: 13px !important;
+  color: var(--text) !important;
+  flex: 1 !important;
+  text-align: right !important;
+  font-weight: 500 !important;
+  font-family: var(--sans) !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  cursor: pointer !important;
+}
+#invCard .ic-ff textarea { text-align: left !important; resize: vertical !important; min-height: 32px !important; padding: 6px 0 !important; cursor: text !important; }
+#invCard .ic-ff input:focus,
+#invCard .ic-ff select:focus {
+  background: var(--navy-lt, #E8ECF5) !important;
+  border-radius: 6px !important;
+  padding: 2px 8px !important;
+  border: 1.5px solid var(--navy, #002675) !important;
+}ground: transparent;
   border: none;
   outline: none;
   cursor: pointer;
 }
-#invCard .ff input[type="number"],
-#invCard .ff input[type="date"] { text-align: right; }
-#invCard .ff input:focus,
-#invCard .ff select:focus {
-  background: var(--navy-lt);
-  border-radius: 6px;
-  padding: 2px 8px;
-  border: 1.5px solid var(--navy);
-  cursor: text;
-}
+#invCard .ic-ff input[type="number"],
+#invCard .ic-ff input[type="date"] { text-align: right; }
+
 /* Person cards for People tab */
 #invCard .ic-person {
   background: var(--surface2);
@@ -6834,31 +6845,6 @@ async
 
 async 
 
-// ══ INVENTORY CARD ══
-
-
-
-
-
-
-
-
-
-
-async 
-
-// ══ INVENTORY CARD ══
-
-
-
-
-
-
-
-
-
-
-async 
 
 // ══ INVENTORY CARD ══
 function icTab(name, btn) {
@@ -6868,155 +6854,154 @@ function icTab(name, btn) {
   if (p) p.classList.add('active');
   if (btn) btn.classList.add('active');
 }
-
 function icFmt(v) {
-  if (!v) return '—';
+  if (!v) return '\u2014';
   const n = parseFloat(String(v).replace(/[^0-9.-]/g,''));
   return isNaN(n) ? String(v) : '$' + n.toLocaleString('en-AU');
 }
-
 function icSet(id, val) {
   const el = document.getElementById(id);
-  if (el) el.textContent = val || '—';
+  if (el) el.textContent = val || '\u2014';
 }
+function icTodayPrefix() {
+  const d = new Date(), mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return String(d.getDate()).padStart(2,'0') + '-' + mo[d.getMonth()];
+}
+function icRenderNotes(raw) {
+  const list = document.getElementById('ic-notes-list');
+  if (!list) return;
+  const lines = (raw||'').split('\n').filter(l => l.trim());
+  list.innerHTML = lines.map(line => {
+    const m = line.match(/^(\d{1,2}-[A-Za-z]{3})\s*[-\u2014]\s*(.*)/);
+    const date = m ? m[1] : '';
+    const text = m ? m[2] : line;
+    return '<div class="ic-note-entry"><span class="ic-note-date">'+date+'</span><span class="ic-note-text">'+text.replace(/</g,'&lt;')+'</span></div>';
+  }).join('') || '<div style="font-size:12px;color:var(--muted);font-style:italic;padding:8px 0">No notes yet</div>';
+}
+function icNotesGrow(el) { el.style.height='auto'; el.style.height=el.scrollHeight+'px'; }
 
 function openInvCard(id) {
-  // Populate the existing form fields via openInvDrawer then hide the drawer
   openInvDrawer(id);
   closeInvDrawer();
-
   const lot = inventory.find(x => x.id === id);
   if (!lot) return;
+  const card = document.getElementById('invCard');
 
   // Header
   document.getElementById('ic-lot-number').textContent =
-    'Lot ' + (lot.lotNum || lot.lotId || '') + (lot.projectName ? ' · ' + lot.projectName : '');
-  document.getElementById('ic-lot-address').textContent = lot.address || '—';
-  document.getElementById('ic-lot-suburb').textContent = '';
+    'Lot '+(lot.lotNum||lot.lotId||'')+(lot.projectName?' \u00b7 '+lot.projectName:'');
+  document.getElementById('ic-lot-address').textContent = lot.address||'\u2014';
 
   // Condition badge
   const badge = document.getElementById('ic-cond-badge');
   const condText = document.getElementById('ic-cond-text');
-  if (lot.salesCondition) {
-    condText.textContent = lot.salesCondition;
-    badge.style.display = 'inline-flex';
-  } else {
-    badge.style.display = 'none';
-  }
+  if (lot.salesCondition) { condText.textContent=lot.salesCondition; badge.style.display='inline-flex'; }
+  else badge.style.display='none';
 
   // Chips
-  const chips = [];
-  if (lot.stage)        chips.push('<span class="ic-chip"><span class="ic-chip-label">Stage</span>' + lot.stage + '</span>');
-  if (lot.lotArea)      chips.push('<span class="ic-chip"><span class="ic-chip-label">Area</span>' + lot.lotArea + ' m²</span>');
-  if (lot.propertyType) chips.push('<span class="ic-chip"><span class="ic-chip-label">Type</span>' + lot.propertyType + '</span>');
-  if (lot.salesChannel) chips.push('<span class="ic-chip"><span class="ic-chip-label">Channel</span>' + lot.salesChannel + '</span>');
+  const chips=[];
+  if(lot.stage)        chips.push('<span class="ic-chip"><span class="ic-chip-label">Stage</span>'+lot.stage+'</span>');
+  if(lot.lotArea)      chips.push('<span class="ic-chip"><span class="ic-chip-label">Area</span>'+lot.lotArea+' m\u00b2</span>');
+  if(lot.propertyType) chips.push('<span class="ic-chip"><span class="ic-chip-label">Type</span>'+lot.propertyType+'</span>');
+  if(lot.salesChannel) chips.push('<span class="ic-chip"><span class="ic-chip-label">Channel</span>'+lot.salesChannel+'</span>');
   document.getElementById('ic-chips').innerHTML = chips.join('');
 
   // Prices
   document.getElementById('ic-p-list').textContent   = icFmt(lot.list);
   document.getElementById('ic-p-cfs').textContent    = icFmt(lot.cfsIssuedPrice);
-  document.getElementById('ic-p-rebate').textContent = icFmt(lot.rebate || lot.offerRebate);
+  document.getElementById('ic-p-rebate').textContent = icFmt(lot.rebate||lot.offerRebate);
 
-  // People tab
-  icSet('ic-p1-name',   lot.p1Name);
-  icSet('ic-p1-mobile', lot.p1Mobile);
-  icSet('ic-p1-email',  lot.p1Email);
-  icSet('ic-p2-name',   lot.p2Name);
-  icSet('ic-p2-mobile', lot.p2Mobile);
-  icSet('ic-p2-email',  lot.p2Email);
-  icSet('ic-sol-name',  lot.pSolicitor);
-  icSet('ic-sol-phone', lot.pSolicitorPhone);
-  icSet('ic-p-suburb',  (lot.pSuburb || '') + (lot.pPostcode ? ' ' + lot.pPostcode : ''));
-  icSet('ic-p-type',    lot.purchaserType);
-  icSet('ic-va-agency', lot.vendorsAgency);
-  icSet('ic-va-agent',  lot.vendorsAgent);
-  icSet('ic-va-mobile', lot.agentMobile);
-  icSet('ic-va-email',  lot.agentEmail);
+  // Populate ALL form fields scoped to #invCard
+  const F = {
+    salesCondition:'iv-salesCondition', salesChannel:'iv-salesChannel',
+    channelPartner:'iv-channelPartner', depositPct:'iv-depositPct', firbApproval:'iv-firbApproval',
+    projectName:'iv-projectName', lotId:'iv-lotId', address:'iv-address', stage:'iv-stage',
+    lotNum:'iv-lotNum', propertyType:'iv-propertyType', cfsType:'iv-cfsType',
+    productLine:'iv-productLine', productType:'iv-productType',
+    lotArea:'iv-lotArea', lotFrontage:'iv-lotFrontage',
+    valuation:'iv-valuation', base:'iv-base', list:'iv-list',
+    landTaxVal:'iv-landTaxVal', landTaxUplift:'iv-landTaxUplift', marchCampaign:'iv-marchCampaign',
+    offerRebate:'iv-offerRebate', settleRebate:'iv-settleRebate',
+    hlHouseSS:'iv-hlHouseSS', hlTotalSS:'iv-hlTotalSS', hlHouseDS:'iv-hlHouseDS', hlTotalDS:'iv-hlTotalDS',
+    cfsIssuedPrice:'iv-cfsIssuedPrice', daysFromCfs:'iv-daysFromCfs', rebate:'iv-rebate',
+    cfsExchangedPrice:'iv-cfsExchangedPrice', cfsSettledPrice:'iv-cfsSettledPrice',
+    saReceivedDate:'iv-saReceivedDate', saSentLegalDate:'iv-saSentLegalDate',
+    contractIssuedDate:'iv-contractIssuedDate', coolingOffDate:'iv-coolingOffDate',
+    proposedExchangeDate:'iv-proposedExchangeDate', exchangedDate:'iv-exchangedDate',
+    proposedSettledDate:'iv-proposedSettledDate', settledDate:'iv-settledDate',
+    settledMonth:'iv-settledMonth', settledYear:'iv-settledYear',
+    channelMarket:'iv-channelMarket', allocationDate:'iv-allocationDate',
+    allocationDays:'iv-allocationDays', allocationPeriod:'iv-allocationPeriod',
+    allocationExpiry:'iv-allocationExpiry', channelSwap:'iv-channelSwap',
+    pendingSADate:'iv-pendingSADate', pendingSADays:'iv-pendingSADays', pendingSAAgency:'iv-pendingSAAgency',
+    notes:'iv-notes', comments:'iv-comments', specialConditions:'iv-specialConditions',
+    marchCampaign2:'iv-marchCampaign2',
+    vendorsAgency:'iv-vendorsAgency', vendorsAgent:'iv-vendorsAgent',
+    agentMobile:'iv-agentMobile', agentEmail:'iv-agentEmail',
+    p1Name:'iv-p1Name', p1Email:'iv-p1Email', p1Mobile:'iv-p1Mobile',
+    p2Name:'iv-p2Name', p2Email:'iv-p2Email', p2Mobile:'iv-p2Mobile',
+    pSuburb:'iv-pSuburb', pPostcode:'iv-pPostcode',
+    pSolicitor:'iv-pSolicitor', pSolicitorPhone:'iv-pSolicitorPhone', purchaserType:'iv-purchaserType',
+  };
+  Object.entries(F).forEach(([k,fid]) => {
+    const el = card.querySelector('#'+fid);
+    if (el && lot[k]!=null) el.value = lot[k];
+  });
 
-  // Notes log — read from the iv-notes field (populated by openInvDrawer)
-  const notesRaw = document.getElementById('iv-notes')?.value || lot.notes || '';
-  icRenderNotes(notesRaw);
+  // People display spans
+  icSet('ic-p1-name',lot.p1Name); icSet('ic-p1-mobile',lot.p1Mobile); icSet('ic-p1-email',lot.p1Email);
+  icSet('ic-p2-name',lot.p2Name); icSet('ic-p2-mobile',lot.p2Mobile); icSet('ic-p2-email',lot.p2Email);
+  icSet('ic-sol-name',lot.pSolicitor); icSet('ic-sol-phone',lot.pSolicitorPhone);
+  icSet('ic-va-agency',lot.vendorsAgency); icSet('ic-va-agent',lot.vendorsAgent);
+  icSet('ic-va-mobile',lot.agentMobile); icSet('ic-va-email',lot.agentEmail);
 
-  // Pre-fill note input
-  document.getElementById('ic-note-input').value = icTodayPrefix() + ' - ';
+  // Notes log
+  icRenderNotes(lot.notes||'');
+  const ni = card.querySelector('#ic-note-input');
+  if (ni) ni.value = icTodayPrefix() + ' - ';
 
-  // Default tab
-  icTab('summary', document.querySelector('#invCard .ic-tab-btn'));
-
-  // Show card
-  const card = document.getElementById('invCard');
+  icTab('summary', card.querySelector('.ic-tab-btn'));
   card.style.display = 'block';
   card.style.pointerEvents = 'auto';
   document.getElementById('app').style.display = 'none';
-  history.pushState({ invCard: true }, '');
+  history.pushState({invCard:true},'');
 }
 
 function closeInvCard() {
-  document.getElementById('invCard').style.display = 'none';
-  document.getElementById('invCard').style.pointerEvents = 'none';
+  const card = document.getElementById('invCard');
+  if (!card) return;
+  card.style.display = 'none';
+  card.style.pointerEvents = 'none';
   document.getElementById('app').style.display = 'flex';
 }
 
-function icTodayPrefix() {
-  const d = new Date();
-  const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return String(d.getDate()).padStart(2,'0') + '-' + mo[d.getMonth()];
-}
-
-function icRenderNotes(raw) {
-  const list = document.getElementById('ic-notes-list');
-  if (!list) return;
-  const lines = (raw || '').split('\n').filter(l => l.trim());
-  list.innerHTML = lines.map(line => {
-    const m = line.match(/^(\d{1,2}-[A-Za-z]{3})\s*[-\u2014]\s*(.*)/);
-    const date = m ? m[1] : '';
-    const text = m ? m[2] : line;
-    return `<div class="ic-note-entry"><span class="ic-note-date">${date}</span><span class="ic-note-text">${text}</span></div>`;
-  }).join('') || '<div style="font-size:12px;color:var(--muted);font-style:italic;padding:8px 0">No notes yet</div>';
-}
-
-function icNotesGrow(el) {
-  el.style.height = 'auto';
-  el.style.height = el.scrollHeight + 'px';
-}
-
 function icAddNote() {
-  const input = document.getElementById('ic-note-input');
-  const text = input.value.trim();
+  const ni = document.getElementById('ic-note-input');
+  const text = ni.value.trim();
   if (!text) return;
-
-  // Parse date from text (e.g. "10-Apr - note")
-  const match = text.match(/^(\d{1,2}-[A-Za-z]{3})\s*[-\u2014]\s*(.+)/);
-  const date = match ? match[1] : icTodayPrefix();
-  const body = match ? match[2].trim() : text;
-
-  // Prepend to notes list
+  const m = text.match(/^(\d{1,2}-[A-Za-z]{3})\s*[-\u2014]\s*(.+)/);
+  const date = m ? m[1] : icTodayPrefix();
+  const body = m ? m[2].trim() : text;
   const list = document.getElementById('ic-notes-list');
   const entry = document.createElement('div');
   entry.className = 'ic-note-entry';
   entry.style.animation = 'ic-fadeIn 0.2s ease';
-  entry.innerHTML = `<span class="ic-note-date">${date}</span><span class="ic-note-text">${body.replace(/</g,'&lt;')}</span>`;
+  entry.innerHTML = '<span class="ic-note-date">'+date+'</span><span class="ic-note-text">'+body.replace(/</g,'&lt;')+'</span>';
   list.insertBefore(entry, list.firstChild);
-
-  // Save to iv-notes textarea
-  const ta = document.getElementById('iv-notes');
-  if (ta) { ta.value = date + ' - ' + body + (ta.value ? '\n' + ta.value : ''); invDirty = true; }
-
-  input.value = icTodayPrefix() + ' - ';
-  input.style.height = 'auto';
-
-  // Show save FAB
+  const ta = document.getElementById('invCard').querySelector('#iv-notes');
+  if (ta) { ta.value=(ta.value?ta.value+'\n':'')+date+' - '+body; invDirty=true; }
+  ni.value = icTodayPrefix() + ' - ';
+  ni.style.height = 'auto';
   document.getElementById('ic-save-fab').classList.add('visible');
 }
 
 async function icSaveLot() {
-  // Commit any open inline edits
   await saveInvLot();
   const fab = document.getElementById('ic-save-fab');
-  fab.innerHTML = '<span>✓</span> Saved';
-  fab.style.background = '#1D5A8A';
+  fab.innerHTML = '<span>\u2713</span> Saved';
+  fab.style.background = 'var(--accent,#2563eb)';
   setTimeout(() => {
-    fab.innerHTML = '<span>💾</span> Save Changes';
+    fab.innerHTML = '<span>\ud83d\udcbe</span> Save Changes';
     fab.style.background = '';
     fab.classList.remove('visible');
   }, 2000);
@@ -7069,44 +7054,44 @@ async function icSaveLot() {
 
     <!-- SUMMARY TAB -->
     <div class="ic-panel active" id="ic-panel-summary">
-<div class="fs"><div class="fst">Sales Condition & Status</div>
-        <div class="fg">
-          <div class="ff"><label>Sales Condition</label>
+<div class="ic-fs"><div class="ic-fst">Sales Condition & Status</div>
+        <div class="ic-fg">
+          <div class="ic-ff"><label>Sales Condition</label>
             <select id="iv-salesCondition">
               <option value="">—</option>
               <option>Available</option><option>Under Offer</option><option>Conditional</option>
               <option>Unconditional</option><option>Settled</option><option>Withdrawn</option><option>Hold</option>
             </select>
           </div>
-          <div class="ff"><label>Pending S/A Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-pendingSADate"></div>
-          <div class="ff"><label>Pending S/A Days</label><input type="number" id="iv-pendingSADays" placeholder="0"></div>
-          <div class="ff"><label>Pending S/A Agency</label><input type="text" id="iv-pendingSAAgency"></div>
+          <div class="ic-ff"><label>Pending S/A Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-pendingSADate"></div>
+          <div class="ic-ff"><label>Pending S/A Days</label><input type="number" id="iv-pendingSADays" placeholder="0"></div>
+          <div class="ic-ff"><label>Pending S/A Agency</label><input type="text" id="iv-pendingSAAgency"></div>
         </div>
       </div>
 
       <!-- SECTION: Linked Leads -->
-<div class="fs"><div class="fst">Project & Lot Identity</div>
-        <div class="fg">
-          <div class="ff"><label>Project Name</label><input type="text" id="iv-projectName" placeholder="e.g. Merrifield Estate"></div>
-          <div class="ff"><label>Lot ID</label><input type="text" id="iv-lotId" placeholder="e.g. MLT-042"></div>
-          <div class="ff"><label>Property Address</label><input type="text" id="iv-address" placeholder="Full address"></div>
-          <div class="ff"><label>Stage</label><input type="text" id="iv-stage" placeholder="e.g. Stage 3"></div>
-          <div class="ff"><label>Lot #</label><input type="text" id="iv-lotNum" placeholder="e.g. 42"></div>
-          <div class="ff"><label>Property Type</label><select id="iv-propertyType"><option value="">—</option><option>Residential</option><option>Townhouse</option><option>Apartment</option><option>Land Only</option><option>H&L Package</option></select></div>
-          <div class="ff"><label>CfS Type</label><input type="text" id="iv-cfsType" placeholder="e.g. Standard / Sunset"></div>
-          <div class="ff"><label>Product Line</label><input type="text" id="iv-productLine"></div>
-          <div class="ff"><label>Product Type</label><input type="text" id="iv-productType"></div>
-          <div class="ff"><label>Lot Area (m²)</label><input type="number" id="iv-lotArea" placeholder="0"></div>
-          <div class="ff"><label>Lot Frontage / Width (m)</label><input type="number" id="iv-lotFrontage" placeholder="0" step="0.1"></div>
+<div class="ic-fs"><div class="ic-fst">Project & Lot Identity</div>
+        <div class="ic-fg">
+          <div class="ic-ff"><label>Project Name</label><input type="text" id="iv-projectName" placeholder="e.g. Merrifield Estate"></div>
+          <div class="ic-ff"><label>Lot ID</label><input type="text" id="iv-lotId" placeholder="e.g. MLT-042"></div>
+          <div class="ic-ff"><label>Property Address</label><input type="text" id="iv-address" placeholder="Full address"></div>
+          <div class="ic-ff"><label>Stage</label><input type="text" id="iv-stage" placeholder="e.g. Stage 3"></div>
+          <div class="ic-ff"><label>Lot #</label><input type="text" id="iv-lotNum" placeholder="e.g. 42"></div>
+          <div class="ic-ff"><label>Property Type</label><select id="iv-propertyType"><option value="">—</option><option>Residential</option><option>Townhouse</option><option>Apartment</option><option>Land Only</option><option>H&L Package</option></select></div>
+          <div class="ic-ff"><label>CfS Type</label><input type="text" id="iv-cfsType" placeholder="e.g. Standard / Sunset"></div>
+          <div class="ic-ff"><label>Product Line</label><input type="text" id="iv-productLine"></div>
+          <div class="ic-ff"><label>Product Type</label><input type="text" id="iv-productType"></div>
+          <div class="ic-ff"><label>Lot Area (m²)</label><input type="number" id="iv-lotArea" placeholder="0"></div>
+          <div class="ic-ff"><label>Lot Frontage / Width (m)</label><input type="number" id="iv-lotFrontage" placeholder="0" step="0.1"></div>
         </div>
       </div>
 
       <!-- SECTION: Sales Condition & Status -->
-<div class="fs"><div class="fst">Linked Leads</div>
+<div class="ic-fs"><div class="ic-fst">Linked Leads</div>
         <div id="iv-linkedLeadsWrap" style="background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px;min-height:44px;margin-bottom:10px">
           <div id="iv-linkedLeadsTags" style="display:flex;flex-wrap:wrap;gap:6px"></div>
         </div>
-        <div class="ff">
+        <div class="ic-ff">
           <label>Search & Add Lead</label>
           <input type="text" id="iv-leadSearch" placeholder="Type lead name…" oninput="filterLeadPicker()" autocomplete="off">
           <div id="iv-leadPickerDropdown" style="background:var(--bg2);border:1px solid var(--border2);border-radius:4px;max-height:180px;overflow-y:auto;display:none;margin-top:2px;box-shadow:0 4px 12px rgba(0,0,0,.12)"></div>
@@ -7114,36 +7099,36 @@ async function icSaveLot() {
       </div>
 
       <!-- SECTION: Channel & Market -->
-<div class="fs"><div class="fst">Channel & Market</div>
-        <div class="fg">
-          <div class="ff"><label>Channel Market</label><input type="text" id="iv-channelMarket"></div>
-          <div class="ff"><label>Sales Channel</label><input type="text" id="iv-salesChannel"></div>
-          <div class="ff"><label>Channel Partner</label><input type="text" id="iv-channelPartner"></div>
-          <div class="ff"><label>Swap to/from Channel Partner</label><input type="text" id="iv-channelSwap"></div>
-          <div class="ff"><label>Allocation Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-allocationDate"></div>
-          <div class="ff"><label>Allocation Days</label><input type="number" id="iv-allocationDays" placeholder="0"></div>
-          <div class="ff"><label>Allocation Period (days)</label><input type="number" id="iv-allocationPeriod" placeholder="0"></div>
-          <div class="ff"><label>Allocation Expiry Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-allocationExpiry"></div>
+<div class="ic-fs"><div class="ic-fst">Channel & Market</div>
+        <div class="ic-fg">
+          <div class="ic-ff"><label>Channel Market</label><input type="text" id="iv-channelMarket"></div>
+          <div class="ic-ff"><label>Sales Channel</label><input type="text" id="iv-salesChannel"></div>
+          <div class="ic-ff"><label>Channel Partner</label><input type="text" id="iv-channelPartner"></div>
+          <div class="ic-ff"><label>Swap to/from Channel Partner</label><input type="text" id="iv-channelSwap"></div>
+          <div class="ic-ff"><label>Allocation Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-allocationDate"></div>
+          <div class="ic-ff"><label>Allocation Days</label><input type="number" id="iv-allocationDays" placeholder="0"></div>
+          <div class="ic-ff"><label>Allocation Period (days)</label><input type="number" id="iv-allocationPeriod" placeholder="0"></div>
+          <div class="ic-ff"><label>Allocation Expiry Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-allocationExpiry"></div>
         </div>
       </div>
 
       <!-- SECTION: Pricing -->
-<div class="fs"><div class="fst">Pricing</div>
-        <div class="fg">
-          <div class="ff"><label>$VAL</label><input type="text" id="iv-valuation" placeholder="$0"></div>
-          <div class="ff"><label>$BASE</label><input type="text" id="iv-base" placeholder="$0"></div>
-          <div class="ff"><label>$LIST</label><input type="text" id="iv-list" placeholder="$0"></div>
-          <div class="ff"><label>Land Tax Per Lot Value</label><input type="text" id="iv-landTaxVal" placeholder="$0"></div>
-          <div class="ff"><label>Land Tax $Uplift / $Shortfall</label><input type="text" id="iv-landTaxUplift" placeholder="$0"></div>
-          <div class="ff"><label>March Campaign</label><input type="text" id="iv-marchCampaign"></div>
-          <div class="ff"><label>OFFER Rebate</label><input type="text" id="iv-offerRebate" placeholder="$0"></div>
-          <div class="ff"><label>SETTLE Rebate</label><input type="text" id="iv-settleRebate" placeholder="$0"></div>
+<div class="ic-fs"><div class="ic-fst">Pricing</div>
+        <div class="ic-fg">
+          <div class="ic-ff"><label>$VAL</label><input type="text" id="iv-valuation" placeholder="$0"></div>
+          <div class="ic-ff"><label>$BASE</label><input type="text" id="iv-base" placeholder="$0"></div>
+          <div class="ic-ff"><label>$LIST</label><input type="text" id="iv-list" placeholder="$0"></div>
+          <div class="ic-ff"><label>Land Tax Per Lot Value</label><input type="text" id="iv-landTaxVal" placeholder="$0"></div>
+          <div class="ic-ff"><label>Land Tax $Uplift / $Shortfall</label><input type="text" id="iv-landTaxUplift" placeholder="$0"></div>
+          <div class="ic-ff"><label>March Campaign</label><input type="text" id="iv-marchCampaign"></div>
+          <div class="ic-ff"><label>OFFER Rebate</label><input type="text" id="iv-offerRebate" placeholder="$0"></div>
+          <div class="ic-ff"><label>SETTLE Rebate</label><input type="text" id="iv-settleRebate" placeholder="$0"></div>
         </div>
-        <div class="fg" style="margin-top:10px">
-          <div class="ff"><label>H&L $House (S/S)</label><input type="text" id="iv-hlHouseSS" placeholder="$0"></div>
-          <div class="ff"><label>$H&L Total (S/S)</label><input type="text" id="iv-hlTotalSS" placeholder="$0"></div>
-          <div class="ff"><label>H&L $House (D/S)</label><input type="text" id="iv-hlHouseDS" placeholder="$0"></div>
-          <div class="ff"><label>$H&L Total (D/S)</label><input type="text" id="iv-hlTotalDS" placeholder="$0"></div>
+        <div class="ic-fg" style="margin-top:10px">
+          <div class="ic-ff"><label>H&L $House (S/S)</label><input type="text" id="iv-hlHouseSS" placeholder="$0"></div>
+          <div class="ic-ff"><label>$H&L Total (S/S)</label><input type="text" id="iv-hlTotalSS" placeholder="$0"></div>
+          <div class="ic-ff"><label>H&L $House (D/S)</label><input type="text" id="iv-hlHouseDS" placeholder="$0"></div>
+          <div class="ic-ff"><label>$H&L Total (D/S)</label><input type="text" id="iv-hlTotalDS" placeholder="$0"></div>
         </div>
       </div>
 
@@ -7152,37 +7137,37 @@ async function icSaveLot() {
 
     <!-- DATES TAB -->
     <div class="ic-panel" id="ic-panel-dates">
-<div class="fs"><div class="fst">Contract & Exchange Dates</div>
-        <div class="fg">
-          <div class="ff"><label>Sales Advice Received Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-saReceivedDate"></div>
-          <div class="ff"><label>Sales Advice Sent To Legal Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-saSentLegalDate"></div>
-          <div class="ff"><label>Contract Issued Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-contractIssuedDate"></div>
-          <div class="ff"><label>Days From CfS Issued</label><input type="number" id="iv-daysFromCfs" placeholder="0"></div>
-          <div class="ff"><label>CfS Issued Price</label><input type="text" id="iv-cfsIssuedPrice" placeholder="$0"></div>
-          <div class="ff"><label>Cooling Off Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-coolingOffDate"></div>
-          <div class="ff"><label>Proposed Exchanged Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-proposedExchangeDate"></div>
-          <div class="ff"><label>Exchanged Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-exchangedDate"></div>
-          <div class="ff"><label>CfS Exchanged Price ($)</label><input type="text" id="iv-cfsExchangedPrice" placeholder="$0"></div>
+<div class="ic-fs"><div class="ic-fst">Contract & Exchange Dates</div>
+        <div class="ic-fg">
+          <div class="ic-ff"><label>Sales Advice Received Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-saReceivedDate"></div>
+          <div class="ic-ff"><label>Sales Advice Sent To Legal Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-saSentLegalDate"></div>
+          <div class="ic-ff"><label>Contract Issued Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-contractIssuedDate"></div>
+          <div class="ic-ff"><label>Days From CfS Issued</label><input type="number" id="iv-daysFromCfs" placeholder="0"></div>
+          <div class="ic-ff"><label>CfS Issued Price</label><input type="text" id="iv-cfsIssuedPrice" placeholder="$0"></div>
+          <div class="ic-ff"><label>Cooling Off Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-coolingOffDate"></div>
+          <div class="ic-ff"><label>Proposed Exchanged Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-proposedExchangeDate"></div>
+          <div class="ic-ff"><label>Exchanged Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-exchangedDate"></div>
+          <div class="ic-ff"><label>CfS Exchanged Price ($)</label><input type="text" id="iv-cfsExchangedPrice" placeholder="$0"></div>
         </div>
       </div>
 
       <!-- SECTION: Settlement -->
-<div class="fs"><div class="fst">Settlement</div>
-        <div class="fg">
-          <div class="ff"><label>Proposed Settled Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-proposedSettledDate"></div>
-          <div class="ff"><label>Settled Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-settledDate"></div>
-          <div class="ff"><label>Settled Month</label>
+<div class="ic-fs"><div class="ic-fst">Settlement</div>
+        <div class="ic-fg">
+          <div class="ic-ff"><label>Proposed Settled Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-proposedSettledDate"></div>
+          <div class="ic-ff"><label>Settled Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="iv-settledDate"></div>
+          <div class="ic-ff"><label>Settled Month</label>
             <select id="iv-settledMonth"><option value="">—</option>
               <option>January</option><option>February</option><option>March</option><option>April</option>
               <option>May</option><option>June</option><option>July</option><option>August</option>
               <option>September</option><option>October</option><option>November</option><option>December</option>
             </select>
           </div>
-          <div class="ff"><label>Settled Year</label><input type="number" id="iv-settledYear" placeholder="2026" min="2020" max="2040"></div>
-          <div class="ff"><label>CfS Settled Price ($)</label><input type="text" id="iv-cfsSettledPrice" placeholder="$0"></div>
-          <div class="ff"><label>Rebate</label><input type="text" id="iv-rebate" placeholder="$0"></div>
-          <div class="ff"><label>Deposit %</label><input type="text" id="iv-depositPct" placeholder="e.g. 10%"></div>
-          <div class="ff"><label>FIRB Approval</label><select id="iv-firbApproval"><option value="">—</option><option>Required</option><option>Approved</option><option>Not Required</option><option>Pending</option></select></div>
+          <div class="ic-ff"><label>Settled Year</label><input type="number" id="iv-settledYear" placeholder="2026" min="2020" max="2040"></div>
+          <div class="ic-ff"><label>CfS Settled Price ($)</label><input type="text" id="iv-cfsSettledPrice" placeholder="$0"></div>
+          <div class="ic-ff"><label>Rebate</label><input type="text" id="iv-rebate" placeholder="$0"></div>
+          <div class="ic-ff"><label>Deposit %</label><input type="text" id="iv-depositPct" placeholder="e.g. 10%"></div>
+          <div class="ic-ff"><label>FIRB Approval</label><select id="iv-firbApproval"><option value="">—</option><option>Required</option><option>Approved</option><option>Not Required</option><option>Pending</option></select></div>
         </div>
       </div>
 
@@ -7230,14 +7215,14 @@ async function icSaveLot() {
         <button class="ic-notes-btn" onclick="icAddNote()">＋</button>
       </div>
       <div id="ic-notes-list"></div>
-<div class="fs"><div class="fst">Campaign & Comments</div>
+<div class="ic-fs"><div class="ic-fst">Campaign & Comments</div>
         <div class="fg3">
-          <div class="ff"><label>March Campaign</label><input type="text" id="iv-marchCampaign2"></div>
+          <div class="ic-ff"><label>March Campaign</label><input type="text" id="iv-marchCampaign2"></div>
         </div>
         <div class="fg1" style="margin-top:10px">
-          <div class="ff"><label>Notes</label><textarea id="iv-notes" style="min-height:60px"></textarea></div>
-          <div class="ff" style="margin-top:8px"><label>Comments</label><textarea id="iv-comments" style="min-height:60px"></textarea></div>
-          <div class="ff" style="margin-top:8px"><label>Special Conditions / Variations</label><textarea id="iv-specialConditions" style="min-height:60px"></textarea></div>
+          <div class="ic-ff"><label>Notes</label><textarea id="iv-notes" style="min-height:60px"></textarea></div>
+          <div class="ic-ff" style="margin-top:8px"><label>Comments</label><textarea id="iv-comments" style="min-height:60px"></textarea></div>
+          <div class="ic-ff" style="margin-top:8px"><label>Special Conditions / Variations</label><textarea id="iv-specialConditions" style="min-height:60px"></textarea></div>
         </div>
       </div>
 
