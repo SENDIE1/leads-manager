@@ -3610,7 +3610,10 @@ function ieClosePillPopup(e) {
 function ieDispatch(e, td) {
   e.stopPropagation();
   hideCellPopup();
-  if (e.type === 'dblclick') { const lid = td.dataset.lid; if (lid) { openLeadCard(lid); return; } }
+  if (e.type === 'dblclick') {
+    const lid = td.dataset.lid;
+    if (lid) { ieCloseAll(); openLeadCard(lid); return; }
+  }
   if (window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768) return;
   if (td === _ieActive) return;
   if (_ieActive) {
@@ -3867,11 +3870,15 @@ function renderMobileLeads() {
       '</div>';
   }).join('');
 
-  // Use delegated click — no inline onclick needed, avoids escaping issues
+  // Single tap on mobile — delegated click + touchend for instant response
   container.onclick = function(e) {
     const row = e.target.closest('[data-lead-id]');
     if (row) openLeadCard(row.dataset.leadId);
   };
+  container.addEventListener('touchend', function(e) {
+    const row = e.target.closest('[data-lead-id]');
+    if (row) { e.preventDefault(); openLeadCard(row.dataset.leadId); }
+  }, { passive: false });
 }
 
 
