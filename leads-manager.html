@@ -507,7 +507,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
     <div class="login-logo">LEADS<span>/</span>MGR</div>
     <div class="login-sub">Property Lead Management · v4</div>
     <div class="login-field"><label>Email</label><input type="email" id="lu" placeholder="your@email.com" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="login-field"><label>Password</label><input type="password" id="lp" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="login-field"><label>Password</label><input type="password" id="lp" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
     <div class="login-err" id="lerr"></div>
   </div>
@@ -519,8 +519,8 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
   <div class="login-card">
     <div class="login-logo">LEADS<span>/</span>MGR</div>
     <div class="login-sub">Set your password to activate your account</div>
-    <div class="login-field"><label>New Password</label><input type="password" id="newPw" placeholder="Min 10 chars, uppercase, lowercase, number, symbol" onkeydown="if(event.key==='Enter')doSetPassword()"></div>
-    <div class="login-field"><label>Confirm Password</label><input type="password" id="newPwConfirm" placeholder="Repeat password" onkeydown="if(event.key==='Enter')doSetPassword()"></div>
+    <div class="login-field"><label>New Password</label><input type="password" id="newPw" placeholder="Min 10 chars, uppercase, lowercase, number, symbol" autocomplete="new-password" onkeydown="if(event.key==='Enter')doSetPassword()"></div>
+    <div class="login-field"><label>Confirm Password</label><input type="password" id="newPwConfirm" placeholder="Repeat password" autocomplete="new-password" onkeydown="if(event.key==='Enter')doSetPassword()"></div>
     <button class="login-btn" id="setPwBtn" onclick="doSetPassword()">Set Password & Sign In</button>
     <div class="login-err" id="setPwErr"></div>
   </div>
@@ -540,7 +540,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
       <div class="stat-pill">🔵 <b id="s-cold">0</b></div>
     </div>
     <div class="hdr-actions">
-      <input class="search-box" type="text" placeholder="Search…" id="searchInput" oninput="applyFilters()">
+      <input class="search-box" type="text" placeholder="Search…" id="searchInput" autocomplete="off" oninput="applyFilters()">
       <div class="dropdown" id="exportDrop" style="display:none">
         <button class="btn btn-ghost" onclick="toggleDD('exportMenu')">⚙ Options ▾</button>
         <div class="dd-menu" id="exportMenu">
@@ -761,23 +761,23 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
         </div>
         <div class="lp-sec-body">
           <div class="lp-grid-3">
-            <div class="ff lp-field"><label>Name <span style="color:var(--red)">*</span></label><input type="text" id="f-name" placeholder="Full name"></div>
+            <div class="ff lp-field"><label>Name <span style="color:var(--red)">*</span></label><input type="text" id="f-name" autocomplete="off" placeholder="Full name"></div>
             <div class="ff lp-field"><label>Lead Date</label><input type="text" placeholder="dd-mm-yyyy" maxlength="10" onblur="expandDate(this)" id="f-date"></div>
             <div></div>
             <div class="ff lp-field">
               <label>Mobile</label>
-              <input type="tel" id="f-mobile" placeholder="04xx xxx xxx or +xx xxx xxx xxx" oninput="validateMobile(this)">
+              <input type="tel" id="f-mobile" autocomplete="off" placeholder="04xx xxx xxx or +xx xxx xxx xxx" oninput="validateMobile(this)">
               <div class="mobile-warn" id="mobileWarn">Format: 04xx xxx xxx · +61 4xx xxx xxx · +xx xxx xxx xxx</div>
             </div>
             <div class="ff lp-field">
               <label>Email</label>
-              <input type="email" id="f-email" placeholder="email@example.com" oninput="validateEmail(this)">
+              <input type="email" id="f-email" autocomplete="off" placeholder="email@example.com" oninput="validateEmail(this)">
               <div class="mobile-warn" id="emailWarn">Doesn't look like a valid email address</div>
             </div>
             <div></div>
           </div>
           <div style="margin-top:16px">
-            <div class="ff lp-field"><label>Lead Message <span style="color:var(--red);font-size:11px;font-weight:400">— Comments received from Lead</span></label><textarea id="f-leadMsg" placeholder="Paste or type lead message…" style="min-height:72px;width:100%"></textarea></div>
+            <div class="ff lp-field"><label>Lead Message <span style="color:var(--red);font-size:11px;font-weight:400">— Comments received from Lead</span></label><textarea id="f-leadMsg" autocomplete="off" placeholder="Paste or type lead message…" style="min-height:72px;width:100%"></textarea></div>
           </div>
         </div>
       </div>
@@ -797,7 +797,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
             <label>Comments / Interactions</label>
             <div class="poc-log" id="pocLog" onclick="expandPocLog()" title="Click to expand"><div class="no-notes" style="font-size:11px">No comments yet.</div></div>
             <div style="margin-top:8px">
-              <textarea id="f-pocNew" placeholder="Add a comment… (Ctrl+Enter to save)" style="width:100%;min-height:56px;resize:vertical" onkeydown="if(event.ctrlKey&&event.key==='Enter'){event.preventDefault();addPocComment()}"></textarea>
+              <textarea id="f-pocNew" autocomplete="off" placeholder="Add a comment… (Ctrl+Enter to save)" style="width:100%;min-height:56px;resize:vertical" onkeydown="if(event.ctrlKey&&event.key==='Enter'){event.preventDefault();addPocComment()}"></textarea>
               <div style="display:flex;justify-content:flex-end;margin-top:6px">
                 <button class="stamp-btn" style="border-radius:4px" onclick="addPocComment()">+ Add</button>
               </div>
@@ -1107,7 +1107,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
               <label>POC Comments</label>
               <div class="poc-log" id="pocLog" onclick="expandPocLog()" title="Click to expand"><div class="no-notes" style="font-size:11px">No comments yet.</div></div>
               <div style="margin-top:8px">
-                <textarea id="f-pocNew" placeholder="Add a comment… (Ctrl+Enter to save)" style="width:100%;min-height:56px;resize:vertical" onkeydown="if(event.ctrlKey&&event.key==='Enter'){event.preventDefault();addPocComment()}"></textarea>
+                <textarea id="f-pocNew" autocomplete="off" placeholder="Add a comment… (Ctrl+Enter to save)" style="width:100%;min-height:56px;resize:vertical" onkeydown="if(event.ctrlKey&&event.key==='Enter'){event.preventDefault();addPocComment()}"></textarea>
                 <div style="display:flex;justify-content:flex-end;margin-top:6px">
                   <button class="stamp-btn" style="border-radius:4px" onclick="addPocComment()">+ Add</button>
                 </div>
