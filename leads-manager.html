@@ -501,6 +501,20 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
   #leadCard .card{border-radius:0;box-shadow:none;max-width:100%;min-height:100vh;border:none}
   }
 
+
+  /* Password masking without triggering Chrome password manager */
+  .pw-mask {
+    -webkit-text-security: disc;
+    text-security: disc;
+  }
+
+
+  /* Password masking — type=text to stop Chrome password manager, masked visually */
+  .pw-mask { -webkit-text-security: disc; text-security: disc; }
+
+
+  #loginScreen[style*="display: none"], #loginScreen[style*="display:none"] { pointer-events:none !important; }
+  #setPasswordScreen[style*="display: none"], #setPasswordScreen[style*="display:none"] { pointer-events:none !important; }
 </style>
 
 <!-- ═══════════ LOGIN SCREEN ═══════════ -->
@@ -509,7 +523,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
     <div class="login-logo">LEADS<span>/</span>MGR</div>
     <div class="login-sub">Property Lead Management · v4</div>
     <div class="login-field"><label>Email</label><input type="email" id="lu" placeholder="your@email.com" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="login-field"><label>Password</label><input type="password" id="lp" placeholder="Password" autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="login-field"><label>Password</label><input type="text" class="pw-mask" id="lp" placeholder="Password" autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
     <div class="login-err" id="lerr"></div>
   </div>
@@ -521,8 +535,8 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
   <div class="login-card">
     <div class="login-logo">LEADS<span>/</span>MGR</div>
     <div class="login-sub">Set your password to activate your account</div>
-    <div class="login-field"><label>New Password</label><input type="password" id="newPw" placeholder="Min 10 chars, uppercase, lowercase, number, symbol" autocomplete="new-password" onkeydown="if(event.key==='Enter')doSetPassword()"></div>
-    <div class="login-field"><label>Confirm Password</label><input type="password" id="newPwConfirm" placeholder="Repeat password" autocomplete="new-password" onkeydown="if(event.key==='Enter')doSetPassword()"></div>
+    <div class="login-field"><label>New Password</label><input type="text" class="pw-mask" id="newPw" placeholder="Min 10 chars, uppercase, lowercase, number, symbol" autocomplete="new-password" onkeydown="if(event.key==='Enter')doSetPassword()"></div>
+    <div class="login-field"><label>Confirm Password</label><input type="text" class="pw-mask" id="newPwConfirm" placeholder="Repeat password" autocomplete="new-password" onkeydown="if(event.key==='Enter')doSetPassword()"></div>
     <button class="login-btn" id="setPwBtn" onclick="doSetPassword()">Set Password & Sign In</button>
     <div class="login-err" id="setPwErr"></div>
   </div>
@@ -2008,7 +2022,7 @@ async function doSetPassword() {
     return;
   }
   // Password set — now log them in properly
-  document.getElementById('setPasswordScreen').style.display = 'none';
+  (function(){const _sp=document.getElementById('setPasswordScreen');if(_sp)_sp.remove();})();
   const { data: { user } } = await sb.auth.getUser();
   if (user) {
     const { data: userRows } = await sb.from('users').select('*').eq('id', user.id);
@@ -5317,6 +5331,14 @@ function fmtCardDate(raw) {
     ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()] + '-' + d.getFullYear();
 }
 
+function fmtPhone(raw) {
+  if (!raw) return '—';
+  const digits = raw.replace(/\D/g, '');
+  if (digits.length === 10) return digits.substring(0,4) + ' ' + digits.substring(4,7) + ' ' + digits.substring(7);
+  return raw;
+}
+
+
 function openLeadCard(id) {
   const l = leads.find(x => String(x.id) === String(id));
   if (!l) return;
@@ -5338,7 +5360,7 @@ function openLeadCard(id) {
   function setHci(lbl,val){ card.querySelectorAll('.hci-label').forEach(el=>{ if(el.textContent.trim()===lbl&&el.nextElementSibling) el.nextElementSibling.textContent=val||'\u2014'; }); }
   setHci('Lead #',l.id);
   setHci('Date',fmtCardDate(l.date));
-  setHci('Mobile',l.mobile||'\u2014');
+  setHci('Mobile',fmtPhone(l.mobile));
   setHci('Email',l.email||'\u2014');
   const ag=agencies&&agencies.find(x=>x.id===l.assignedAgency);
   const at=agents&&agents.find(x=>x.id===l.assignedAgent);
