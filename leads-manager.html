@@ -1866,6 +1866,7 @@ function hideLoading() {
 // ─── Load all data from Supabase ───
 async function loadData() {
   showLoading('Loading leads…');
+  try {
   const [leadsRes, agenciesRes, agentsRes] = await Promise.all([
     sb.from('leads').select('*, notes(*)').eq('deleted', false).order('id', {ascending: true}),
     sb.from('agencies').select('*'),
@@ -1892,6 +1893,10 @@ async function loadData() {
   inventory = (invRes.data||[]).map(r=>({...r, linkedLeads:r.linked_leads||[]}));
   nextInvId = inventory.length+1;
   hideLoading();
+  } catch(err) {
+    console.error('loadData error:', err);
+    hideLoading();
+  }
 }
 
 // ─── persist() → Supabase ───
