@@ -515,6 +515,115 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
 
   #loginScreen[style*="display: none"], #loginScreen[style*="display:none"] { pointer-events:none !important; }
   #setPasswordScreen[style*="display: none"], #setPasswordScreen[style*="display:none"] { pointer-events:none !important; }
+
+  #leadCard .hwc-card{transition:border-color .15s,background .15s}
+  #leadCard .hwc-card.selected{border-width:3px !important;box-shadow:0 0 0 2px rgba(0,38,117,0.15)}
+  #leadCard .hwc-card[data-hwc="Hot"].selected{border-color:var(--red) !important;background:#FEE2E2 !important}
+  #leadCard .hwc-card[data-hwc="Warm"].selected{border-color:var(--gold) !important;background:var(--gold-lt) !important}
+  #leadCard .hwc-card[data-hwc="Cold"].selected{border-color:#3B82F6 !important;background:#EFF6FF !important}
+  #leadCard .field-value[title="Click to edit"]:hover,#leadCard .hci-value[title="Click to edit"]:hover{background:var(--navy-lt);border-radius:3px;padding:1px 4px}
+  #leadCard .process-item:hover{background:var(--surface2)}
+
+
+  
+    .header-logo { font-size: 14px; }
+    .role-badge  { font-size: 9px; padding: 2px 6px; }
+    /* Collapse right-side header buttons to icon-only on very narrow */
+    #exportDrop .btn-ghost span,
+    #darkToggle span { display: none; }
+    /* Filter bar wraps */
+    .filter-bar { flex-wrap: wrap; gap: 6px; padding: 6px 10px; }
+    /* Bulk bar */
+    .bulk-bar { flex-wrap: wrap; gap: 6px; padding: 6px 10px; }
+    /* Tab bar scrolls horizontally */
+    #tabBar { overflow-x: auto; flex-wrap: nowrap; }
+    #tabBar .tab { flex-shrink: 0; }
+    /* Status bar */
+    .statusbar { font-size: 11px; padding: 4px 10px; }
+    /* Table stays scrollable — sticky cols keep name/# visible */
+    .table-wrap { -webkit-overflow-scrolling: touch; }
+    /* Column ref row hidden on mobile */
+    #col-ref-row { display: none; }
+  }
+
+
+  /* ══ MOBILE LIST VIEW ≤768px ══ */
+  @media (max-width: 768px) {
+    .table-wrap { display: none !important; }
+    #mobileLeadsList { display: flex !important; flex-direction: column; }
+    header { height:auto; min-height:52px; flex-wrap:wrap; padding:8px 12px; gap:6px; }
+    .filter-bar { flex-wrap:wrap; gap:6px; padding:6px 10px; }
+    #tabBar { overflow-x:auto; flex-wrap:nowrap; }
+    #tabBar .tab { flex-shrink:0; }
+    .statusbar { font-size:11px; padding:4px 10px; }
+  }
+  .mobile-lead-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    gap: 8px;
+    cursor: pointer;
+    background: var(--surface);
+    transition: background .12s;
+  }
+  .mobile-lead-row:active { background: var(--navy-lt, #E8ECF5); }
+  .mobile-lead-date {
+    font-size: 11px;
+    color: var(--muted, #7A7872);
+    white-space: nowrap;
+    width: 80px;
+    flex-shrink: 0;
+  }
+  .mobile-lead-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink, #1A1A1A);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mobile-lead-badge {
+    font-size: 16px;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+    background: none !important;
+    color: inherit;
+    padding: 0;
+  }
+  .mobile-lead-chevron {
+    color: var(--muted, #7A7872);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  /* ══ MOBILE LIST VIEW ≤768px ══ */
+  @media (max-width: 768px) {
+    #app { max-width: 100vw; overflow-x: hidden; }
+    .table-wrap { display: none !important; }
+    #mobileLeadsList { display: flex !important; flex-direction: column; width: 100%; }
+    header { height:auto; min-height:52px; flex-wrap:wrap; padding:8px 12px; gap:6px; max-width:100vw; overflow:hidden; }
+    .filter-bar { flex-wrap:wrap; gap:6px; padding:6px 10px; max-width:100vw; overflow:hidden; }
+    #tabBar { overflow-x:auto; flex-wrap:nowrap; max-width:100vw; }
+    #tabBar .tab { flex-shrink:0; }
+    .statusbar { font-size:11px; padding:4px 10px; }
+    #col-ref-row { display: none !important; }
+  }
+
+  #mobileLeadsList > div {
+    min-height: 60px;
+    height: auto !important;
+    overflow: visible !important;
+    align-items: flex-start !important;
+  }
+  #mobileLeadsList > div > div:nth-child(2) {
+    overflow: visible !important;
+    height: auto !important;
+  }
+
 </style>
 
 <!-- ═══════════ LOGIN SCREEN ═══════════ -->
@@ -561,10 +670,10 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
         <button class="btn btn-ghost" onclick="toggleDD('exportMenu')">⚙ Options ▾</button>
         <div class="dd-menu" id="exportMenu">
           <div class="dd-item" onclick="exportCSV()">📄 Export Leads CSV</div>
-          <div class="dd-item" onclick="triggerImport()">📥 Import Leads CSV</div>
-          <div class="dd-item" onclick="clearAllLeads()">🗑 Clear All Leads</div>
+          <div class="dd-item" data-admin-only onclick="triggerImport()">📥 Import Leads CSV</div>
+          <div class="dd-item" data-admin-only onclick="clearAllLeads()">🗑 Clear All Leads</div>
           <div style="height:1px;background:var(--border);margin:4px 0"></div>
-          <div class="dd-item" onclick="openFieldsModal()">⚙ Manage Custom Fields</div>
+          <div class="dd-item" data-admin-only onclick="openFieldsModal()">⚙ Manage Custom Fields</div>
           <div style="height:1px;background:var(--border);margin:4px 0"></div>
           <div class="dd-item" style="color:var(--green);font-weight:600" onclick="backupAll()">💾 Backup All Data</div>
           <div class="dd-item" style="color:var(--orange);font-weight:600" onclick="triggerRestore()">📂 Restore from Backup</div>
@@ -706,6 +815,10 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
         <tbody id="leadsBody"></tbody>
       </table>
     </div>
+    
+  <!-- MOBILE LEADS LIST (shown at ≤768px instead of table) -->
+  <div id="mobileLeadsList" style="display:none;flex:1;overflow-y:auto;padding:0"></div>
+
     <div class="statusbar">
       <span>Showing <b id="s-showing">0</b> of <b id="s-total2">0</b></span>
       <span id="s-selbadge" style="display:none">· <b id="s-selcount">0</b> selected</span>
@@ -1222,7 +1335,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
 
 </div>
 <!-- ═══════════ LEAD CARD ═══════════ -->
-<div id="leadCard" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;padding:32px 16px 64px">
+<div id="leadCard" style="display:none;pointer-events:none;position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;padding:32px 16px 64px">
 <div class="card">
 
   <div class="gold-rule"></div>
@@ -1370,9 +1483,9 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
         <div class="section">
           <div class="section-title">HWC Status</div>
           <div style="display:flex;gap:10px;padding:14px">
-            <div style="flex:1;border-radius:8px;padding:12px;text-align:center;background:var(--surface2);border:2px solid var(--border)"><div style="font-size:20px;margin-bottom:4px">🔴</div><div style="font-size:11px;font-weight:600;color:var(--red)">Hot</div></div>
-            <div style="flex:1;border-radius:8px;padding:12px;text-align:center;background:var(--gold-lt);border:2px solid var(--gold)"><div style="font-size:20px;margin-bottom:4px">🟠</div><div style="font-size:11px;font-weight:600;color:var(--orange)">Warm</div></div>
-            <div style="flex:1;border-radius:8px;padding:12px;text-align:center;background:var(--surface2);border:2px solid var(--border)"><div style="font-size:20px;margin-bottom:4px">🔵</div><div style="font-size:11px;font-weight:600;color:#60a5fa">Cold</div></div>
+            <div class="hwc-card" data-hwc="Hot" style="flex:1;border-radius:8px;padding:12px;text-align:center;background:var(--surface2);border:2px solid var(--border)"><div style="font-size:20px;margin-bottom:4px">🔴</div><div style="font-size:11px;font-weight:600;color:var(--red)">Hot</div></div>
+            <div class="hwc-card" data-hwc="Warm" style="flex:1;border-radius:8px;padding:12px;text-align:center;background:var(--gold-lt);border:2px solid var(--gold)"><div style="font-size:20px;margin-bottom:4px">🟠</div><div style="font-size:11px;font-weight:600;color:var(--orange)">Warm</div></div>
+            <div class="hwc-card" data-hwc="Cold" style="flex:1;border-radius:8px;padding:12px;text-align:center;background:var(--surface2);border:2px solid var(--border)"><div style="font-size:20px;margin-bottom:4px">🔵</div><div style="font-size:11px;font-weight:600;color:#60a5fa">Cold</div></div>
           </div>
         </div>
         <div style="font-size:11px;color:var(--muted);padding:8px 14px;background:var(--gold-lt);border:1px solid #C4B88A;border-radius:6px;margin-bottom:10px;line-height:1.5">
@@ -2085,7 +2198,8 @@ function enterApp() {
     bc.innerHTML = `${ag?ag.name:'—'} <span>›</span> <b>${me.username}</b>`;
   }
   // Admin-only controls
-  document.getElementById('exportDrop').style.display = me.role==='admin' ? 'block' : 'none';
+  document.getElementById('exportDrop').style.display = 'block';
+  document.querySelectorAll('[data-admin-only]').forEach(el => { el.style.display = me.role === 'admin' ? '' : 'none'; });
   document.getElementById('newLeadBtn').style.display = me.role==='admin' ? 'flex' : 'none';
   document.getElementById('selAll').style.display = 'inline';
   document.getElementById('darkToggle').textContent = document.body.classList.contains('dark') ? '☾ Light Mode' : '☀ Dark Mode';
@@ -3038,6 +3152,60 @@ document.addEventListener('click', e => {
 });
 
 
+
+function renderMobileLeads() {
+  if (window.innerWidth > 768) return;
+  const container = document.getElementById('mobileLeadsList');
+  if (!container) return;
+  const rows = getVisible();
+  if (!rows.length) {
+    container.innerHTML = '<div style="padding:32px;text-align:center;color:var(--text3)">No leads found</div>';
+    return;
+  }
+
+  function fmtShortDate(raw) {
+    if (!raw) return '\u2014';
+    // Already DD-MM-YYYY format
+    const m = raw.match(/^(\d{2})-(\d{2})-(\d{4})/);
+    if (m) return m[1] + '-' + m[2] + '-' + m[3].slice(2);
+    // ISO format fallback
+    const d = new Date(raw);
+    if (!isNaN(d)) return String(d.getDate()).padStart(2,'0') + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getFullYear()).slice(2);
+    return raw;
+  }
+
+  function getLastComment(pocComments) {
+    if (!pocComments) return '';
+    try {
+      const entries = JSON.parse(pocComments);
+      if (!Array.isArray(entries) || !entries.length) return '';
+      const last = entries[entries.length - 1];
+      return last.text || '';
+    } catch(e) { return typeof pocComments === 'string' ? pocComments : ''; }
+  }
+
+  container.innerHTML = rows.map(l => {
+    const status = (l.hotWarmStatus||'').toLowerCase();
+    const emoji = status==='hot'?'\ud83d\udd34':status==='warm'?'\ud83d\udfe0':status==='cold'?'\ud83d\udd35':'';
+    const dateStr = fmtShortDate(l.date);
+    const lastComment = getLastComment(l.pocComments);
+
+    return '<div onclick="openLeadCard(\'' + l.id + '\')" style="display:flex;align-items:flex-start;padding:12px 14px;border-bottom:1px solid var(--border);gap:10px;cursor:pointer;background:var(--surface);box-sizing:border-box;width:100%;overflow:hidden">' +
+      '<div style="flex-shrink:0;width:60px;padding-top:1px">' +
+        '<div style="font-size:11px;color:var(--text3);white-space:nowrap">' + dateStr + '</div>' +
+        '<div style="font-size:15px;margin-top:4px">' + emoji + '</div>' +
+      '</div>' +
+      '<div style="flex:1;min-width:0;overflow:hidden">' +
+        '<div style="font-size:14px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px">' + (l.name||'\u2014') + '</div>' +
+        (lastComment ? '<div style="font-size:11px;color:var(--text3);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical">' + lastComment.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' : '<div style="font-size:11px;color:var(--text3);font-style:italic">No comments yet</div>') +
+      '</div>' +
+      '<span style="color:#bbb;font-size:16px;flex-shrink:0;padding-top:2px">\u203a</span>' +
+      '</div>';
+  }).join('');
+}
+
+
+
 function renderLeads() {
   const data = getVisible();
   document.getElementById('leadsBody').innerHTML = data.length
@@ -3053,6 +3221,7 @@ function renderLeads() {
   document.getElementById('s-warm').textContent   = pool.filter(l=>l.hotWarmStatus==='Warm').length;
   document.getElementById('s-cold').textContent   = pool.filter(l=>l.hotWarmStatus==='Cold').length;
   document.getElementById('s-showing').textContent = data.length;
+  renderMobileLeads();
 }
 
 function sortBy(col) { sortDir = sortCol===col?sortDir*-1:1; sortCol=col; renderLeads(); }
@@ -4276,7 +4445,37 @@ function notify(msg) {
 function exportCSV() {
   if (!leads.length) { notify('No leads to export'); return; }
   const keys = Object.keys(leads[0]).filter(k => k !== 'notes');
-  const rows = [keys.join(','), ...leads.map(l => keys.map(k => `"${String(l[k]||'').replace(/"/g,'""')}"`).join(','))];
+
+  function fmtCell(k, val) {
+    // Resolve agency/agent IDs to names
+    if (k === 'assignedAgency') {
+      const a = agencies.find(x => x.id === val);
+      return a ? a.name : (val || '');
+    }
+    if (k === 'assignedAgent') {
+      const a = agents.find(x => x.id === val);
+      return a ? a.name : (val || '');
+    }
+    if (k === 'pocComments') {
+      try {
+        const entries = val ? JSON.parse(val) : [];
+        if (!Array.isArray(entries)) return String(val||'');
+        return entries.map(e => {
+          const parts = [];
+          if (e.ts) parts.push(e.ts);
+          if (e.author) parts.push(e.author);
+          const prefix = parts.length ? parts.join(' | ') + ': ' : '';
+          return prefix + (e.text||'');
+        }).join('\n');
+      } catch(e) { return String(val||''); }
+    }
+    return String(val||'');
+  }
+
+  const rows = [
+    keys.join(','),
+    ...leads.map(l => keys.map(k => '"' + fmtCell(k, l[k]).replace(/"/g, '""') + '"').join(','))
+  ];
   const csv = rows.join('\n');
   const a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
@@ -5320,7 +5519,9 @@ function addComment(){
 
 
 function closeLeadCard() {
-  document.getElementById('leadCard').style.display = 'none';
+  const lc = document.getElementById('leadCard');
+  lc.style.display = 'none';
+  lc.style.pointerEvents = 'none';
   document.getElementById('app').style.display = 'flex';
   history.back();
 }
@@ -5344,6 +5545,383 @@ function fmtPhone(raw) {
 }
 
 
+
+
+// ═══════════════════════════════════════════
+//  CARD INLINE EDITING
+// ═══════════════════════════════════════════
+
+// Save a single field to Supabase and update local leads array
+async function cardSaveField(lid, dbField, value) {
+  const update = {};
+  update[dbField] = value;
+  const { error } = await sb.from('leads').update(update).eq('id', lid);
+  if (error) { console.error('cardSaveField error:', error); return false; }
+  // Update local leads array
+  const idx = leads.findIndex(l => String(l.id) === String(lid));
+  if (idx >= 0) {
+    const jsField = Object.entries({
+      name:'name', mobile:'mobile', email:'email', lead_msg:'leadMsg',
+      lso_visit:'lsoVisit', buyer_type:'buyerType', time_to_buy:'timeToBuy',
+      price_hl:'priceHL', price_land:'priceLand', storey:'storey', garage:'garage',
+      lot_type:'lotType', lot_area:'lotArea', lot_numbers:'lotNumbers',
+      suburb_postcode:'suburbPostcode', cfs_lot:'cfsLot', under_cfs:'underCfs',
+      hot_warm_status:'hotWarmStatus', settle_ok:'settleOk',
+      roi_email:'roiEmail', call1:'call1', call2:'call2', sms:'sms', final_email:'finalEmail',
+      tc:'tc', cb:'cb', vm:'vm', na:'na', nm:'nm', dc:'dc', ni:'ni', duplicate:'duplicate',
+      deposit5:'deposit5', deposit5plus5:'deposit5plus5', deposit10:'deposit10',
+    }).find(([k]) => k === dbField);
+    if (jsField) leads[idx][jsField[1]] = value;
+  }
+  // Re-render the row in the table
+  renderLeads();
+  return true;
+}
+
+// Make a field-value editable inline
+function cardMakeEditable(el, lid, dbField, type, opts) {
+  if (el.dataset.editing) return;
+  el.dataset.editing = '1';
+  const orig = el.textContent.trim();
+  const origClass = el.className;
+
+  let input;
+  if (type === 'select') {
+    input = document.createElement('select');
+    input.style.cssText = 'width:100%;font-size:12px;padding:3px 6px;border:1.5px solid var(--navy);border-radius:4px;background:var(--surface);color:var(--ink);font-family:inherit';
+    (opts || []).forEach(o => {
+      const opt = document.createElement('option');
+      opt.value = o.value !== undefined ? o.value : o;
+      opt.textContent = o.label || o;
+      if (opt.value === orig || opt.textContent === orig) opt.selected = true;
+      input.appendChild(opt);
+    });
+  } else {
+    input = document.createElement('input');
+    input.type = 'text';
+    input.value = orig === '—' ? '' : orig;
+    input.style.cssText = 'width:100%;font-size:12px;padding:3px 6px;border:1.5px solid var(--navy);border-radius:4px;background:var(--surface);color:var(--ink);font-family:inherit;text-align:right';
+    input.autocomplete = 'off';
+  }
+
+  el.textContent = '';
+  el.appendChild(input);
+  input.focus();
+  if (input.type === 'text') input.select();
+
+  async function save() {
+    const val = input.value.trim();
+    delete el.dataset.editing;
+    el.className = origClass + (val ? '' : ' empty');
+    el.textContent = val || '—';
+    if (val !== orig && !(val === '' && orig === '—')) {
+      await cardSaveField(lid, dbField, val || null);
+    }
+  }
+
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { delete el.dataset.editing; el.className = origClass; el.textContent = orig; }
+  });
+}
+
+// Stamp a 48hrs process item (click = stamp now, click again = clear)
+async function cardToggleStamp(lid, dbField, currentVal, dotEl, tsEl) {
+  let newVal;
+  if (currentVal && currentVal !== 'Not sent') {
+    // Already stamped — clear it
+    newVal = null;
+    dotEl.className = 'process-dot pending';
+    tsEl.className = 'process-ts pending';
+    tsEl.textContent = 'Not sent';
+  } else {
+    // Stamp with today's date
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2,'0');
+    const mm = String(now.getMonth()+1).padStart(2,'0');
+    const yyyy = now.getFullYear();
+    newVal = dd + '-' + mm + '-' + yyyy;
+    dotEl.className = 'process-dot done';
+    tsEl.className = 'process-ts';
+    tsEl.textContent = newVal;
+  }
+  await cardSaveField(lid, dbField, newVal);
+}
+
+// Toggle a pill (follow up / closed)
+async function cardTogglePill(lid, dbField, pill, isExclusive, groupSelector) {
+  const isActive = pill.classList.contains('active');
+  if (isExclusive && !isActive) {
+    // Deactivate all in group first
+    const card = document.getElementById('leadCard');
+    card.querySelectorAll(groupSelector).forEach(async p => {
+      if (p.classList.contains('active')) {
+        p.classList.remove('active');
+        await cardSaveField(lid, p.dataset.followup ? 'followup_'+p.dataset.followup : p.dataset.closed, false);
+      }
+    });
+  }
+  pill.classList.toggle('active', !isActive);
+  await cardSaveField(lid, dbField, !isActive);
+}
+
+// Set HWC status (hot/warm/cold cards in outcome tab)
+async function cardSetHWC(lid, status, card) {
+  // Update UI
+  card.querySelectorAll('.hwc-card').forEach(c => c.classList.remove('selected'));
+  const selected = card.querySelector('.hwc-card[data-hwc="'+status+'"]');
+  if (selected) selected.classList.add('selected');
+  // Update header badge
+  const badge = card.querySelector('.hwc-badge');
+  if (badge) {
+    badge.className = 'hwc-badge ' + status.toLowerCase();
+    badge.textContent = status === 'Hot' ? '🔴 Hot' : status === 'Warm' ? '🟠 Warm' : '🔵 Cold';
+  }
+  await cardSaveField(lid, 'hot_warm_status', status);
+  await cardSaveField(lid, 'is_hot', status === 'Hot');
+  await cardSaveField(lid, 'is_warm', status === 'Warm');
+  await cardSaveField(lid, 'is_cold', status === 'Cold');
+}
+
+// Attach all edit handlers to the card after it's populated
+function cardAttachEditors(lid) {
+  const card = document.getElementById('leadCard');
+
+  // ── Text fields in qualifying tab ──
+  const textFields = [
+    { label: 'Land Price',             db: 'price_land'       },
+    { label: 'Storey',                 db: 'storey'           },
+    { label: 'Garage',                 db: 'garage'           },
+    { label: 'Lot Type / Frontage',    db: 'lot_type'         },
+    { label: 'Area (m\u00b2)',         db: 'lot_area'         },
+    { label: 'Interested Lot Numbers', db: 'lot_numbers'      },
+    { label: 'Postcode',               db: 'suburb_postcode'  },
+    { label: 'CFS Lot #',              db: 'cfs_lot'          },
+    { label: 'Under CFS',              db: 'under_cfs'        },
+    { label: 'Settle Time OK',         db: 'settle_ok'        },
+  ];
+  textFields.forEach(({ label, db }) => {
+    card.querySelectorAll('.field-row').forEach(row => {
+      const lbl = row.querySelector('.field-label');
+      if (lbl && lbl.textContent.trim() === label) {
+        const val = row.querySelector('.field-value');
+        if (val) {
+          val.style.cursor = 'pointer';
+          val.title = 'Click to edit';
+          val.addEventListener('click', () => cardMakeEditable(val, lid, db, 'text'));
+        }
+      }
+    });
+  });
+
+  // ── Select fields ──
+  const selectFields = [
+    { label: 'How Did You Hear About Us?', db: 'hear_about_us', opts: ['','Facebook','Instagram','Google','REA','Walk In','Friend/Family','EDM','Other'] },
+    { label: 'Land Sales Office Visit',    db: 'lso_visit',     opts: ['','Yes','No'] },
+    { label: 'Buyer Type',                 db: 'buyer_type',    opts: ['','FHB','Investor','Upgrader','Downsizer','Other'] },
+    { label: 'Time To Buy',                db: 'time_to_buy',   opts: ['','0-3 months','3-6 months','6-12 months','12+ months'] },
+    { label: 'House & Land Price',         db: 'price_hl',      opts: ['','Under $700k','$700k-$900k','$900k-$1.1m','$1.1m-$1.3m','$1.3m+'] },
+  ];
+  selectFields.forEach(({ label, db, opts }) => {
+    card.querySelectorAll('.field-row').forEach(row => {
+      const lbl = row.querySelector('.field-label');
+      if (lbl && lbl.textContent.trim() === label) {
+        const val = row.querySelector('.field-value');
+        if (val) {
+          val.style.cursor = 'pointer';
+          val.title = 'Click to edit';
+          val.addEventListener('click', () => cardMakeEditable(val, lid, db, 'select', opts.map(o => ({value: o, label: o || '— Select —'}))));
+        }
+      }
+    });
+  });
+
+  // ── Deposit pills ──
+  card.querySelectorAll('[data-deposit]').forEach(pill => {
+    pill.style.cursor = 'pointer';
+    pill.addEventListener('click', async () => {
+      const key = pill.dataset.deposit;
+      const isActive = pill.classList.contains('active');
+      // Only one deposit active at a time
+      card.querySelectorAll('[data-deposit]').forEach(p => p.classList.remove('active'));
+      if (!isActive) {
+        pill.classList.add('active');
+        await cardSaveField(lid, 'deposit5', key === 'deposit5');
+        await cardSaveField(lid, 'deposit5plus5', key === 'deposit5plus5');
+        await cardSaveField(lid, 'deposit10', key === 'deposit10');
+      } else {
+        await cardSaveField(lid, 'deposit5', false);
+        await cardSaveField(lid, 'deposit5plus5', false);
+        await cardSaveField(lid, 'deposit10', false);
+      }
+    });
+  });
+
+  // ── 48 hrs stamps ──
+  const stampMap = {
+    'ROI Email':          'roi_email',
+    '1st Call':           'call1',
+    '2nd Call':           'call2',
+    'Text Message (SMS)': 'sms',
+    'Final Email':        'final_email',
+  };
+  card.querySelectorAll('.process-item').forEach(item => {
+    const lbl = item.querySelector('.process-label');
+    const dot = item.querySelector('.process-dot');
+    const ts  = item.querySelector('.process-ts');
+    if (!lbl || !dot || !ts) return;
+    const dbField = stampMap[lbl.textContent.trim()];
+    if (!dbField) return;
+    item.style.cursor = 'pointer';
+    item.title = 'Click to stamp / un-stamp';
+    item.addEventListener('click', () => {
+      const l = leads.find(x => String(x.id) === String(lid));
+      const jsKey = {roi_email:'roiEmail', call1:'call1', call2:'call2', sms:'sms', final_email:'finalEmail'}[dbField];
+      cardToggleStamp(lid, dbField, l ? l[jsKey] : null, dot, ts);
+    });
+  });
+
+  // ── Follow Up pills ──
+  card.querySelectorAll('[data-followup]').forEach(pill => {
+    pill.style.cursor = 'pointer';
+    pill.addEventListener('click', () => cardTogglePill(lid, pill.dataset.followup, pill, false, '[data-followup]'));
+  });
+
+  // ── Closed pills ──
+  card.querySelectorAll('[data-closed]').forEach(pill => {
+    pill.style.cursor = 'pointer';
+    pill.addEventListener('click', () => cardTogglePill(lid, pill.dataset.closed, pill, false, '[data-closed]'));
+  });
+
+  // ── HWC Status cards ──
+  card.querySelectorAll('.hwc-card').forEach(c => {
+    c.style.cursor = 'pointer';
+    c.addEventListener('click', () => cardSetHWC(lid, c.dataset.hwc, card));
+  });
+
+  // ── Lead Message ──
+  const lmEl = card.querySelector('[data-section="leadmsg"]');
+  if (lmEl) {
+    lmEl.contentEditable = 'true';
+    lmEl.style.cursor = 'text';
+    lmEl.style.outline = 'none';
+    lmEl.addEventListener('focus', () => lmEl.style.background = 'var(--surface2)');
+    lmEl.addEventListener('blur', async () => {
+      lmEl.style.background = '';
+      await cardSaveField(lid, 'lead_msg', lmEl.textContent.trim() || null);
+    });
+  }
+
+  // ── HCI contact row fields (mobile, email) ──
+  const hciEditFields = [
+    { label: 'Mobile', db: 'mobile' },
+    { label: 'Email',  db: 'email'  },
+  ];
+
+  // ── Agency dropdown ──
+  card.querySelectorAll('.hci-label').forEach(el => {
+    if (el.textContent.trim() === 'Agency' && el.nextElementSibling) {
+      const val = el.nextElementSibling;
+      val.style.cursor = 'pointer';
+      val.title = 'Click to edit';
+      val.addEventListener('click', () => {
+        if (val.dataset.editing) return;
+        val.dataset.editing = '1';
+        const orig = val.textContent.trim();
+        const sel = document.createElement('select');
+        sel.style.cssText = 'font-size:11px;padding:2px 4px;border:1.5px solid var(--navy);border-radius:4px;background:var(--surface);color:var(--navy);font-family:inherit';
+        sel.innerHTML = '<option value="">— Unassigned —</option>' +
+          agencies.map(a => `<option value="${a.id}" ${a.id === leads.find(x=>String(x.id)===String(lid))?.assignedAgency ? 'selected' : ''}>${a.name}</option>`).join('');
+        val.textContent = '';
+        val.appendChild(sel);
+        sel.focus();
+        async function saveAgency() {
+          delete val.dataset.editing;
+          const chosen = agencies.find(a => a.id === sel.value);
+          val.textContent = chosen ? chosen.name : '—';
+          // Also reset agent when agency changes
+          const agentVal = card.querySelectorAll('.hci-label').find ? null :
+            [...card.querySelectorAll('.hci-label')].find(e => e.textContent.trim() === 'Agent')?.nextElementSibling;
+          if (agentVal) agentVal.textContent = '—';
+          await cardSaveField(lid, 'assigned_agency', sel.value || null);
+          await cardSaveField(lid, 'assigned_agent', null);
+          // Update local lead
+          const idx = leads.findIndex(l => String(l.id) === String(lid));
+          if (idx >= 0) { leads[idx].assignedAgency = sel.value || null; leads[idx].assignedAgent = null; }
+        }
+        sel.addEventListener('blur', saveAgency);
+        sel.addEventListener('change', () => sel.blur());
+      });
+    }
+  });
+
+  // ── Agent dropdown (filtered by assigned agency) ──
+  card.querySelectorAll('.hci-label').forEach(el => {
+    if (el.textContent.trim() === 'Agent' && el.nextElementSibling) {
+      const val = el.nextElementSibling;
+      val.style.cursor = 'pointer';
+      val.title = 'Click to edit';
+      val.addEventListener('click', () => {
+        if (val.dataset.editing) return;
+        val.dataset.editing = '1';
+        const l = leads.find(x => String(x.id) === String(lid));
+        const agencyId = l ? l.assignedAgency : null;
+        const filtered = agencyId ? agents.filter(a => a.agencyId === agencyId) : agents;
+        const sel = document.createElement('select');
+        sel.style.cssText = 'font-size:11px;padding:2px 4px;border:1.5px solid var(--navy);border-radius:4px;background:var(--surface);color:var(--navy);font-family:inherit';
+        sel.innerHTML = '<option value="">— Unassigned —</option>' +
+          filtered.map(a => `<option value="${a.id}" ${a.id === l?.assignedAgent ? 'selected' : ''}>${a.name}</option>`).join('');
+        val.textContent = '';
+        val.appendChild(sel);
+        sel.focus();
+        async function saveAgent() {
+          delete val.dataset.editing;
+          const chosen = agents.find(a => a.id === sel.value);
+          val.textContent = chosen ? chosen.name : '—';
+          await cardSaveField(lid, 'assigned_agent', sel.value || null);
+          const idx = leads.findIndex(l => String(l.id) === String(lid));
+          if (idx >= 0) leads[idx].assignedAgent = sel.value || null;
+        }
+        sel.addEventListener('blur', saveAgent);
+        sel.addEventListener('change', () => sel.blur());
+      });
+    }
+  });
+  hciEditFields.forEach(({ label, db }) => {
+    card.querySelectorAll('.hci-label').forEach(el => {
+      if (el.textContent.trim() === label && el.nextElementSibling) {
+        const val = el.nextElementSibling;
+        val.style.cursor = 'pointer';
+        val.title = 'Click to edit';
+        val.addEventListener('click', () => {
+          if (val.dataset.editing) return;
+          val.dataset.editing = '1';
+          const orig = val.textContent.trim();
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.value = orig === '—' ? '' : orig.replace(/\s/g, '');
+          input.autocomplete = 'off';
+          input.style.cssText = 'font-size:11px;padding:2px 4px;border:1.5px solid var(--navy);border-radius:4px;background:var(--surface);color:var(--navy);font-family:inherit;width:130px';
+          val.textContent = '';
+          val.appendChild(input);
+          input.focus(); input.select();
+          async function saveHci() {
+            delete val.dataset.editing;
+            const v = input.value.trim();
+            val.textContent = db === 'mobile' ? fmtPhone(v) : (v || '—');
+            if (v !== orig) await cardSaveField(lid, db, v || null);
+          }
+          input.addEventListener('blur', saveHci);
+          input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') input.blur();
+            if (e.key === 'Escape') { delete val.dataset.editing; val.textContent = orig; }
+          });
+        });
+      }
+    });
+  });
+}
 
 function cardSwitchTab(name, btn) {
   const card = document.getElementById('leadCard');
@@ -5417,10 +5995,22 @@ function openLeadCard(id) {
 
   cardSwitchTab('process', card.querySelector('.tab-btn'));
 
+  // Attach edit handlers
+  cardAttachEditors(lid);
+
   document.getElementById('leadCard').style.display='block';
+  document.getElementById('leadCard').style.pointerEvents='auto';
   document.getElementById('app').style.display='none';
   history.pushState({leadCard:true},'');
 }
+
+window.addEventListener('resize', function() {
+  const isMobile = window.innerWidth <= 768;
+  const tw = document.querySelector('.table-wrap');
+  const ml = document.getElementById('mobileLeadsList');
+  if (tw) tw.style.display = isMobile ? 'none' : '';
+  if (ml) { ml.style.display = isMobile ? 'flex' : 'none'; if (isMobile) renderMobileLeads(); }
+});
 
 </script>
 </body>
