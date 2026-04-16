@@ -1447,8 +1447,11 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
   <div class="login-card">
     <div class="login-logo">LEADS<span>/</span>MGR</div>
     <div class="login-sub">Property Lead Management · v4</div>
-    <div class="login-field"><label>Email</label><input type="email" id="lu" placeholder="your@email.com" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="login-field"><label>Password</label><input type="text" class="pw-mask" id="lp" placeholder="Password" autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <!-- Honeypots — stop password managers from filling wrong fields -->
+    <input style="display:none" type="text" tabindex="-1" autocomplete="username">
+    <input style="display:none" type="password" tabindex="-1" autocomplete="new-password">
+    <div class="login-field"><label>Email</label><input type="email" id="lu" placeholder="your@email.com" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="login-field"><label>Password</label><input type="password" id="lp" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
     <div class="login-err" id="lerr"></div>
   </div>
@@ -2604,6 +2607,7 @@ function toInputDate(val) {
 
 // ─── State ───
 let leads = [], agencies = [], agents = [], auditLog = [], inventory = [], deletedLeads = [];
+let _lcId = null, _lcDirty = false;
 let customFields = JSON.parse(localStorage.getItem('lm3_customFields') || '[]');
 let customGroups = JSON.parse(localStorage.getItem('lm3_customGroups') || '[]');
 let nextId = 1, nextInvId = 1;
@@ -3822,10 +3826,16 @@ document.addEventListener('click', e => {
 
 
 function renderMobileLeads() {
-  if (window.innerWidth > 768) return;
   if (!me) return;
   const container = document.getElementById('mobileLeadsList');
   if (!container) return;
+  const isMobile = window.innerWidth <= 768;
+  const tw = document.querySelector('.table-wrap');
+  // Always sync display state
+  container.style.display = isMobile ? 'flex' : 'none';
+  container.style.flexDirection = 'column';
+  if (tw) tw.style.display = isMobile ? 'none' : '';
+  if (!isMobile) return;
   const rows = getVisible();
   if (!rows.length) {
     container.innerHTML = '<div style="padding:32px;text-align:center;color:var(--text3)">No leads found</div>';
@@ -6260,11 +6270,7 @@ async
 
 
 window.addEventListener('resize', function() {
-  const isMobile = window.innerWidth <= 768;
-  const tw = document.querySelector('.table-wrap');
-  const ml = document.getElementById('mobileLeadsList');
-  if (tw) tw.style.display = isMobile ? 'none' : '';
-  if (ml) { ml.style.display = isMobile ? 'flex' : 'none'; if (isMobile) renderMobileLeads(); }
+  renderMobileLeads();
 });
 
 // ── Session restore on page load ──
@@ -6484,9 +6490,6 @@ async function icSaveLot() {
 }
 
 // ══ LEAD CARD (template layout) ══
-let _lcId = null;
-let _lcDirty = false;
-
 function lcTab(name, btn) {
   document.querySelectorAll('#leadCard .lc-panel').forEach(p => { p.classList.remove('active'); p.style.display='none'; });
   document.querySelectorAll('#leadCard .lc-tb').forEach(b => b.classList.remove('active'));
