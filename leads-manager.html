@@ -2623,8 +2623,8 @@ async function loadData() {
   agents   = (agentsRes.data || []).map(a => ({...a, agencyId: a.agency_id||null}));
   // Load deleted leads scoped by role
   let deletedQuery = sb.from('leads').select('*, notes(*)').eq('deleted', true).order('id', {ascending: false});
-  if (me.role === 'agency') deletedQuery = deletedQuery.eq('assigned_agency', me.agencyId);
-  if (me.role === 'agent')  deletedQuery = deletedQuery.eq('assigned_agent', me.agentId);
+  if (me && me.role === 'agency') deletedQuery = deletedQuery.eq('assigned_agency', me.agencyId);
+  if (me && me.role === 'agent')  deletedQuery = deletedQuery.eq('assigned_agent', me.agentId);
   const deletedRes = await deletedQuery;
   deletedLeads = (deletedRes.data || []).map(mapFromDb);
   nextId   = leads.length ? Math.max(...leads.map(l=>parseInt(l.id)||0))+1 : 1;
@@ -2823,20 +2823,22 @@ function enterApp() {
   history.pushState({app: true}, '');
   // Role badge
   const rb = document.getElementById('roleBadge');
-  rb.textContent = me.role.toUpperCase();
-  rb.className = 'role-badge rb-' + me.role;
+  if (me && me.role) {
+    rb.textContent = me.role.toUpperCase();
+    rb.className = 'role-badge rb-' + me.role;
+  }
   // Breadcrumb
   const bc = document.getElementById('breadcrumb');
-  if (me.role === 'admin') { bc.innerHTML = '<b>Admin</b>'; }
-  else if (me.role === 'agency') { bc.innerHTML = `<b>${me.username}</b>`; }
-  else {
+  if (me && me.role === 'admin') { bc.innerHTML = '<b>Admin</b>'; }
+  else if (me && me.role === 'agency') { bc.innerHTML = `<b>${me.username}</b>`; }
+  else if (me) {
     const ag = agencies.find(a => a.id === me.agencyId);
     bc.innerHTML = `${ag?ag.name:'—'} <span>›</span> <b>${me.username}</b>`;
   }
   // Admin-only controls
   document.getElementById('exportDrop').style.display = 'block';
-  document.querySelectorAll('[data-admin-only]').forEach(el => { el.style.display = me.role === 'admin' ? '' : 'none'; });
-  document.getElementById('newLeadBtn').style.display = me.role==='admin' ? 'flex' : 'none';
+  document.querySelectorAll('[data-admin-only]').forEach(el => { el.style.display = (me && me.role === 'admin') ? '' : 'none'; });
+  document.getElementById('newLeadBtn').style.display = (me && me.role==='admin') ? 'flex' : 'none';
   document.getElementById('selAll').style.display = 'inline';
   document.getElementById('darkToggle').textContent = document.body.classList.contains('dark') ? '☾ Light Mode' : '☀ Dark Mode';
   // Build tabs
@@ -4057,11 +4059,11 @@ function openLeadDrawer(id) {
   document.querySelectorAll('.temp-card').forEach(c=>c.classList.remove('sel-hot','sel-warm','sel-cold'));
 
   // Show/hide assignment section
-  document.getElementById('sec-agencyAssign').style.display = (me.role==='admin') ? 'flex' : 'none';
-  document.getElementById('sec-agentAssign').style.display  = (me.role==='admin'||me.role==='agency') ? 'block' : 'none';
+  document.getElementById('sec-agencyAssign').style.display = (me && me.role==='admin') ? 'flex' : 'none';
+  document.getElementById('sec-agentAssign').style.display  = (me && (me.role==='admin'||me.role==='agency')) ? 'block' : 'none';
 
   // Populate agency dropdown
-  if (me.role==='admin') {
+  if (me && me.role==='admin') {
     document.getElementById('f-agency').innerHTML =
       '<option value="">— Unassigned —</option>' + agencies.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
   }
@@ -4087,10 +4089,10 @@ function openLeadDrawer(id) {
       const r=document.querySelector(`input[name="hw"][value="${l.hotWarmStatus}"]`);
       if(r) { r.checked=true; updateTempCards(); }
     }
-    if (me.role==='admin') {
+    if (me && me.role==='admin') {
       document.getElementById('f-agency').value = l.assignedAgency||'';
       syncAgentDropdown(l.assignedAgent);
-    } else if (me.role==='agency') {
+    } else if (me && me.role==='agency') {
       syncAgentDropdown(l.assignedAgent);
     }
     renderNotes(l);
@@ -4100,7 +4102,7 @@ function openLeadDrawer(id) {
     document.getElementById('ldSub').textContent   = '';
     document.getElementById('f-date').value = toInputDate(new Date().toISOString().split('T')[0]);
     document.getElementById('notesBox').innerHTML = '<div class="no-notes">No notes yet.</div>';
-    if (me.role==='agency') syncAgentDropdown(null);
+    if (me && me.role==='agency') syncAgentDropdown(null);
   }
 
   // Show/hide delete button (element doesn't exist in current HTML, skipping)
