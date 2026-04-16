@@ -126,89 +126,17 @@
 
   /* Inline cell editing */
   .ie-cell{cursor:pointer;position:relative}
-  @media (max-width:768px) or (pointer:coarse) { .ie-cell{cursor:default;pointer-events:none} }
-  .ie-cell:hover{background:rgba(37,99,235,0.06) !important;outline:1px solid var(--accent)}
-  .ie-active{outline:2px solid var(--accent) !important;background:#fff !important;z-index:25 !important;position:relative;overflow:visible}
-  .ie-input{width:100%;max-width:100%;border:none;outline:none;background:transparent;font-family:var(--sans);font-size:11px;color:var(--text);padding:0;min-width:80px}
-  .ie-select{width:100%;border:none;outline:none;background:transparent;font-family:var(--sans);font-size:11px;color:var(--text);padding:0;cursor:pointer}
-  .ie-actions{display:flex;gap:4px;margin-top:4px}
-  .ie-save{padding:2px 8px;background:var(--accent);color:#fff;border:none;border-radius:3px;font-size:10px;cursor:pointer}
-  .ie-cancel{padding:2px 8px;background:var(--bg4);color:var(--text2);border:1px solid var(--border2);border-radius:3px;font-size:10px;cursor:pointer}
-  .ie-stamp-btn{padding:3px 10px;background:var(--accent);color:#fff;border:none;border-radius:3px;font-size:10px;cursor:pointer;white-space:nowrap}
-  .ie-pill-popup{position:fixed;z-index:9999;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:12px;box-shadow:0 4px 20px rgba(0,0,0,.15);display:flex;flex-wrap:wrap;gap:8px;max-width:280px}
-  .cell-popup{position:fixed;z-index:9999;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:12px 14px;max-width:320px;font-size:12px;color:var(--text);line-height:1.6;box-shadow:0 4px 16px rgba(0,0,0,.12);pointer-events:none;white-space:pre-wrap;word-break:break-word}
-  .rn{font-size:10px;color:var(--text3);text-align:right}
-  .rcb{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
-  .badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:500;white-space:nowrap}
-  .b-hot{background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3)}
-  .b-warm{background:rgba(249,115,22,.15);color:#f97316;border:1px solid rgba(249,115,22,.3)}
-  .b-cold{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
-  .cy{color:var(--green);font-weight:600}.cn{color:var(--text3)}.cu{color:var(--yellow)}
-  .tag{display:inline-block;padding:1px 5px;border-radius:2px;font-size:10px;background:var(--bg4);border:1px solid var(--border2);color:var(--text2)}
-  .t-tc{background:rgba(20,184,166,.1);color:var(--teal);border-color:rgba(20,184,166,.3)}
-  .t-cb{background:rgba(59,130,246,.1);color:#60a5fa;border-color:rgba(59,130,246,.3)}
-  .t-vm{background:rgba(168,85,247,.1);color:#a855f7;border-color:rgba(168,85,247,.3)}
-  .t-na{background:rgba(234,179,8,.1);color:#eab308;border-color:rgba(234,179,8,.3)}
-  .t-nm{background:rgba(249,115,22,.1);color:#f97316;border-color:rgba(249,115,22,.3)}
-  .t-dc{background:rgba(239,68,68,.1);color:#ef4444;border-color:rgba(239,68,68,.3)}
-  .t-ni{background:rgba(239,68,68,.15);color:#fca5a5;border-color:rgba(239,68,68,.4)}
-  .t-dup{background:rgba(107,114,128,.15);color:#9ca3af;border-color:rgba(107,114,128,.3)}
-  .assign-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:3px;font-size:10px}
-  .unassigned-badge{background:var(--bg4);color:var(--text3);border:1px solid var(--border);font-size:10px;padding:2px 7px;border-radius:3px}
-  .empty-row td{text-align:center;padding:60px 20px;color:var(--text3);font-size:12px}
-
-  /* Column header shading — matches group headers exactly */
-  .ch th:nth-child(n+4):nth-child(-n+7)   { background-color: #e0f7f4 !important }  /* LEAD DETAILS (cols 4-7) */
-  .ch th:nth-child(8)                     { background-color: #fed7aa !important }  /* COMMENTS/INTERACTIONS (col 8) */
-  .ch th:nth-child(n+9):nth-child(-n+13)  { background-color: #dbeafe !important }  /* 48 HOURS PROCESS (cols 9-13) */
-  .ch th:nth-child(14)                    { background-color: #f3e8ff !important }  /* LEAD SOURCE (col 14) */
-  .ch th:nth-child(n+15):nth-child(-n+27) { background-color: #fef9c3 !important }  /* QUALIFYING QUESTIONS (cols 15-27) */
-  .ch th:nth-child(n+28):nth-child(-n+31) { background-color: #fee2e2 !important }  /* QUALIFYING OUTCOMES (cols 28-31) */
-  .ch th:nth-child(n+32):nth-child(-n+33) { background-color: #ccfbf1 !important }  /* UNDER CFS (cols 32-33) */
-  .ch th:nth-child(n+34):nth-child(-n+35) { background-color: #ede9fe !important }  /* ASSIGNMENT (cols 34-35) */
-  /* Zebra striping on data rows */
-  tbody tr:nth-child(even) td { background-color: #ffffff }
-  tbody tr:nth-child(odd) td  { background-color: #ffffff }
-  tbody tr:nth-child(even) td:nth-child(1),tbody tr:nth-child(even) td:nth-child(2),tbody tr:nth-child(even) td:nth-child(4) { background-color: #ffffff }
-  tbody tr:nth-child(odd) td:nth-child(1),tbody tr:nth-child(odd) td:nth-child(2),tbody tr:nth-child(odd) td:nth-child(4) { background-color: #ffffff !important }
-  /* Keep hover visible */
-  tbody tr:hover td { background-color: var(--bg3) !important }
-  tbody tr:hover td:nth-child(1),tbody tr:hover td:nth-child(2),tbody tr:hover td:nth-child(4) { background-color: var(--bg3) !important }
-  .ls-pill,.oc-pill{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--border2);transition:all .15s;user-select:none;opacity:1}
-  .ls-pill.active,.oc-pill.active{border-color:currentColor;font-weight:600}
-  .ls-pill:not(.active),.oc-pill:not(.active){filter:saturate(0.5);opacity:0.8}
-  .ls-pill:hover,.oc-pill:hover{filter:none;opacity:1}
-  input.mobile-invalid{border-color:var(--red)!important;background:rgba(220,38,38,0.05)!important}
-  .req-highlight{border-color:var(--red)!important;background:rgba(220,38,38,0.05)!important;border-radius:4px}
-  .mobile-warn{color:var(--red);font-size:10px;margin-top:3px;display:none}
-  .mobile-warn.show{display:block}
-  .contact-row{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 14px}
-  .contact-row-label{font-size:12px;font-weight:500;color:var(--text2);width:90px;flex-shrink:0}
-  .contact-row-stamp{flex:1;font-size:12px;color:var(--text);font-weight:500}
-  .contact-row-stamp.stamped{color:var(--accent)}
-  .stamp-btn{padding:5px 14px;border-radius:20px;border:1px solid var(--accent);background:transparent;color:var(--accent);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
-  .stamp-btn:hover{background:var(--accent);color:#fff}
-  .stamp-btn.stamped{background:var(--bg3);border-color:var(--border2);color:var(--text3)}
-  .stamp-btn.stamped:hover{background:var(--accent);border-color:var(--accent);color:#fff}
-  .contact-row-stamp.backdated{color:var(--orange)!important}
-  .stamp-bd-tag{display:inline-block;font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;background:rgba(234,88,12,.12);color:var(--orange);border:1px solid rgba(234,88,12,.3);margin-left:5px;vertical-align:middle;text-transform:uppercase;letter-spacing:.5px}
-  .bd-cell{color:var(--orange)!important}
-  .bd-cell .bd-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--orange);margin-left:3px;vertical-align:middle}
-  .stamp-backdate:hover{color:var(--accent);border-color:var(--accent)}
-  .stamp-backdate.active{color:var(--accent);border-color:var(--accent);background:rgba(37,99,235,.08)}
-  .backdate-wrap{display:flex;align-items:center;gap:6px}
-  .backdate-input{padding:4px 8px;border:1px solid var(--border2);border-radius:4px;background:var(--bg3);color:var(--text);font-size:11px;width:160px;outline:none}
-  .backdate-input:focus{border-color:var(--accent)}
-  .stamp-clear:hover{color:var(--red);background:var(--bg3)}
-  .poc-log{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:8px;max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;cursor:pointer}
-  .poc-log:hover{border-color:var(--border2)}
-  .poc-entry{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;display:flex;gap:10px;align-items:flex-start}
-  .poc-entry-ts{font-size:10px;color:var(--text2);white-space:nowrap;min-width:90px;flex-shrink:0;line-height:1.5;padding-top:1px}
-  .poc-entry-text{font-size:12px;color:var(--text);line-height:1.5;flex:1}
-  .poc-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;padding:0 2px;line-height:1}
-  .poc-del:hover{color:var(--red)}
-  .cf-pills{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0}
-  .lp-sec{padding:28px 24px 32px 24px;border-bottom:1px solid var(--border)}
+  @media (max-width:768px) {
+    header { height:auto; min-height:48px; flex-wrap:nowrap; padding:6px 10px; gap:6px; overflow:hidden; }
+    .search-box { display:none !important; }
+    header #exportDrop { display:none !important; }
+    header .dark-toggle { display:none !important; }
+    header .hdr-actions { gap:4px !important; }
+    .stat-pill { font-size:10px !important; padding:2px 5px !important; cursor:pointer; }
+    .stat-row { gap:3px !important; }
+    /* Hide STATUS filter bar on mobile — use header pills instead */
+    #filterBar .fl, #filterBar .fc[onclick*="setStatusFilter"] { display:none !important; }
+  }
   .lp-sec:last-of-type{border-bottom:none}
   .lp-sec-label{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
   .lp-sec-help{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border2);background:none;color:var(--text3);font-size:10px;font-weight:700;cursor:pointer;margin-top:6px;flex-shrink:0;transition:all .15s;line-height:1}
@@ -1474,6 +1402,15 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
   }
   .hdr-avatar:hover { background:rgba(255,255,255,0.28); }
 
+
+
+  /* Stat pill active state when used as filter */
+  .stat-pill.active {
+    background: rgba(255,255,255,0.35) !important;
+    border-color: rgba(255,255,255,0.6) !important;
+    color: #fff !important;
+  }
+
 </style>
 
 <!-- ═══════════ LOGIN SCREEN ═══════════ -->
@@ -1512,10 +1449,10 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
     <div class="role-badge" id="roleBadge"></div>
     <div class="breadcrumb" id="breadcrumb"></div>
     <div class="stat-row">
-      <div class="stat-pill">Total <b id="s-total">0</b></div>
-      <div class="stat-pill">🔴 <b id="s-hot">0</b></div>
-      <div class="stat-pill">🟠 <b id="s-warm">0</b></div>
-      <div class="stat-pill">🔵 <b id="s-cold">0</b></div>
+      <div class="stat-pill" onclick="setStatusFilter('all',null)" title="All leads" style="cursor:pointer">Total <b id="s-total">0</b></div>
+      <div class="stat-pill stat-pill-hot" onclick="setStatusFilter('hot',null)" title="Hot leads" style="cursor:pointer">🔴 <b id="s-hot">0</b></div>
+      <div class="stat-pill stat-pill-warm" onclick="setStatusFilter('warm',null)" title="Warm leads" style="cursor:pointer">🟠 <b id="s-warm">0</b></div>
+      <div class="stat-pill stat-pill-cold" onclick="setStatusFilter('cold',null)" title="Cold leads" style="cursor:pointer">🔵 <b id="s-cold">0</b></div>
     </div>
     <!-- Search hidden on mobile, shown in filter bar instead -->
     <input class="search-box" type="text" placeholder="Search…" id="searchInput" autocomplete="off" oninput="applyFilters()">
@@ -3028,10 +2965,27 @@ function buildDynFilters() {
 // ═══════════════════════════════════════════
 function setStatusFilter(v, el) {
   fStatus = v;
+  // Update filter bar pills
   document.querySelectorAll('.filter-bar .fc').forEach(c => {
     if (['All','🔴 Hot','🟠 Warm','🔵 Cold'].some(x => c.textContent.trim()===x)) c.classList.remove('active');
   });
-  el.classList.add('active');
+  if (el) el.classList.add('active');
+  // Sync the matching filter bar pill when called from header stat pills
+  if (!el) {
+    const map = {all:'All', hot:'🔴 Hot', warm:'🟠 Warm', cold:'🔵 Cold'};
+    document.querySelectorAll('.filter-bar .fc').forEach(c => {
+      if (c.textContent.trim() === map[v]) c.classList.add('active');
+    });
+  }
+  // Update stat pill active state
+  document.querySelectorAll('.stat-pill').forEach(p => p.classList.remove('active'));
+  const pillMap = {all:null, hot:'stat-pill-hot', warm:'stat-pill-warm', cold:'stat-pill-cold'};
+  if (v === 'all') {
+    document.querySelector('.stat-pill:first-child')?.classList.add('active');
+  } else {
+    const cls = pillMap[v];
+    if (cls) document.querySelector('.' + cls)?.classList.add('active');
+  }
   renderLeads();
 }
 function setBuyerFilter(v, el) {
