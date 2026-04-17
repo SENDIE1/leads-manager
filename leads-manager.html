@@ -235,14 +235,16 @@
   .table-wrap{flex:1;overflow:auto;position:relative}
   table{border-collapse:collapse;width:max-content;min-width:100%}
   #col-ref-row th{background:#1e293b !important}
-  thead th:nth-child(1),thead th:nth-child(2){background:var(--bg3) !important;position:sticky;z-index:12;left:0}
+  thead th:nth-child(1),thead th:nth-child(2),thead th:nth-child(3){background:var(--bg3) !important;position:sticky;z-index:12}
+  thead th:nth-child(1){left:0}
   thead th:nth-child(2){left:28px !important}
+  thead th:nth-child(3){left:56px !important} /* Lead Date column */
   thead{position:sticky;top:0;z-index:50;isolation:isolate}
   .gh th{background:var(--bg3);padding:4px 8px;text-align:center;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);border-right:1px solid var(--border);white-space:nowrap}
   .gh th:nth-child(1){position:sticky;z-index:11;background:var(--bg3) !important;left:0;width:28px;min-width:28px}
   .gh th:nth-child(2){position:sticky;z-index:11;background:var(--bg3) !important;left:28px;min-width:28px}
-  .gh th:nth-child(3){min-width:90px;white-space:nowrap}
-  .gh th:nth-child(4){position:sticky;z-index:11;background:#e0f7f4 !important;left:56px;min-width:120px;width:120px;border-right:2px solid var(--border2) !important}
+  .gh th:nth-child(3){position:sticky;z-index:11;background:var(--bg3) !important;left:56px;min-width:90px;white-space:nowrap;border-right:2px solid var(--border2) !important}
+  .gh th:nth-child(4){min-width:120px;width:120px}
   .gh th.g1{background:#e0f7f4;color:#0d7a6e;border-bottom:2px solid #0d9488}
   .gh th.g2{background:#dbeafe;color:#1e40af;border-bottom:2px solid #2563eb}
   .gh th.g3{background:#f3e8ff;color:#6b21a8;border-bottom:2px solid #7c3aed}
@@ -257,12 +259,12 @@
   .ch th{background:var(--bg2);padding:7px 8px;text-align:left;font-size:10px;font-weight:600;color:var(--text2);border-bottom:1px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;min-width:80px}
 
   .ch th:hover{background:var(--bg3);color:var(--text)}
-  .ch th:nth-child(1),.ch th:nth-child(2),.ch th:nth-child(4){position:sticky;z-index:11;background:var(--bg2) !important}
-  tbody td:nth-child(1),tbody td:nth-child(2),tbody td:nth-child(4){position:sticky;z-index:10;background:inherit}
+  .ch th:nth-child(1),.ch th:nth-child(2),.ch th:nth-child(3){position:sticky;z-index:11;background:var(--bg2) !important}
+  tbody td:nth-child(1),tbody td:nth-child(2),tbody td:nth-child(3){position:sticky;z-index:10;background:inherit}
   .ch th:nth-child(1),tbody td:nth-child(1){left:0;width:28px;min-width:28px}
   .ch th:nth-child(2),tbody td:nth-child(2){left:28px;min-width:28px;white-space:nowrap}
-  .ch th:nth-child(4),tbody td:nth-child(4){left:56px;min-width:120px;border-right:2px solid var(--border2) !important}
-  .ch th:nth-child(3),tbody td:nth-child(3){min-width:90px;white-space:nowrap}
+  .ch th:nth-child(3),tbody td:nth-child(3){left:56px;min-width:90px;white-space:nowrap;border-right:2px solid var(--border2) !important}
+  .ch th:nth-child(4),tbody td:nth-child(4){min-width:120px}
   tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
   tbody tr:hover td{background:var(--bg3) !important}
   tbody td{padding:7px 8px;border-right:1px solid var(--border);vertical-align:middle;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
