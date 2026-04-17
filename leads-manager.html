@@ -27,7 +27,7 @@
   .dark-toggle{background:none;border:1px solid var(--border2);border-radius:20px;padding:4px 10px;cursor:pointer;font-size:13px;color:var(--text2);transition:all .2s;line-height:1}
   .dark-toggle:hover{background:var(--bg3)}
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;height:100vh;display:flex;flex-direction:column;overflow:hidden;overscroll-behavior-x:none}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;height:100vh;display:flex;flex-direction:column;overflow-y:hidden;overflow-x:auto}
 
   /* LOGIN */
   #loginScreen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center}
@@ -47,7 +47,20 @@
   .login-err{color:var(--red);font-size:11px;margin-top:10px;text-align:center;min-height:16px}
 
   /* HEADER */
-  header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;height:52px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:100}
+  header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;height:auto;min-height:52px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:100;flex-wrap:wrap}
+  @media (max-width: 1200px) {
+    header { gap: 8px; }
+    .search-box { width: 150px; }
+  }
+  @media (max-width: 1000px) {
+    header { gap: 6px; padding: 8px 12px; }
+    .search-box { width: 120px; }
+    .stat-row { display: none; }
+  }
+  @media (max-width: 800px) {
+    .breadcrumb { display: none; }
+    .user-switcher { order: 3; width: 100%; }
+  }
   .logo{font-size:15px;font-weight:600;color:var(--accent);white-space:nowrap}
   .logo span{color:var(--text3)}
   .role-badge{padding:3px 10px;border-radius:3px;font-size:10px;font-weight:600;flex-shrink:0}
@@ -89,7 +102,7 @@
   .bulk-text{font-size:12px;color:#e2e8f0;font-weight:500}
 
   /* TABLE */
-  .table-wrap{flex:1;overflow:auto;position:relative;overscroll-behavior-x:contain}
+  .table-wrap{flex:1;overflow:auto;position:relative}
   table{border-collapse:collapse;width:max-content;min-width:100%}
   #col-ref-row th{background:#1e293b !important}
   thead th:nth-child(1),thead th:nth-child(2){background:var(--bg3) !important;position:sticky;z-index:12;left:0}
@@ -638,11 +651,11 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
 
   /* ══ MOBILE LIST VIEW ≤768px ══ */
   @media (max-width: 768px) {
-    #app { max-width: 100vw; overflow-x: hidden; }
+    #app { max-width: 100vw; }
     .table-wrap { display: none !important; }
     #mobileLeadsList { display: flex !important; flex-direction: column; width: 100%; }
-    header { height:auto; min-height:52px; flex-wrap:wrap; padding:8px 12px; gap:6px; max-width:100vw; overflow:hidden; }
-    .filter-bar { flex-wrap:wrap; gap:6px; padding:6px 10px; max-width:100vw; overflow:hidden; }
+    header { height:auto; min-height:52px; flex-wrap:wrap; padding:8px 12px; gap:6px; max-width:100vw; }
+    .filter-bar { flex-wrap:wrap; gap:6px; padding:6px 10px; max-width:100vw; }
     #tabBar { overflow-x:auto; flex-wrap:nowrap; max-width:100vw; }
     #tabBar .tab { flex-shrink:0; }
     .statusbar { font-size:11px; padding:4px 10px; }
@@ -1445,6 +1458,39 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
   font-weight: 600;
 }
 
+/* User Switcher */
+.user-switcher-btn:hover {
+  background: var(--bg2) !important;
+}
+.user-switcher-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.user-switcher-option:last-child {
+  border-bottom: none;
+}
+.user-switcher-option:hover {
+  background: var(--bg2);
+}
+.user-switcher-option.active {
+  background: var(--primary);
+  color: white;
+}
+.user-role-badge {
+  background: var(--bg3);
+  color: var(--text3);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
 </style>
 
 <!-- ═══════════ LOGIN SCREEN ═══════════ -->
@@ -1477,7 +1523,15 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
 
   <header>
     <div class="logo">LEADS<span>/</span>MGR</div>
-    <div class="role-badge" id="roleBadge"></div>
+    <div class="user-switcher" style="position:relative">
+      <button class="user-switcher-btn" id="userSwitcherBtn" onclick="toggleUserSwitcher()" style="background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:6px 12px;color:var(--text);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px">
+        <span id="currentUserLabel">Admin</span>
+        <span style="font-size:10px">▼</span>
+      </button>
+      <div class="user-switcher-dropdown" id="userSwitcherDropdown" style="display:none;position:absolute;top:100%;right:0;background:var(--bg);border:1px solid var(--border2);border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:1000;min-width:200px;margin-top:4px">
+        <div style="padding:8px 0" id="userSwitcherOptions"></div>
+      </div>
+    </div>
     <div class="breadcrumb" id="breadcrumb"></div>
     <div class="stat-row">
       <div class="stat-pill">Total <b id="s-total">0</b></div>
@@ -3008,18 +3062,8 @@ function enterApp() {
   // Push 2 history entries so swipe-back never reaches login
   history.pushState({app: true}, '');
   history.pushState({app: true}, '');
-  // Role badge
-  const rb = document.getElementById('roleBadge');
-  rb.textContent = me.role.toUpperCase();
-  rb.className = 'role-badge rb-' + me.role;
-  // Breadcrumb
-  const bc = document.getElementById('breadcrumb');
-  if (me.role === 'admin') { bc.innerHTML = '<b>Admin</b>'; }
-  else if (me.role === 'agency') { bc.innerHTML = `<b>${me.username}</b>`; }
-  else {
-    const ag = agencies.find(a => a.id === me.agencyId);
-    bc.innerHTML = `${ag?ag.name:'—'} <span>›</span> <b>${me.username}</b>`;
-  }
+  // Initialize user switcher
+  updateUIForCurrentUser();
   // Admin-only controls
   document.getElementById('exportDrop').style.display = 'block';
   document.querySelectorAll('[data-admin-only]').forEach(el => { el.style.display = me.role === 'admin' ? '' : 'none'; });
@@ -3129,6 +3173,143 @@ function switchTab(id) {
 }
 
 function switchToLeads() { switchTab('leads'); }
+
+// ═══════════════════════════════════════════
+//  USER SWITCHER
+// ═══════════════════════════════════════════
+function toggleUserSwitcher() {
+  const dropdown = document.getElementById('userSwitcherDropdown');
+  const isVisible = dropdown.style.display === 'block';
+  dropdown.style.display = isVisible ? 'none' : 'block';
+  
+  if (!isVisible) {
+    buildUserSwitcherOptions();
+  }
+}
+
+function buildUserSwitcherOptions() {
+  const container = document.getElementById('userSwitcherOptions');
+  let options = [];
+  
+  // Add Admin option
+  const isCurrentAdmin = me.role === 'admin';
+  options.push(`
+    <div class="user-switcher-option ${isCurrentAdmin ? 'active' : ''}" onclick="switchToUser('admin', null, null)">
+      <div>
+        <div style="font-weight: 600">Admin</div>
+        <div style="font-size: 10px; color: var(--text3)">System Administrator</div>
+      </div>
+      <div class="user-role-badge">admin</div>
+    </div>
+  `);
+  
+  // Add Agency options
+  agencies.forEach(agency => {
+    const isCurrentUser = me.role === 'agency' && me.agencyId === agency.id;
+    options.push(`
+      <div class="user-switcher-option ${isCurrentUser ? 'active' : ''}" onclick="switchToUser('agency', '${agency.id}', null)">
+        <div>
+          <div style="font-weight: 600">${agency.name}</div>
+          <div style="font-size: 10px; color: var(--text3)">${agency.principal || 'Agency Owner'}</div>
+        </div>
+        <div class="user-role-badge">agency</div>
+      </div>
+    `);
+  });
+  
+  // Add Agent options
+  agents.forEach(agent => {
+    const agency = agencies.find(a => a.id === agent.agencyId);
+    const isCurrentUser = me.role === 'agent' && me.agentId === agent.id;
+    options.push(`
+      <div class="user-switcher-option ${isCurrentUser ? 'active' : ''}" onclick="switchToUser('agent', '${agent.agencyId}', '${agent.id}')">
+        <div>
+          <div style="font-weight: 600">${agent.name}</div>
+          <div style="font-size: 10px; color: var(--text3)">${agency ? agency.name : 'No Agency'}</div>
+        </div>
+        <div class="user-role-badge">agent</div>
+      </div>
+    `);
+  });
+  
+  container.innerHTML = options.join('');
+}
+
+function switchToUser(role, agencyId, agentId) {
+  // Update the current user context
+  if (role === 'admin') {
+    me = { role: 'admin', username: 'admin', agencyId: null, agentId: null };
+  } else if (role === 'agency') {
+    const agency = agencies.find(a => a.id === agencyId);
+    me = { 
+      role: 'agency', 
+      username: agency ? agency.username : 'agency', 
+      agencyId: agencyId, 
+      agentId: null 
+    };
+  } else if (role === 'agent') {
+    const agent = agents.find(a => a.id === agentId);
+    me = { 
+      role: 'agent', 
+      username: agent ? agent.username : 'agent', 
+      agencyId: agencyId, 
+      agentId: agentId 
+    };
+  }
+  
+  // Close the dropdown
+  document.getElementById('userSwitcherDropdown').style.display = 'none';
+  
+  // Update the UI
+  updateUIForCurrentUser();
+}
+
+function updateUIForCurrentUser() {
+  // Update the user switcher button label
+  const label = document.getElementById('currentUserLabel');
+  if (me.role === 'admin') {
+    label.textContent = 'Admin';
+  } else if (me.role === 'agency') {
+    const agency = agencies.find(a => a.id === me.agencyId);
+    label.textContent = agency ? agency.name : 'Agency User';
+  } else if (me.role === 'agent') {
+    const agent = agents.find(a => a.id === me.agentId);
+    const agency = agencies.find(a => a.id === me.agencyId);
+    label.textContent = `${agent ? agent.name : 'Agent'} @ ${agency ? agency.name : 'Agency'}`;
+  }
+  
+  // Update breadcrumb
+  const bc = document.getElementById('breadcrumb');
+  if (me.role === 'admin') { bc.innerHTML = '<b>Admin</b>'; }
+  else if (me.role === 'agency') { bc.innerHTML = `<b>${me.username}</b>`; }
+  else {
+    const ag = agencies.find(a => a.id === me.agencyId);
+    bc.innerHTML = `${ag?ag.name:'—'} <span>›</span> <b>${me.username}</b>`;
+  }
+  
+  // Update admin-only controls
+  document.querySelectorAll('[data-admin-only]').forEach(el => { el.style.display = me.role === 'admin' ? '' : 'none'; });
+  document.getElementById('newLeadBtn').style.display = me.role==='admin' ? 'flex' : 'none';
+  
+  // Rebuild tabs and refresh current view
+  buildTabs();
+  buildDynFilters();
+  renderLeads();
+  
+  // If we're in a management view, refresh that too
+  if (document.getElementById('mgmtView').style.display === 'block') {
+    switchTab('leads'); // Go back to leads view for simplicity
+  }
+}
+
+// Hide user switcher when clicking outside
+document.addEventListener('click', function(e) {
+  const switcher = document.querySelector('.user-switcher');
+  const dropdown = document.getElementById('userSwitcherDropdown');
+  if (switcher && !switcher.contains(e.target)) {
+    dropdown.style.display = 'none';
+  }
+});
 
 // ═══════════════════════════════════════════
 //  DYNAMIC FILTER CHIPS
@@ -5665,7 +5846,7 @@ function renderInventoryPanel() {
             <button class="btn btn-primary" onclick="openInvDrawer(null)">+ New Lot</button>
           </div>
         </div>
-        <div id="invTableWrap" style="flex:1;overflow:auto"></div>
+        <div id="invTableWrap" style="flex:1;overflow:auto;-webkit-overflow-scrolling:touch"></div>
         <div style="background:var(--bg2);border-top:1px solid var(--border);height:28px;display:flex;align-items:center;padding:0 16px">
           <span id="invStatusBar" style="font-size:10px;color:var(--text3)"></span>
         </div>
@@ -5974,6 +6155,7 @@ if (!agencies.length) {
   agencies=[
     {id:'ag_001',name:'Ray White Craigieburn',principal:'James Okafor',username:'raywhite',password:'rw2026',color:'#3b82f6'},
     {id:'ag_002',name:'Harcourts Donnybrook', principal:'Linda Pham',  username:'harcourts',password:'hc2026',color:'#22c55e'},
+    {id:'ag_003',name:'Realtisan',principal:'Jack Realtisan',username:'realtisan',password:'real2026',color:'#f59e0b'},
   ];
 }
 if (!agents.length) {
@@ -5981,6 +6163,7 @@ if (!agents.length) {
     {id:'agt_001',agencyId:'ag_001',name:'Tom Reynolds', email:'tom@rw.com', username:'tom.rw',    password:'tom2026',  color:'#60a5fa'},
     {id:'agt_002',agencyId:'ag_001',name:'Aisha Malik',  email:'aisha@rw.com',username:'aisha.rw', password:'aisha2026',color:'#93c5fd'},
     {id:'agt_003',agencyId:'ag_002',name:'Sam Tran',     email:'sam@hc.com', username:'sam.hc',    password:'sam2026',  color:'#4ade80'},
+    {id:'agt_004',agencyId:'ag_003',name:'Wilhelm',      email:'wilhelm@realtisan.com', username:'wilhelm', password:'wil2026',  color:'#fbbf24'},
   ];
 }
 if (!leads.length) {
