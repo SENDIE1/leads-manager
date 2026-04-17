@@ -74,8 +74,43 @@
   .stat-pill{background:var(--bg3);border:1px solid var(--border);padding:4px 10px;font-size:11px;display:flex;align-items:center;gap:5px;color:var(--text2)}
   .stat-pill:first-child{border-radius:4px 0 0 4px}.stat-pill:last-child{border-radius:0 4px 4px 0}
   .stat-pill b{color:var(--text)}
-  .hdr-actions{display:flex;gap:8px;margin-left:auto;align-items:center}
-  .btn{padding:6px 14px;border-radius:4px;border:none;cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:500;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .hdr-actions{display:flex;gap:8px;margin-left:auto;align-items:center;flex-wrap:wrap}
+  
+  /* Desktop responsive header actions */
+  @media (max-width: 1200px) {
+    .hdr-actions { gap: 6px; }
+    .search-box { width: 150px; }
+    .btn { font-size: 11px; padding: 5px 10px; }
+  }
+  
+  @media (max-width: 1000px) {
+    .hdr-actions { gap: 4px; }
+    .search-box { width: 120px; }
+    .btn { font-size: 11px; padding: 4px 8px; }
+    .dark-toggle { display: none; } /* Hide dark mode toggle first */
+  }
+  
+  @media (max-width: 900px) {
+    .hdr-actions { 
+      flex-wrap: wrap; 
+      justify-content: flex-end; 
+      width: auto; 
+    }
+    .search-box { width: 100px; }
+  }
+  
+  @media (max-width: 800px) {
+    .hdr-actions { 
+      order: 3; 
+      width: 100%; 
+      margin-left: 0; 
+      margin-top: 8px; 
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .search-box { flex: 1; min-width: 120px; max-width: 200px; }
+  }
+  .btn{padding:6px 14px;border-radius:4px;border:none;cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:500;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0}
   .btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent2)}
   .btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}.btn-ghost:hover{background:var(--bg3);color:var(--text)}
   .btn-sm{padding:4px 10px;font-size:11px}
@@ -572,7 +607,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
       margin-top: 8px; 
       justify-content: space-between; 
       flex-wrap: wrap; 
-      gap: 8px; 
+      gap: 6px; 
     }
     .hdr-actions .search-box { 
       flex: 1; 
