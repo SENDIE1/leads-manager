@@ -60,7 +60,7 @@
   }
   
   /* Ensure buttons can wrap on smaller screens */
-  @media (max-width: 1200px) {
+  @media (max-width: 1400px) {
     .hdr-actions .btn {
       white-space: normal !important;
       flex-shrink: 1 !important;
@@ -112,10 +112,18 @@
   .stat-pill b{color:var(--text)}
   .hdr-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   
-  /* Only push to right on larger screens, allow normal flow on smaller screens */
-  @media (min-width: 1200px) {
+  /* Ensure buttons flow naturally and wrap when needed */
+  .hdr-actions {
+    flex: 1;
+    justify-content: flex-end;
+    min-width: 0;
+  }
+  
+  /* On smaller screens, allow full wrapping */
+  @media (max-width: 1400px) {
     .hdr-actions {
-      margin-left: auto;
+      flex: none;
+      justify-content: flex-start;
     }
   }
   
