@@ -5496,8 +5496,10 @@ function openEntityDrawer(type, id) {
   // Show/hide fields based on entity type and user role
   if (principalWrap) principalWrap.style.display = isAgency ? 'block' : 'none';
   if (agencyWrap) {
-    // Show agency selector for admin creating/editing agents, hide for everyone else
-    agencyWrap.style.display = (!isAgency && me.role === 'admin') ? 'block' : 'none';
+    // Show agency selector ONLY for admin creating/editing agents
+    // Hide for agency users (they can only create agents in their own agency) and agents
+    const shouldShowAgencySelector = !isAgency && me.role === 'admin';
+    agencyWrap.style.display = shouldShowAgencySelector ? 'block' : 'none';
   }
 
   // Reset visible inputs
@@ -6319,7 +6321,7 @@ if (!agencies.length) {
   agencies=[
     {id:'ag_001',name:'Ray White Craigieburn',principal:'James Okafor',username:'raywhite',password:'rw2026',color:'#3b82f6'},
     {id:'ag_002',name:'Harcourts Donnybrook', principal:'Linda Pham',  username:'harcourts',password:'hc2026',color:'#22c55e'},
-    {id:'ag_003',name:'Realtisan',principal:'Jack Realtisan',username:'realtisan',password:'real2026',color:'#f59e0b'},
+    {id:'ag_003',name:'Realtisan',principal:'Wilhelm',username:'wilhelm',password:'wil2026',email:'wilhelm@realtisan.com',color:'#f59e0b'},
   ];
 }
 if (!agents.length) {
@@ -6327,7 +6329,6 @@ if (!agents.length) {
     {id:'agt_001',agencyId:'ag_001',name:'Tom Reynolds', email:'tom@rw.com', username:'tom.rw',    password:'tom2026',  color:'#60a5fa'},
     {id:'agt_002',agencyId:'ag_001',name:'Aisha Malik',  email:'aisha@rw.com',username:'aisha.rw', password:'aisha2026',color:'#93c5fd'},
     {id:'agt_003',agencyId:'ag_002',name:'Sam Tran',     email:'sam@hc.com', username:'sam.hc',    password:'sam2026',  color:'#4ade80'},
-    {id:'agt_004',agencyId:'ag_003',name:'Wilhelm',      email:'wilhelm@realtisan.com', username:'wilhelm', password:'wil2026',  color:'#fbbf24'},
   ];
 }
 if (!leads.length) {
