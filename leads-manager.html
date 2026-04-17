@@ -49,6 +49,25 @@
   /* HEADER */
   header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;height:auto;min-height:52px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:100;flex-wrap:wrap;overflow:visible}
   
+  /* AGGRESSIVE DEBUG - Force header actions to wrap */
+  .hdr-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  
+  /* PROPER FIX - Only push buttons right on large screens */
+  @media (min-width: 1200px) {
+    .hdr-actions {
+      margin-left: auto;
+    }
+  }
+  
+  /* Ensure buttons can wrap on smaller screens */
+  @media (max-width: 1200px) {
+    .hdr-actions .btn {
+      white-space: normal !important;
+      flex-shrink: 1 !important;
+      min-width: 0 !important;
+    }
+  }
+  
   /* Force header to be responsive */
   #app header {
     display: flex !important;
@@ -91,14 +110,20 @@
   .stat-pill{background:var(--bg3);border:1px solid var(--border);padding:4px 10px;font-size:11px;display:flex;align-items:center;gap:5px;color:var(--text2)}
   .stat-pill:first-child{border-radius:4px 0 0 4px}.stat-pill:last-child{border-radius:0 4px 4px 0}
   .stat-pill b{color:var(--text)}
-  .hdr-actions{display:flex;gap:8px;margin-left:auto;align-items:center;flex-wrap:wrap}
+  .hdr-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  
+  /* Only push to right on larger screens, allow normal flow on smaller screens */
+  @media (min-width: 1200px) {
+    .hdr-actions {
+      margin-left: auto;
+    }
+  }
   
   /* Force responsive header actions with higher specificity */
   header .hdr-actions {
     display: flex !important;
     flex-wrap: wrap !important;
     gap: 8px;
-    margin-left: auto;
     align-items: center;
   }
   
@@ -7390,6 +7415,60 @@ window.addEventListener('resize', function() {
   await loadData();
   enterApp();
 })();
+
+// ═══════════════════════════════════════════
+//  HEADER DEBUG LOGGING
+// ═══════════════════════════════════════════
+window.addEventListener('load', function() {
+  function logHeaderDebug() {
+    const header = document.querySelector('header');
+    const hdrActions = document.querySelector('.hdr-actions');
+    const buttons = document.querySelectorAll('.hdr-actions .btn');
+    
+    console.log('=== HEADER DEBUG ===');
+    console.log('Window width:', window.innerWidth);
+    
+    if (header) {
+      const headerStyles = window.getComputedStyle(header);
+      console.log('Header computed styles:', {
+        display: headerStyles.display,
+        flexWrap: headerStyles.flexWrap,
+        width: headerStyles.width,
+        maxWidth: headerStyles.maxWidth,
+        overflow: headerStyles.overflow,
+        height: header.offsetHeight,
+        scrollHeight: header.scrollHeight
+      });
+    }
+    
+    if (hdrActions) {
+      const actionsStyles = window.getComputedStyle(hdrActions);
+      console.log('Hdr-actions computed styles:', {
+        display: actionsStyles.display,
+        flexWrap: actionsStyles.flexWrap,
+        width: actionsStyles.width,
+        maxWidth: actionsStyles.maxWidth,
+        marginLeft: actionsStyles.marginLeft,
+        position: hdrActions.getBoundingClientRect()
+      });
+    }
+    
+    buttons.forEach((btn, i) => {
+      const btnStyles = window.getComputedStyle(btn);
+      console.log(`Button ${i} (${btn.textContent.trim()}):`, {
+        whiteSpace: btnStyles.whiteSpace,
+        flexShrink: btnStyles.flexShrink,
+        minWidth: btnStyles.minWidth,
+        maxWidth: btnStyles.maxWidth,
+        position: btn.getBoundingClientRect()
+      });
+    });
+  }
+  
+  // Log on load and resize
+  logHeaderDebug();
+  window.addEventListener('resize', logHeaderDebug);
+});
 
 // ═══════════════════════════════════════════
 //  INVENTORY CARD
