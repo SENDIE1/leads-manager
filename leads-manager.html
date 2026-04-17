@@ -2367,6 +2367,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
           <div class="ff" style="width:100%"><label id="edNameLabel">Name *</label><input type="text" id="ed-name" style="width:100%;box-sizing:border-box"></div>
           <div class="ff" style="width:100%" id="ed-principalWrap"><label>Principal Name</label><input type="text" id="ed-principal" style="width:100%;box-sizing:border-box"></div>
           <div class="ff" style="width:100%" id="ed-emailWrap"><label id="edEmailLabel">Login Email *</label><input type="email" id="ed-email" autocomplete="off" placeholder="email@example.com" style="width:100%;box-sizing:border-box"></div>
+          <div class="ff" style="width:100%" id="ed-agencyWrap"><label>Agency *</label><select id="ed-agency" style="width:100%;box-sizing:border-box;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px;color:var(--text);font-size:13px;outline:none"><option value="">Select an agency...</option></select></div>
         </div>
       </div>
     </div>
@@ -3042,6 +3043,7 @@ function buildTabs() {
       {id:'deleted',   label:'❄️ Cold Leads'},
       {id:'inventory', label:'🏗 Inventory'},
       {id:'agencies',  label:'🏢 Agencies'},
+      {id:'agents',    label:'👤 Agents'},
       {id:'audit',     label:'🕓 Audit Log'},
     ];
   } else if (me && me.role === 'agency') {
@@ -4981,19 +4983,24 @@ function renderAgenciesPanel() {
 
 function renderAgentsPanel() {
   const mv = document.getElementById('mgmtView');
-  const myAgents = agents.filter(a=>a.agencyId===me.agencyId);
+  // Admin sees all agents; agency sees only their own agents
+  const myAgents = me.role === 'admin' ? agents : agents.filter(a=>a.agencyId===me.agencyId);
+  const title = me.role === 'admin' ? 'All Agents' : 'My Agents';
+  
   mv.innerHTML = `<div class="mgmt-panel">
     <div class="mgmt-header">
-      <div class="mgmt-title">My Agents <span style="color:var(--text3);font-size:13px">(${myAgents.length})</span></div>
+      <div class="mgmt-title">${title} <span style="color:var(--text3);font-size:13px">(${myAgents.length})</span></div>
       <button class="btn btn-primary" onclick="openEntityDrawer('agent')">+ Add Agent</button>
     </div>
     ${myAgents.length ? myAgents.map(ag => {
       const lCount = leads.filter(l=>l.assignedAgent===ag.id).length;
+      const agencyName = me.role === 'admin' ? (agencies.find(a=>a.id===ag.agencyId)?.name || 'No Agency') : '';
+      const agencyLabel = me.role === 'admin' ? ` &nbsp;·&nbsp; 🏢 ${agencyName}` : '';
       return `<div class="card">
         <div class="card-dot" style="background:${ag.color}"></div>
         <div>
           <div class="card-name">${ag.name}</div>
-          <div class="card-meta">📧 ${ag.email||'—'} &nbsp;·&nbsp; 🔑 @${ag.username}</div>
+          <div class="card-meta">📧 ${ag.email||'—'} &nbsp;·&nbsp; 🔑 @${ag.username}${agencyLabel}</div>
         </div>
         <div class="card-stat"><div class="card-count">${lCount}</div><div class="card-label">leads</div></div>
         <div class="card-actions">
@@ -5032,17 +5039,34 @@ function openEntityDrawer(type, id) {
   document.getElementById('edSub').textContent       = id ? `Editing ${id}` : '';
   document.getElementById('edFormTitle').textContent = isAgency ? 'Agency Details' : 'Agent Details';
   document.getElementById('edNameLabel').textContent = isAgency ? 'Agency Name *' : 'Agent Name *';
+  
   // Safe-set: only touch elements that actually exist in the current drawer markup
   const principalWrap = document.getElementById('ed-principalWrap');
+  const agencyWrap = document.getElementById('ed-agencyWrap');
+  
+  // Show/hide fields based on entity type and user role
   if (principalWrap) principalWrap.style.display = isAgency ? 'block' : 'none';
+  if (agencyWrap) {
+    // Show agency selector for admin creating/editing agents, hide for everyone else
+    agencyWrap.style.display = (!isAgency && me.role === 'admin') ? 'block' : 'none';
+  }
 
   // Reset visible inputs
   const nameEl      = document.getElementById('ed-name');
   const principalEl = document.getElementById('ed-principal');
   const emailEl     = document.getElementById('ed-email');
+  const agencyEl    = document.getElementById('ed-agency');
+  
   if (nameEl)      nameEl.value = '';
   if (principalEl) principalEl.value = '';
   if (emailEl)     emailEl.value = '';
+  if (agencyEl)    agencyEl.value = '';
+
+  // Populate agency dropdown for admin agent creation/editing
+  if (agencyEl && !isAgency && me.role === 'admin') {
+    agencyEl.innerHTML = '<option value="">Select an agency...</option>' + 
+      agencies.map(ag => `<option value="${ag.id}">${ag.name}</option>`).join('');
+  }
 
   if (id) {
     const list = isAgency ? agencies : agents;
@@ -5052,6 +5076,7 @@ function openEntityDrawer(type, id) {
     if (principalEl) principalEl.value = e.principal || '';
     // Agencies store login email on .email (fall back to legacy username); agents store it on .email
     if (emailEl)     emailEl.value     = e.email || e.username || '';
+    if (agencyEl && !isAgency) agencyEl.value = e.agencyId || '';
     pickedColor = e.color || COLORS[5];
   }
   entityDirty = false;
@@ -5073,6 +5098,8 @@ function saveEntity() {
   const nameEl      = document.getElementById('ed-name');
   const principalEl = document.getElementById('ed-principal');
   const emailEl     = document.getElementById('ed-email');
+  const agencyEl    = document.getElementById('ed-agency');
+  
   const name  = nameEl ? nameEl.value.trim() : '';
   const email = emailEl ? emailEl.value.trim() : '';
   const principal = principalEl ? principalEl.value.trim() : '';
@@ -5105,11 +5132,19 @@ function saveEntity() {
     }
     persist(); entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityType=null; renderAgenciesPanel(); buildDynFilters();
   } else {
-    const agencyId = entityParentAgencyId || me.agencyId;
+    // For agents: agency users can only create agents in their own agency, admins must select an agency
+    let agencyId;
+    if (me.role === 'admin') {
+      agencyId = agencyEl ? agencyEl.value : '';
+      if (!agencyId) { alert('Please select an agency for this agent.'); return; }
+    } else {
+      agencyId = entityParentAgencyId || me.agencyId;
+    }
+    
     if (editEntityId) {
       const ag = agents.find(a=>a.id===editEntityId);
       if (!ag) { alert('Agent no longer exists.'); return; }
-      Object.assign(ag, { name, email, username: derivedUsername, color: ag.color || pickedColor });
+      Object.assign(ag, { name, email, username: derivedUsername, agencyId, color: ag.color || pickedColor });
     } else {
       agents.push({
         id: 'agt_'+Date.now(),
