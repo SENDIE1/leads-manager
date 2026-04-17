@@ -47,7 +47,7 @@
   .login-err{color:var(--red);font-size:11px;margin-top:10px;text-align:center;min-height:16px}
 
   /* HEADER */
-  header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;height:auto;min-height:52px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:100;flex-wrap:wrap}
+  header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;height:auto;min-height:52px;display:flex;align-items:center;gap:12px;flex-shrink:0;z-index:100;flex-wrap:wrap;overflow:visible}
   
   /* Force header to be responsive */
   #app header {
@@ -57,6 +57,12 @@
     justify-content: flex-start !important;
     height: auto !important;
     min-height: 52px !important;
+    overflow: visible !important;
+  }
+  
+  /* Ensure wrapped buttons are visible despite body overflow constraints */
+  #app {
+    overflow-y: auto !important;
   }
   
   @media (max-width: 1200px) {
@@ -135,17 +141,6 @@
     header .search-box { flex: 1 !important; min-width: 100px !important; max-width: 180px !important; }
   }
   .btn{padding:6px 14px;border-radius:4px;border:none;cursor:pointer;font-family:var(--sans);font-size:12px;font-weight:500;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
-  
-  /* CRITICAL FIX: Allow button text to wrap on narrow screens */
-  @media (max-width: 1200px) {
-    .btn, header .btn, #app header .btn {
-      white-space: normal !important;
-      text-align: center !important;
-      line-height: 1.2 !important;
-      min-width: 0 !important;
-      flex-shrink: 1 !important;
-    }
-  }
   
   /* Allow buttons to shrink on smaller screens */
   @media (max-width: 1000px) {
@@ -7421,9 +7416,6 @@ function fmtMoney(v) {
 
 
 
-async 
-
-async 
 
 
 
@@ -7436,7 +7428,7 @@ async
 
 
 
-async 
+
 
 
 // ══ INVENTORY CARD ══
