@@ -552,10 +552,46 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
     .table-wrap { display: none !important; }
     #mobileLeadsList { display: flex !important; flex-direction: column; }
     header { height:auto; min-height:52px; flex-wrap:wrap; padding:8px 12px; gap:6px; }
+    .hdr-actions { 
+      order: 10; 
+      width: 100%; 
+      margin-left: 0 !important; 
+      margin-top: 8px; 
+      justify-content: space-between; 
+      flex-wrap: wrap; 
+      gap: 8px; 
+    }
+    .hdr-actions .search-box { 
+      flex: 1; 
+      min-width: 120px; 
+      width: auto; 
+      max-width: 200px; 
+    }
+    .hdr-actions .btn { 
+      flex-shrink: 0; 
+      font-size: 11px; 
+      padding: 6px 12px; 
+    }
     .filter-bar { flex-wrap:wrap; gap:6px; padding:6px 10px; }
     #tabBar { overflow-x:auto; flex-wrap:nowrap; }
     #tabBar .tab { flex-shrink:0; }
     .statusbar { font-size:11px; padding:4px 10px; }
+  }
+
+  /* Extra narrow screens - stack header actions vertically */
+  @media (max-width: 480px) {
+    .hdr-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+    }
+    .hdr-actions .search-box {
+      max-width: none;
+      width: 100%;
+    }
+    .hdr-actions .btn {
+      justify-content: center;
+    }
   }
   .mobile-lead-row {
     display: flex;
@@ -2761,8 +2797,8 @@ async function loadData() {
   agents   = (agentsRes.data || []).map(a => ({...a, agencyId: a.agency_id||null}));
   // Load deleted leads scoped by role
   let deletedQuery = sb.from('leads').select('*, notes(*)').eq('deleted', true).order('id', {ascending: false});
-  if (me.role === 'agency') deletedQuery = deletedQuery.eq('assigned_agency', me.agencyId);
-  if (me.role === 'agent')  deletedQuery = deletedQuery.eq('assigned_agent', me.agentId);
+  if (me && me.role === 'agency') deletedQuery = deletedQuery.eq('assigned_agency', me.agencyId);
+  if (me && me.role === 'agent')  deletedQuery = deletedQuery.eq('assigned_agent', me.agentId);
   const deletedRes = await deletedQuery;
   deletedLeads = (deletedRes.data || []).map(mapFromDb);
   nextId   = leads.length ? Math.max(...leads.map(l=>parseInt(l.id)||0))+1 : 1;
@@ -3000,7 +3036,7 @@ async function doLogout() {
 function buildTabs() {
   const bar = document.getElementById('tabBar');
   let tabs = [];
-  if (me.role === 'admin') {
+  if (me && me.role === 'admin') {
     tabs = [
       {id:'leads',     label:'📋 Leads'},
       {id:'deleted',   label:'❄️ Cold Leads'},
@@ -3008,7 +3044,7 @@ function buildTabs() {
       {id:'agencies',  label:'🏢 Agencies'},
       {id:'audit',     label:'🕓 Audit Log'},
     ];
-  } else if (me.role === 'agency') {
+  } else if (me && me.role === 'agency') {
     tabs = [
       {id:'leads',   label:'📋 Leads'},
       {id:'deleted', label:'❄️ Cold Leads'},
@@ -4973,7 +5009,9 @@ function renderAgentsPanel() {
 //  ENTITY DRAWER (agency or agent)
 // ═══════════════════════════════════════════
 function buildColorSwatches() {
-  document.getElementById('colorSwatches').innerHTML = COLORS.map(c =>
+  const host = document.getElementById('colorSwatches');
+  if (!host) return; // Swatch picker removed from UI; noop instead of crashing
+  host.innerHTML = COLORS.map(c =>
     `<div class="swatch${c===pickedColor?' sel':''}" style="background:${c}" onclick="pickColor('${c}',this)"></div>`
   ).join('');
 }
@@ -4985,7 +5023,7 @@ function pickColor(c, el) {
 
 function openEntityDrawer(type, id) {
   entityType = type; editEntityId = id||null;
-  entityParentAgencyId = me.role==='agency' ? me.agencyId : null;
+  entityParentAgencyId = (me && me.role==='agency') ? me.agencyId : null;
   pickedColor = COLORS[5];
 
   // Configure labels
@@ -4994,25 +5032,27 @@ function openEntityDrawer(type, id) {
   document.getElementById('edSub').textContent       = id ? `Editing ${id}` : '';
   document.getElementById('edFormTitle').textContent = isAgency ? 'Agency Details' : 'Agent Details';
   document.getElementById('edNameLabel').textContent = isAgency ? 'Agency Name *' : 'Agent Name *';
-  document.getElementById('ed-principalWrap').style.display = isAgency ? 'block' : 'none';
-  document.getElementById('ed-colorWrap').style.display = 'block';
+  // Safe-set: only touch elements that actually exist in the current drawer markup
+  const principalWrap = document.getElementById('ed-principalWrap');
+  if (principalWrap) principalWrap.style.display = isAgency ? 'block' : 'none';
 
-  document.getElementById('ed-name').value = '';
-  document.getElementById('ed-principal').value = '';
-  document.getElementById('ed-username').value = '';
-  document.getElementById('ed-password').value = '';
-  buildColorSwatches();
+  // Reset visible inputs
+  const nameEl      = document.getElementById('ed-name');
+  const principalEl = document.getElementById('ed-principal');
+  const emailEl     = document.getElementById('ed-email');
+  if (nameEl)      nameEl.value = '';
+  if (principalEl) principalEl.value = '';
+  if (emailEl)     emailEl.value = '';
 
   if (id) {
     const list = isAgency ? agencies : agents;
     const e = list.find(x=>x.id===id);
     if (!e) return;
-    document.getElementById('ed-name').value      = e.name;
-    document.getElementById('ed-principal').value = e.principal||'';
-    document.getElementById('ed-username').value  = e.username;
-    document.getElementById('ed-password').value  = e.password;
-    pickedColor = e.color||COLORS[5];
-    buildColorSwatches();
+    if (nameEl)      nameEl.value      = e.name || '';
+    if (principalEl) principalEl.value = e.principal || '';
+    // Agencies store login email on .email (fall back to legacy username); agents store it on .email
+    if (emailEl)     emailEl.value     = e.email || e.username || '';
+    pickedColor = e.color || COLORS[5];
   }
   entityDirty = false;
   document.getElementById('entityOv').classList.add('open');
@@ -5030,30 +5070,53 @@ function closeEntityDrawer() {
 }
 
 function saveEntity() {
-  const name = document.getElementById('ed-name').value.trim();
-  const user = document.getElementById('ed-username').value.trim();
-  const pass = document.getElementById('ed-password').value;
-  if (!name||!user||!pass) { alert('Name, username and password are required.'); return; }
+  const nameEl      = document.getElementById('ed-name');
+  const principalEl = document.getElementById('ed-principal');
+  const emailEl     = document.getElementById('ed-email');
+  const name  = nameEl ? nameEl.value.trim() : '';
+  const email = emailEl ? emailEl.value.trim() : '';
+  const principal = principalEl ? principalEl.value.trim() : '';
 
-  const allLogins = [...agencies.map(a=>a.username), ...agents.map(a=>a.username)];
-  if (!editEntityId && allLogins.includes(user)) { alert('Username already taken.'); return; }
+  if (!name || !email) { alert('Name and login email are required.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { alert('Please enter a valid email address.'); return; }
+
+  // Derive a display handle from the email local-part; cards show @${username}
+  const derivedUsername = email.split('@')[0].toLowerCase().replace(/[^a-z0-9._-]/g,'') || 'user';
+
+  // Uniqueness: ignore the record being edited
+  const allEmails = [
+    ...agencies.filter(a=>a.id!==editEntityId).map(a=>(a.email||'').toLowerCase()),
+    ...agents.filter(a=>a.id!==editEntityId).map(a=>(a.email||'').toLowerCase())
+  ];
+  if (allEmails.includes(email.toLowerCase())) { alert('That email is already in use.'); return; }
 
   if (entityType === 'agency') {
     if (editEntityId) {
       const ag = agencies.find(a=>a.id===editEntityId);
-      Object.assign(ag, {name, principal:document.getElementById('ed-principal').value.trim(), username:user, password:pass, color:pickedColor});
+      if (!ag) { alert('Agency no longer exists.'); return; }
+      Object.assign(ag, { name, principal, email, username: derivedUsername, color: ag.color || pickedColor });
     } else {
-      agencies.push({id:'ag_'+Date.now(), name, principal:document.getElementById('ed-principal').value.trim(), username:user, password:pass, color:pickedColor});
+      agencies.push({
+        id: 'ag_'+Date.now(),
+        name, principal, email,
+        username: derivedUsername,
+        color: COLORS[agencies.length % COLORS.length]
+      });
     }
-      persist(); entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityType=null; renderAgenciesPanel(); buildDynFilters();
-    entityDirty = false;
+    persist(); entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityType=null; renderAgenciesPanel(); buildDynFilters();
   } else {
     const agencyId = entityParentAgencyId || me.agencyId;
     if (editEntityId) {
       const ag = agents.find(a=>a.id===editEntityId);
-      Object.assign(ag, {name, email:document.getElementById('ed-principal').value.trim(), username:user, password:pass, color:pickedColor});
+      if (!ag) { alert('Agent no longer exists.'); return; }
+      Object.assign(ag, { name, email, username: derivedUsername, color: ag.color || pickedColor });
     } else {
-      agents.push({id:'agt_'+Date.now(), agencyId, name, email:document.getElementById('ed-principal').value.trim(), username:user, password:pass, color:pickedColor});
+      agents.push({
+        id: 'agt_'+Date.now(),
+        agencyId, name, email,
+        username: derivedUsername,
+        color: COLORS[agents.length % COLORS.length]
+      });
     }
     persist(); entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityType=null; renderAgentsPanel(); buildDynFilters();
   }
@@ -5062,15 +5125,22 @@ function saveEntity() {
 
 function deleteAgency(id) {
   if (!confirm('Delete agency? Their leads become unassigned.')) return;
+  // Collect agent IDs under this agency so we can clear any active agent filter too
+  const removedAgentIds = agents.filter(a=>a.agencyId===id).map(a=>a.id);
   leads.forEach(l=>{ if(l.assignedAgency===id){l.assignedAgency=null;l.assignedAgent=null;} });
   agents = agents.filter(a=>a.agencyId!==id);
   agencies = agencies.filter(a=>a.id!==id);
+  // Clear stale filters that pointed at the deleted entities, otherwise getVisible() hides every lead
+  if (fAgency === id) fAgency = '';
+  if (removedAgentIds.includes(fAgent)) fAgent = '';
   persist(); renderAgenciesPanel(); buildDynFilters(); renderLeads(); notify('Agency deleted');
 }
 function deleteAgent(id) {
   if (!confirm('Delete agent? Their leads become unassigned from agent.')) return;
   leads.forEach(l=>{ if(l.assignedAgent===id) l.assignedAgent=null; });
   agents = agents.filter(a=>a.id!==id);
+  // Clear stale filter that pointed at the deleted agent
+  if (fAgent === id) fAgent = '';
   persist(); renderAgentsPanel(); buildDynFilters(); renderLeads(); notify('Agent deleted');
 }
 
