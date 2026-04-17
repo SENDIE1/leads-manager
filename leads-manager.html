@@ -1433,6 +1433,18 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
 }
 @keyframes ic-fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
 
+/* Management Panel Toggle Buttons */
+.mgmt-toggle {
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+.mgmt-toggle:hover {
+  opacity: 0.8;
+}
+.mgmt-toggle.active {
+  font-weight: 600;
+}
+
 </style>
 
 <!-- ═══════════ LOGIN SCREEN ═══════════ -->
@@ -2757,6 +2769,7 @@ let me = null;
 let editLeadId = null, editEntityId = null, entityType = null, entityParentAgencyId = null;
 let sortCol = 'id', sortDir = 1;
 let fStatus = 'all', fBuyer = '', fAgency = '', fAgent = '', fUnassigned = false, fSearch = '', f48hr = false;
+let mgmtView = 'agencies'; // Track whether admin is viewing agencies or agents
 let pickedColor = COLORS[5];
 
 function toggleDark() {
@@ -3039,12 +3052,11 @@ function buildTabs() {
   let tabs = [];
   if (me && me.role === 'admin') {
     tabs = [
-      {id:'leads',     label:'📋 Leads'},
-      {id:'deleted',   label:'❄️ Cold Leads'},
-      {id:'inventory', label:'🏗 Inventory'},
-      {id:'agencies',  label:'🏢 Agencies'},
-      {id:'agents',    label:'👤 Agents'},
-      {id:'audit',     label:'🕓 Audit Log'},
+      {id:'leads',      label:'📋 Leads'},
+      {id:'deleted',    label:'❄️ Cold Leads'},
+      {id:'inventory',  label:'🏗 Inventory'},
+      {id:'management', label:'👥 Management'},
+      {id:'audit',      label:'🕓 Audit Log'},
     ];
   } else if (me && me.role === 'agency') {
     tabs = [
@@ -3104,6 +3116,11 @@ function switchTab(id) {
     lv.style.display = 'none'; mv.style.display = 'block';
     fb.style.display = 'none'; bb.classList.remove('show');
     renderAgentsPanel();
+  } else if (id === 'management') {
+    // New unified management view for admin with toggle
+    lv.style.display = 'none'; mv.style.display = 'block';
+    fb.style.display = 'none'; bb.classList.remove('show');
+    renderManagementPanel();
   } else if (id === 'audit') {
     lv.style.display = 'none'; mv.style.display = 'block';
     fb.style.display = 'none'; bb.classList.remove('show');
@@ -4954,6 +4971,93 @@ function saveCustomFieldValues(lead) {
 // ═══════════════════════════════════════════
 //  MANAGEMENT PANELS
 // ═══════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  MANAGEMENT PANEL (unified agencies/agents for admin)
+// ═══════════════════════════════════════════
+function renderManagementPanel() {
+  if (me.role !== 'admin') {
+    // Fallback for non-admin users
+    renderAgenciesPanel();
+    return;
+  }
+  
+  const mv = document.getElementById('mgmtView');
+  mv.innerHTML = `<div class="mgmt-panel">
+    <div class="mgmt-header">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="mgmt-title">👥 Management</div>
+        <div style="display:flex;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;overflow:hidden">
+          <button class="mgmt-toggle ${mgmtView==='agencies'?'active':''}" onclick="switchMgmtView('agencies')" style="padding:6px 12px;border:none;background:${mgmtView==='agencies'?'var(--primary)':'transparent'};color:${mgmtView==='agencies'?'white':'var(--text2)'};font-size:12px;cursor:pointer">🏢 Agencies</button>
+          <button class="mgmt-toggle ${mgmtView==='agents'?'active':''}" onclick="switchMgmtView('agents')" style="padding:6px 12px;border:none;background:${mgmtView==='agents'?'var(--primary)':'transparent'};color:${mgmtView==='agents'?'white':'var(--text2)'};font-size:12px;cursor:pointer">👤 Agents</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="openEntityDrawer('${mgmtView==='agencies'?'agency':'agent'}')" id="mgmtAddBtn">+ Add ${mgmtView==='agencies'?'Agency':'Agent'}</button>
+    </div>
+    <div id="mgmtContent"></div>
+  </div>`;
+  
+  // Render the appropriate content
+  if (mgmtView === 'agencies') {
+    renderMgmtAgencies();
+  } else {
+    renderMgmtAgents();
+  }
+}
+
+function switchMgmtView(view) {
+  mgmtView = view;
+  renderManagementPanel();
+}
+
+function renderMgmtAgencies() {
+  const container = document.getElementById('mgmtContent');
+  if (!container) return;
+  
+  const total = agencies.length;
+  container.innerHTML = agencies.length ? agencies.map(ag => {
+    const lCount = leads.filter(l=>l.assignedAgency===ag.id).length;
+    const aCount = agents.filter(a=>a.agencyId===ag.id).length;
+    return `<div class="card">
+      <div class="card-dot" style="background:${ag.color}"></div>
+      <div>
+        <div class="card-name">${ag.name}</div>
+        <div class="card-meta">👤 ${ag.principal||'—'} &nbsp;·&nbsp; 🔑 @${ag.username} &nbsp;·&nbsp; 👥 ${aCount} agent${aCount!==1?'s':''}</div>
+      </div>
+      <div class="card-stat"><div class="card-count">${lCount}</div><div class="card-label">leads</div></div>
+      <div class="card-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openEntityDrawer('agency','${ag.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAgency('${ag.id}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('') : '<div style="color:var(--text3);font-size:12px;padding:20px;text-align:center">No agencies yet.</div>';
+}
+
+function renderMgmtAgents() {
+  const container = document.getElementById('mgmtContent');
+  if (!container) return;
+  
+  const allAgents = agents;
+  container.innerHTML = allAgents.length ? allAgents.map(ag => {
+    const lCount = leads.filter(l=>l.assignedAgent===ag.id).length;
+    const agencyName = agencies.find(a=>a.id===ag.agencyId)?.name || 'No Agency';
+    return `<div class="card">
+      <div class="card-dot" style="background:${ag.color}"></div>
+      <div>
+        <div class="card-name">${ag.name}</div>
+        <div class="card-meta">📧 ${ag.email||'—'} &nbsp;·&nbsp; 🔑 @${ag.username} &nbsp;·&nbsp; 🏢 ${agencyName}</div>
+      </div>
+      <div class="card-stat"><div class="card-count">${lCount}</div><div class="card-label">leads</div></div>
+      <div class="card-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openEntityDrawer('agent','${ag.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAgent('${ag.id}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('') : '<div style="color:var(--text3);font-size:12px;padding:20px;text-align:center">No agents yet.</div>';
+}
+
+// ═══════════════════════════════════════════
+//  LEGACY PANELS (kept for agency/agent role users)
+// ═══════════════════════════════════════════
 function renderAgenciesPanel() {
   const mv = document.getElementById('mgmtView');
   const total = agencies.length;
@@ -5130,7 +5234,14 @@ function saveEntity() {
         color: COLORS[agencies.length % COLORS.length]
       });
     }
-    persist(); entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityType=null; renderAgenciesPanel(); buildDynFilters();
+    persist(); entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityType=null; 
+    // Refresh the appropriate panel
+    if (me.role === 'admin' && document.getElementById('mgmtContent')) {
+      renderManagementPanel();
+    } else {
+      renderAgenciesPanel();
+    }
+    buildDynFilters();
   } else {
     // For agents: agency users can only create agents in their own agency, admins must select an agency
     let agencyId;
@@ -5153,7 +5264,14 @@ function saveEntity() {
         color: COLORS[agents.length % COLORS.length]
       });
     }
-    persist(); entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityType=null; renderAgentsPanel(); buildDynFilters();
+    persist(); entityDirty=false; document.getElementById('entityOv').classList.remove('open'); editEntityId=null; entityType=null; 
+    // Refresh the appropriate panel
+    if (me.role === 'admin' && document.getElementById('mgmtContent')) {
+      renderManagementPanel();
+    } else {
+      renderAgentsPanel();
+    }
+    buildDynFilters();
   }
   notify(editEntityId?'Updated ✓':'Created ✓');
 }
@@ -5168,7 +5286,14 @@ function deleteAgency(id) {
   // Clear stale filters that pointed at the deleted entities, otherwise getVisible() hides every lead
   if (fAgency === id) fAgency = '';
   if (removedAgentIds.includes(fAgent)) fAgent = '';
-  persist(); renderAgenciesPanel(); buildDynFilters(); renderLeads(); notify('Agency deleted');
+  persist(); 
+  // Refresh the appropriate panel
+  if (me.role === 'admin' && document.getElementById('mgmtContent')) {
+    renderManagementPanel();
+  } else {
+    renderAgenciesPanel();
+  }
+  buildDynFilters(); renderLeads(); notify('Agency deleted');
 }
 function deleteAgent(id) {
   if (!confirm('Delete agent? Their leads become unassigned from agent.')) return;
@@ -5176,7 +5301,14 @@ function deleteAgent(id) {
   agents = agents.filter(a=>a.id!==id);
   // Clear stale filter that pointed at the deleted agent
   if (fAgent === id) fAgent = '';
-  persist(); renderAgentsPanel(); buildDynFilters(); renderLeads(); notify('Agent deleted');
+  persist(); 
+  // Refresh the appropriate panel
+  if (me.role === 'admin' && document.getElementById('mgmtContent')) {
+    renderManagementPanel();
+  } else {
+    renderAgentsPanel();
+  }
+  buildDynFilters(); renderLeads(); notify('Agent deleted');
 }
 
 // ═══════════════════════════════════════════
