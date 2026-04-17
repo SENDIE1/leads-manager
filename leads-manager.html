@@ -64,19 +64,44 @@
   .hdr-actions {
     display: flex !important;
     gap: 8px !important;
-    flex-wrap: nowrap !important;
-    justify-content: flex-end !important;
-    overflow-x: auto !important;
-    overflow-y: visible !important;
-    max-width: 100% !important;
     align-items: center !important;
+    
+    /* CRITICAL: Prevent massive width */
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    
+    /* Right-align on large screens */
+    margin-left: auto !important;
+    justify-content: flex-end !important;
+    flex-wrap: nowrap !important;
+    
+    /* Prevent overflow */
+    overflow: visible !important;
+    box-sizing: border-box !important;
   }
   
   .hdr-actions .btn {
     flex-shrink: 0 !important;
     white-space: nowrap !important;
+    max-width: 200px !important;
   }
   
+  /* Smaller screens: Allow natural flow and wrapping */
+  @media (max-width: 1400px) {
+    .hdr-actions {
+      margin-left: 0 !important;
+      justify-content: flex-start !important;
+      flex-wrap: wrap !important;
+    }
+    
+    .hdr-actions .btn {
+      flex-shrink: 1 !important;
+      min-width: 0 !important;
+      max-width: 150px !important;
+    }
+  }
+
   /* Mobile: Stack elements vertically */
   @media (max-width: 768px) {
     header {
@@ -95,6 +120,7 @@
       min-width: 0 !important;
       font-size: 11px !important;
       padding: 6px 8px !important;
+      white-space: normal !important;
     }
   }
   
@@ -1674,9 +1700,15 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
     min-height: 52px !important;
   }
   .hdr-actions, #app > header > .hdr-actions {
-    flex-wrap: wrap !important;
+    /* Ensure proper width constraints */
+    width: auto !important;
+    min-width: 0 !important;
     max-width: 100% !important;
+    
+    /* Allow wrapping and prevent overflow */
+    flex-wrap: wrap !important;
     overflow: visible !important;
+    box-sizing: border-box !important;
   }
   .btn, header .btn, #app header .btn {
     flex-shrink: 1 !important;
