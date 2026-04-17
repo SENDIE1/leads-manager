@@ -34,6 +34,9 @@
   .login-logo{font-size:22px;font-weight:600;color:var(--accent);margin-bottom:4px}
   .login-logo span{color:var(--text3)}
   .login-sub{font-size:11px;color:var(--text3);margin-bottom:28px}
+  .role-tabs{display:flex;gap:4px;margin-bottom:22px}
+  .role-tab{flex:1;padding:8px;text-align:center;border-radius:4px;border:1px solid var(--border2);cursor:pointer;font-size:11px;color:var(--text2);background:var(--bg3);transition:all .15s}
+  .role-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
   .login-field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
   .login-field label{font-size:10px;color:var(--text3)}
   .login-field input{background:var(--bg3);border:1px solid var(--border2);border-radius:4px;padding:10px 14px;color:var(--text);font-family:var(--sans);font-size:13px;outline:none}
@@ -357,13 +360,15 @@
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">LEADS<span>/</span>MGR</div>
-    <div class="login-sub">Property Lead Management · v4</div>
-    <!-- Honeypots — stop password managers from filling wrong fields -->
-    <input style="display:none" type="text" tabindex="-1" autocomplete="username">
-    <input style="display:none" type="password" tabindex="-1" autocomplete="new-password">
-    <div class="login-field"><label>Email</label><input type="email" id="lu" placeholder="your@email.com" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="login-field"><label>Password</label><input type="password" id="lp" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+    <div class="login-sub">Property Lead Management · v3</div>
+    <div class="role-tabs">
+      <div class="role-tab active" onclick="setLoginRole('admin',this)">Admin</div>
+      <div class="role-tab" onclick="setLoginRole('agency',this)">Agency</div>
+      <div class="role-tab" onclick="setLoginRole('agent',this)">Agent</div>
+    </div>
+    <div class="login-field"><label>Username</label><input type="text" id="lu" placeholder="Username" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="login-field"><label>Password</label><input type="password" id="lp" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
     <div class="login-err" id="lerr"></div>
   </div>
 </div>
@@ -1279,17 +1284,7 @@
   </div>
 </div>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-// ═══════════════════════════════════════════
-//  SUPABASE CLIENT
-// ═══════════════════════════════════════════
-const { createClient } = supabase;
-const sb = createClient(
-  'https://lkmgahsefhhgfkjxbjnn.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrbWdhaHNlZmhoZ2Zranhibm4iLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczMDc2NjI4MSwiZXhwIjoyMDQ2MzQyMjgxfQ.KMkshH85B6HyJIzs5Z5nZbkF2MaS7MHEfgQ_bfaHPYo'
-);
-
 // ═══════════════════════════════════════════
 //  CONSTANTS & STATE
 // ═══════════════════════════════════════════
@@ -1367,17 +1362,17 @@ function toInputDate(val) {
   return `${String(d.getUTCDate()).padStart(2,'0')}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${d.getUTCFullYear()}`;
 }
 
-let leads = [];
-let agencies = [];
-let agents = [];
-let auditLog = [];
-let inventory = [];
-let nextId = 1;
-let nextInvId = 1;
-let deletedLeads = [];
-let customFields = [];
+let leads    = JSON.parse(localStorage.getItem('lm3_leads')    || '[]');
+let agencies = JSON.parse(localStorage.getItem('lm3_agencies') || '[]');
+let agents   = JSON.parse(localStorage.getItem('lm3_agents')   || '[]');
+let auditLog = JSON.parse(localStorage.getItem('lm3_audit')    || '[]');
+let inventory= JSON.parse(localStorage.getItem('lm3_inventory')|| '[]');
+let nextId   = parseInt(localStorage.getItem('lm3_nextId')     || '1');
+let nextInvId= parseInt(localStorage.getItem('lm3_nextInvId')  || '1');
+let deletedLeads = JSON.parse(localStorage.getItem('lm3_deleted') || '[]');
+let customFields = JSON.parse(localStorage.getItem('lm3_customFields') || '[]');
 // customFields: [{id, groupId, groupName, label, type, options:[], showInTable}]
-let customGroups = [];
+let customGroups = JSON.parse(localStorage.getItem('lm3_customGroups') || '[]');
 // customGroups: [{id, name}]
 
 let me = null; // { role, username, agencyId?, agentId? }
@@ -1398,8 +1393,16 @@ if (localStorage.getItem('lm3_dark') === '1') {
 }
 
 function persist() {
-  // For Supabase, individual saves happen automatically in each function
-  // This function now just updates the "last saved" timestamp
+  localStorage.setItem('lm3_leads',    JSON.stringify(leads));
+  localStorage.setItem('lm3_agencies', JSON.stringify(agencies));
+  localStorage.setItem('lm3_agents',   JSON.stringify(agents));
+  localStorage.setItem('lm3_audit',    JSON.stringify(auditLog));
+  localStorage.setItem('lm3_inventory',JSON.stringify(inventory));
+  localStorage.setItem('lm3_deleted',       JSON.stringify(deletedLeads));
+  localStorage.setItem('lm3_customFields',  JSON.stringify(customFields));
+  localStorage.setItem('lm3_customGroups',  JSON.stringify(customGroups));
+  localStorage.setItem('lm3_nextId',   String(nextId));
+  localStorage.setItem('lm3_nextInvId',String(nextInvId));
   const el = document.getElementById('s-saved');
   if (el) el.textContent = nowStamp();
 }
@@ -1431,57 +1434,48 @@ window.addEventListener('popstate', function(e) {
 //  AUTH
 // ═══════════════════════════════════════════
 let loginRole = 'admin';
-function setLoginRole(r, el) {} // kept for compatibility
+function setLoginRole(r, el) {
+  loginRole = r;
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
 
-async function doLogin() {
-  const email = document.getElementById('lu').value.trim();
-  const password = document.getElementById('lp').value;
+function doLogin() {
+  const u = document.getElementById('lu').value.trim();
+  const p = document.getElementById('lp').value;
   document.getElementById('lerr').textContent = '';
-  const btn = document.getElementById('loginBtn');
-  btn.textContent = 'Signing in…'; btn.disabled = true;
-  const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) {
-    document.getElementById('lerr').textContent = 'Invalid email or password.';
-    btn.textContent = 'Sign In'; btn.disabled = false;
-    return;
+  if (loginRole === 'admin') {
+    if (u === ADMIN_USER && p === ADMIN_PASS) { me = {role:'admin', username:'Admin'}; enterApp(); }
+    else document.getElementById('lerr').textContent = 'Invalid credentials.';
+  } else if (loginRole === 'agency') {
+    const ag = agencies.find(a => a.username===u && a.password===p);
+    if (ag) { me = {role:'agency', username:ag.name, agencyId:ag.id}; enterApp(); }
+    else document.getElementById('lerr').textContent = 'Invalid credentials.';
+  } else {
+    const ag = agents.find(a => a.username===u && a.password===p);
+    if (ag) { me = {role:'agent', username:ag.name, agentId:ag.id, agencyId:ag.agencyId}; enterApp(); }
+    else document.getElementById('lerr').textContent = 'Invalid credentials.';
   }
-  // Fetch role from users table
-  const { data: userRow, error: uerr } = await sb.from('users').select('*').eq('id', data.user.id).single();
-  if (uerr || !userRow) {
-    document.getElementById('lerr').textContent = 'User not configured. Contact admin.';
-    btn.textContent = 'Sign In'; btn.disabled = false;
-    await sb.auth.signOut();
-    return;
-  }
-  me = { role: userRow.role, username: userRow.username, agencyId: userRow.agency_id||null, agentId: userRow.agent_id||null };
-  await loadData();
-  enterApp();
-  btn.textContent = 'Sign In'; btn.disabled = false;
 }
 
 function enterApp() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
-  // Push 2 history entries so swipe-back never reaches login
-  history.pushState({app: true}, '');
-  history.pushState({app: true}, '');
   // Role badge
   const rb = document.getElementById('roleBadge');
-  if (me && me.role) {
-    rb.textContent = me.role.toUpperCase();
-    rb.className = 'role-badge rb-' + me.role;
-  }
+  rb.textContent = me.role.toUpperCase();
+  rb.className = 'role-badge rb-' + me.role;
   // Breadcrumb
   const bc = document.getElementById('breadcrumb');
-  if (me && me.role === 'admin') { bc.innerHTML = '<b>Admin</b>'; }
-  else if (me && me.role === 'agency') { bc.innerHTML = `<b>${me.username}</b>`; }
-  else if (me) {
+  if (me.role === 'admin') { bc.innerHTML = '<b>Admin</b>'; }
+  else if (me.role === 'agency') { bc.innerHTML = `<b>${me.username}</b>`; }
+  else {
     const ag = agencies.find(a => a.id === me.agencyId);
     bc.innerHTML = `${ag?ag.name:'—'} <span>›</span> <b>${me.username}</b>`;
   }
   // Admin-only controls
-  document.getElementById('exportDrop').style.display = (me && me.role==='admin') ? 'block' : 'none';
-  document.getElementById('newLeadBtn').style.display = (me && me.role==='admin') ? 'flex' : 'none';
+  document.getElementById('exportDrop').style.display = me.role==='admin' ? 'block' : 'none';
+  document.getElementById('newLeadBtn').style.display = me.role==='admin' ? 'flex' : 'none';
   document.getElementById('selAll').style.display = 'inline';
   document.getElementById('darkToggle').textContent = document.body.classList.contains('dark') ? '☾ Light Mode' : '☀ Dark Mode';
   // Build tabs
@@ -1491,9 +1485,8 @@ function enterApp() {
   switchToLeads();
 }
 
-async function doLogout() {
-  await sb.auth.signOut();
-  me = null; leads = []; agencies = []; agents = [];
+function doLogout() {
+  me = null;
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('lu').value = '';
@@ -1502,88 +1495,13 @@ async function doLogout() {
   fStatus='all'; fBuyer=''; fAgency=''; fAgent=''; fUnassigned=false; fSearch=''; f48hr=false;
 }
 
-async function loadData() {
-  try {
-    console.log('📊 Loading data from Supabase...');
-    
-    // Load all data in parallel
-    const [
-      leadsRes,
-      agenciesRes,
-      agentsRes
-    ] = await Promise.all([
-      sb.from('leads').select('*, notes(*)').eq('deleted', false).order('id', {ascending: false}),
-      sb.from('agencies').select('*'),
-      sb.from('agents').select('*')
-    ]);
-    
-    leads = (leadsRes.data || []).map(mapFromDb);
-    agencies = agenciesRes.data || [];
-    agents = (agentsRes.data || []).map(a => ({...a, agencyId: a.agency_id||null}));
-    
-    // Load deleted leads scoped by role
-    let deletedQuery = sb.from('leads').select('*, notes(*)').eq('deleted', true).order('id', {ascending: false});
-    if (me && me.role === 'agency') deletedQuery = deletedQuery.eq('assigned_agency', me.agencyId);
-    if (me && me.role === 'agent')  deletedQuery = deletedQuery.eq('assigned_agent', me.agentId);
-    const deletedRes = await deletedQuery;
-    deletedLeads = (deletedRes.data || []).map(mapFromDb);
-    
-    nextId = leads.length ? Math.max(...leads.map(l=>parseInt(l.id)||0))+1 : 1;
-    
-    const auditRes = await sb.from('audit_log').select('*').order('created_at',{ascending:false}).limit(500);
-    auditLog = (auditRes.data||[]).map(e=>({
-      id:e.id, ts:e.created_at ? new Date(e.created_at).toLocaleString('en-AU') : '',
-      user:e.user_name||'', role:e.user_role||'', agencyId:e.agency_id||null,
-      agentId:e.agent_id||null, action:e.action||'', leadId:e.lead_id||'',
-      leadName:e.lead_name||'', changes:e.changes||''
-    }));
-    
-    console.log('✅ Data loaded successfully');
-  } catch (error) {
-    console.error('💥 Error loading data:', error);
-    alert('Error loading data: ' + error.message);
-  }
-}
-
-function mapFromDb(l) {
-  return {
-    id: l.id, name: l.name||'', date: l.date||'', mobile: l.mobile||'', email: l.email||'',
-    leadMsg: l.lead_msg||'', buyerType: l.buyer_type||'', timeToBuy: l.time_to_buy||'',
-    suburbPostcode: l.suburb_postcode||'', assignedAgency: l.assigned_agency,
-    assignedAgent: l.assigned_agent, hotWarmStatus: l.hot_warm_status||'',
-    
-    // Boolean fields
-    walkIns: !!l.walk_ins, social: !!l.social, roi: !!l.roi, rea: !!l.rea, reaAds: !!l.rea_ads,
-    google: !!l.google, crf: !!l.crf, crfAgency: !!l.crf_agency, edm: !!l.edm,
-    tba1: !!l.tba1, tba2: !!l.tba2, tba3: !!l.tba3,
-    deposit5: !!l.deposit5, deposit5plus5: !!l.deposit5plus5, deposit10: !!l.deposit10,
-    settleOk: !!l.settle_ok, isHot: !!l.is_hot, isWarm: !!l.is_warm, isCold: !!l.is_cold,
-    tc: !!l.tc, cb: !!l.cb, vm: !!l.vm, na: !!l.na, nm: !!l.nm, dc: !!l.dc, ni: !!l.ni,
-    duplicate: !!l.duplicate, isDeleted: !!l.deleted,
-    
-    // Text fields
-    pocComments: l.poc_comments||'', priceLand: l.price_land||'', priceHL: l.price_hl||'',
-    storey: l.storey||'', garage: l.garage||'', lotType: l.lot_type||'', lotArea: l.lot_area||'',
-    lotNumbers: l.lot_numbers||'', cfsLot: l.cfs_lot||'', underCfs: l.under_cfs||'',
-    lsoVisit: l.lso_visit||'',
-    
-    // Activity stamps
-    roiEmail: l.roi_email||'', call1: l.call1||'', call2: l.call2||'',
-    sms: l.sms||'', finalEmail: l.final_email||'',
-    
-    notes: (l.notes || []).map(n => ({
-      id: n.id, author: n.author, date: n.date, text: n.text
-    }))
-  };
-}
-
 // ═══════════════════════════════════════════
 //  TABS
 // ═══════════════════════════════════════════
 function buildTabs() {
   const bar = document.getElementById('tabBar');
   let tabs = [];
-  if (me && me.role === 'admin') {
+  if (me.role === 'admin') {
     tabs = [
       {id:'leads',     label:'📋 Leads'},
       {id:'deleted',   label:'🗑 Deleted'},
@@ -1591,7 +1509,7 @@ function buildTabs() {
       {id:'agencies',  label:'🏢 Agencies'},
       {id:'audit',     label:'🕓 Audit Log'},
     ];
-  } else if (me && me.role === 'agency') {
+  } else if (me.role === 'agency') {
     tabs = [
       {id:'leads', label:'📋 Leads'},
       {id:'agents',label:'👤 Agents'},
@@ -1662,14 +1580,14 @@ function buildDynFilters() {
   const wrap = document.getElementById('dynFilters');
   const sep  = document.getElementById('dynFiltersep');
   let html = '';
-  if (me && me.role === 'admin') {
+  if (me.role === 'admin') {
     html += `<span class="fl">AGENCY:</span>`;
     agencies.forEach(ag =>
       html += `<div class="fc dyn-agency" onclick="setAgencyFilter('${ag.id}',this)" style="border-color:${ag.color}44;color:${ag.color}">${ag.name}</div>`
     );
     html += `<div class="fsep"></div><span class="fl">UNASSIGNED:</span>`;
     html += `<div class="fc" id="fc-unassigned" onclick="toggleUnassigned(this)">Unassigned</div>`;
-  } else if (me && me.role === 'agency') {
+  } else if (me.role === 'agency') {
     const myAgents = agents.filter(a => a.agencyId === me.agencyId);
     if (myAgents.length) {
       html += `<span class="fl">AGENT:</span>`;
@@ -1731,8 +1649,8 @@ function applyFilters() { fSearch = document.getElementById('searchInput').value
 function getVisible() {
   let data = [...leads];
   // scope by role
-  if (me && me.role === 'agency') data = data.filter(l => l.assignedAgency === me.agencyId);
-  if (me && me.role === 'agent')  data = data.filter(l => l.assignedAgent  === me.agentId);
+  if (me.role === 'agency') data = data.filter(l => l.assignedAgency === me.agencyId);
+  if (me.role === 'agent')  data = data.filter(l => l.assignedAgent  === me.agentId);
   // filters
   if (fSearch) {
     const q = fSearch.toLowerCase();
@@ -1744,8 +1662,8 @@ function getVisible() {
   if (fAgency)   data = data.filter(l => l.assignedAgency === fAgency);
   if (fAgent)    data = data.filter(l => l.assignedAgent  === fAgent);
   if (fUnassigned) {
-    if (me && me.role === 'admin')  data = data.filter(l => !l.assignedAgency);
-    if (me && me.role === 'agency') data = data.filter(l => !l.assignedAgent);
+    if (me.role === 'admin')  data = data.filter(l => !l.assignedAgency);
+    if (me.role === 'agency') data = data.filter(l => !l.assignedAgent);
   }
   data.sort((a,b) => {
     let av = a[sortCol]??'', bv = b[sortCol]??'';
@@ -4208,24 +4126,6 @@ if (!inventory.length) {
   ];
   persist();
 }
-
-// ── Session restore on page load ──
-(async function() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    document.getElementById('loginScreen').style.display = 'flex';
-    return;
-  }
-  const { data: userRows } = await sb.from('users').select('*').eq('id', session.user.id);
-  const userRow = userRows?.[0];
-  if (!userRow) {
-    document.getElementById('loginScreen').style.display = 'flex';
-    return;
-  }
-  me = { role: userRow.role, username: userRow.username, agencyId: userRow.agency_id||null, agentId: userRow.agent_id||null };
-  await loadData();
-  enterApp();
-})();
 </script>
 </body>
 </html>
