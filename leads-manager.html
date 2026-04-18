@@ -140,7 +140,7 @@
   }
   @media (max-width: 800px) {
     .breadcrumb { display: none !important; }
-    .user-switcher { order: 3 !important; width: 100% !important; }
+    .user-switcher { display: none !important; } /* Hide floating user switcher on mobile */
   }
   .logo{font-size:15px;font-weight:600;color:var(--accent);white-space:nowrap}
   .logo span{color:var(--text3)}
@@ -1771,6 +1771,7 @@ body{font-family:'Aptos','DM Sans',sans-serif;background:var(--bg);color:var(--i
     </div>
     <div class="hdr-actions">
       <input class="search-box" type="text" placeholder="Search…" id="searchInput" autocomplete="off" oninput="applyFilters()">
+      <button class="btn btn-sm" id="viewToggle" onclick="toggleView()">📊 Table</button>
       <div class="dropdown" id="exportDrop" style="display:none">
         <button class="btn btn-ghost" onclick="toggleDD('exportMenu')">⚙ Options ▾</button>
         <div class="dd-menu" id="exportMenu">
@@ -7711,6 +7712,27 @@ async function icSaveLot() {
     fab.style.background = '';
     fab.classList.remove('visible');
   }, 2000);
+}
+
+function toggleView() {
+  const tw = document.querySelector('.table-wrap');
+  const ml = document.getElementById('mobileLeadsList');
+  const btn = document.getElementById('viewToggle');
+  
+  if (tw.style.display === 'none' || ml.style.display === 'flex') {
+    // Switch to table view
+    tw.style.display = '';
+    ml.style.display = 'none';
+    btn.innerHTML = '📱 Cards';
+    btn.title = 'Switch to card view';
+  } else {
+    // Switch to card view
+    tw.style.display = 'none';
+    ml.style.display = 'flex';
+    btn.innerHTML = '📊 Table';
+    btn.title = 'Switch to table view';
+    renderMobileLeads();
+  }
 }
 
 </script>
