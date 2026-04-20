@@ -2557,6 +2557,10 @@ async function doLogout() {
 async function enterApp() {
   document.getElementById('loginScreen').style.display = 'none';
 
+  // Belt-and-braces: make sure the header is visible (in case any prior flow hid it)
+  const headerEl = document.querySelector('.header');
+  if (headerEl) headerEl.style.display = '';
+
   // Fetch session user (auth.users — gives us email)
   const { data: { user: authUser } } = await sb.auth.getUser();
 
@@ -3416,9 +3420,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'PASSWORD_RECOVERY') {
       recoveryMode = true;
-      // Show login screen (in case app had already been loaded) and switch to setpass
+      // Show login screen over the app (z-index:10000 covers the header automatically)
       document.getElementById('loginScreen').style.display = 'flex';
-      document.querySelector('.header')?.style && (document.querySelector('.header').style.display = 'none');
       showLoginView('setpass');
       // Tailor the title for recovery vs invite
       const hash = window.location.hash || '';
