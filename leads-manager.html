@@ -1259,6 +1259,490 @@ input, textarea, select, button {
   border-bottom: 1px solid #e2e8f0;
   flex-shrink: 0;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   GEAR MENU (admin-only dropdown)
+   ═══════════════════════════════════════════════════════════════ */
+.gear-wrap {
+  position: relative;
+}
+.gear-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: white;
+  border: 1px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+.gear-btn:hover { border-color: #002675; background: #f8fafc; }
+.gear-btn.active { border-color: #002675; background: #f1f5f9; }
+.gear-btn svg { width: 15px; height: 15px; stroke: #475569; }
+.gear-btn.active svg { stroke: #002675; }
+.gear-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #dc2626;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 8px;
+  min-width: 14px;
+  text-align: center;
+  box-shadow: 0 0 0 2px white;
+  display: none;
+}
+.gear-badge.visible { display: block; }
+
+.gear-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: white;
+  border: 0.5px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  padding: 4px;
+  min-width: 240px;
+  z-index: 500;
+  display: none;
+}
+.gear-menu.open { display: block; }
+.gear-menu-header {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 1px;
+  padding: 8px 12px 4px;
+  text-transform: uppercase;
+}
+.gear-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: #1e293b;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+.gear-menu-item:hover { background: #f8fafc; }
+.gear-menu-item svg { width: 15px; height: 15px; stroke: #64748b; flex-shrink: 0; }
+.gear-menu-item .gm-badge {
+  margin-left: auto;
+  background: #dc2626;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+.gear-menu-item .gm-badge.neutral { background: #64748b; }
+.gear-menu-divider {
+  height: 0.5px;
+  background: #e2e8f0;
+  margin: 4px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN PAGES (Users, Deleted, Duplicate attempts, Audit log)
+   ═══════════════════════════════════════════════════════════════ */
+.admin-page {
+  flex: 1;
+  overflow-y: auto;
+  background: #f8fafc;
+  padding: 24px;
+  display: none;
+}
+.admin-page.open { display: block; }
+.admin-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.admin-page-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+.admin-page-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0 0;
+}
+.admin-card {
+  background: white;
+  border: 0.5px solid #e2e8f0;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.admin-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 0.5px solid #e2e8f0;
+}
+.admin-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+.admin-card-sub {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 0;
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.admin-table th {
+  background: #f8fafc;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 0.5px solid #e2e8f0;
+}
+.admin-table td {
+  padding: 12px 14px;
+  border-bottom: 0.5px solid #f1f5f9;
+  color: #1e293b;
+}
+.admin-table tr:last-child td { border-bottom: 0; }
+.admin-table tr.deactivated td {
+  color: #94a3b8;
+  background: #fafafa;
+}
+.admin-table .tbl-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.admin-btn-sm {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #475569;
+  cursor: pointer;
+  font-family: inherit;
+}
+.admin-btn-sm:hover { border-color: #002675; color: #002675; }
+.admin-btn-sm.danger { color: #dc2626; border-color: #fca5a5; }
+.admin-btn-sm.danger:hover { background: #fef2f2; }
+.admin-btn-sm.success { color: #059669; border-color: #86efac; }
+.admin-btn-sm.success:hover { background: #f0fdf4; }
+
+.admin-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* Password rule indicator marks in the set-new-password view */
+.rule-mark {
+  display: inline-block;
+  width: 16px;
+  text-align: center;
+  font-weight: 600;
+  color: inherit;
+}
+
+/* Collapsible agency cards (Users & Agencies page) */
+.agency-card {
+  background: white;
+  border: 0.5px solid #e2e8f0;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.agency-card:hover { border-color: #cbd5e1; }
+.agency-card.deactivated { background: #fafafa; }
+
+.agency-head {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.agency-caret {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 10px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.agency-caret.open { transform: rotate(90deg); }
+
+.agency-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #eef2ff;
+  color: #4338ca;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.agency-card.deactivated .agency-icon {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.agency-info-block { flex: 1; min-width: 0; }
+.agency-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+.agency-card.deactivated .agency-name { color: #94a3b8; }
+.agency-meta {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.agency-stats {
+  display: flex;
+  gap: 18px;
+  margin-right: 16px;
+  font-size: 11px;
+}
+.agency-stat { text-align: right; color: #94a3b8; }
+.agency-stat b {
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 13px;
+  display: block;
+  line-height: 1.2;
+}
+
+.agency-head-actions { display: flex; gap: 6px; }
+
+/* Status chip — scoped under .ag-chip to avoid colliding with existing status-chip */
+.ag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 8px;
+}
+.ag-chip.active { background: #ecfdf5; color: #059669; }
+.ag-chip.deactivated { background: #fef2f2; color: #dc2626; }
+.ag-dot { width: 5px; height: 5px; border-radius: 50%; }
+.ag-chip.active .ag-dot { background: #10b981; }
+.ag-chip.deactivated .ag-dot { background: #dc2626; }
+
+.ag-btn {
+  font-size: 11px;
+  padding: 4px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: white;
+  color: #475569;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ag-btn:hover { border-color: #002675; color: #002675; }
+.ag-btn.danger { color: #dc2626; border-color: #fca5a5; }
+.ag-btn.danger:hover { background: #fef2f2; }
+.ag-btn.success { color: #059669; border-color: #86efac; }
+.ag-btn.success:hover { background: #f0fdf4; }
+.ag-btn.primary { background: #002675; color: white; border-color: #002675; }
+.ag-btn.primary:hover { background: #001a55; }
+
+.agents-list {
+  border-top: 0.5px solid #e2e8f0;
+  background: #fafbfc;
+}
+
+.agent-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 14px 5px 52px;
+}
+.agent-row:not(:last-child) {
+  border-bottom: 0.5px solid #e2e8f0;
+}
+.agent-row.deactivated { background: #fafafa; }
+
+.agent-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: #1e40af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.agent-row.deactivated .agent-avatar { background: #f1f5f9; color: #64748b; }
+.agent-info-block { flex: 1; min-width: 0; }
+.agent-name {
+  color: #1e293b;
+  font-weight: 500;
+  font-size: 13px;
+}
+.agent-row.deactivated .agent-name { color: #94a3b8; }
+
+.agent-leads {
+  margin-right: 12px;
+  font-size: 11px;
+  color: #64748b;
+}
+.agent-leads b { color: #1e293b; }
+
+.agents-empty {
+  padding: 14px;
+  text-align: center;
+  font-size: 12px;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.status-chip.active { background: #ecfdf5; color: #059669; }
+.status-chip.deactivated { background: #fef2f2; color: #dc2626; }
+.status-chip.pending { background: #fef3c7; color: #b45309; }
+.status-chip-dot { width: 5px; height: 5px; border-radius: 50%; }
+.status-chip.active .status-chip-dot { background: #10b981; }
+.status-chip.deactivated .status-chip-dot { background: #dc2626; }
+.status-chip.pending .status-chip-dot { background: #f59e0b; }
+
+/* Invite/deactivate modals */
+.admin-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10002;
+  background: rgba(30, 41, 59, 0.55);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.admin-modal-overlay.open { display: flex; }
+.admin-modal {
+  background: white;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 440px;
+  max-height: 85vh;
+  overflow: hidden;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+}
+.admin-modal-head {
+  padding: 16px 22px;
+  border-bottom: 0.5px solid #e2e8f0;
+}
+.admin-modal-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+.admin-modal-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0 0;
+}
+.admin-modal-body {
+  padding: 18px 22px;
+  overflow-y: auto;
+}
+.admin-modal-field {
+  margin-bottom: 14px;
+}
+.admin-modal-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 5px;
+}
+.admin-modal-field input,
+.admin-modal-field select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #1e293b;
+  background: white;
+  box-sizing: border-box;
+  outline: none;
+}
+.admin-modal-field input:focus,
+.admin-modal-field select:focus { border-color: #002675; }
+.admin-modal-foot {
+  padding: 12px 22px;
+  border-top: 0.5px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  background: #fafbfc;
+}
+.admin-modal-error {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #dc2626;
+  min-height: 16px;
+}
 .comments-head-title {
   font-size: 14px;
   font-weight: 600;
@@ -1390,28 +1874,98 @@ input, textarea, select, button {
 <!-- Login Screen -->
 <div id="loginScreen" style="position: fixed; inset: 0; z-index: 10000; background: #f8fafc; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: 'Aptos', 'Aptos Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', system-ui, sans-serif;">
   <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 36px 32px; width: 100%; max-width: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
-    <div style="text-align: center; margin-bottom: 28px;">
-      <div style="font-size: 22px; font-weight: 700; color: #002675; letter-spacing: 0.5px;">LEADS MANAGER</div>
-      <div style="font-size: 12px; color: #64748b; margin-top: 4px; letter-spacing: 1.5px; text-transform: uppercase;">Sign in to continue</div>
+
+    <!-- VIEW 1: Sign in -->
+    <div id="loginView-signin">
+      <form id="loginForm" onsubmit="event.preventDefault(); doLogin();" autocomplete="on">
+        <div style="text-align: center; margin-bottom: 28px;">
+          <div style="font-size: 22px; font-weight: 700; color: #002675; letter-spacing: 0.5px;">LEADS MANAGER</div>
+          <div style="font-size: 12px; color: #64748b; margin-top: 4px; letter-spacing: 1.5px; text-transform: uppercase;">Sign in to continue</div>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label for="loginEmail" style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 5px;">Email</label>
+          <input id="loginEmail" name="email" type="email" autocomplete="username" placeholder="you@example.com"
+                 style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-family: inherit; box-sizing: border-box;">
+        </div>
+        <div style="margin-bottom: 8px;">
+          <label for="loginPassword" style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 5px;">Password</label>
+          <input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="••••••••"
+                 style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-family: inherit; box-sizing: border-box;">
+        </div>
+        <div style="text-align: right; margin-bottom: 18px;">
+          <a href="#" onclick="event.preventDefault(); showLoginView('forgot');" style="font-size: 12px; color: #002675; text-decoration: none;">Forgot password?</a>
+        </div>
+        <button id="loginBtn" type="submit"
+                style="width: 100%; padding: 11px; background: #002675; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.15s;"
+                onmouseover="this.style.background='#001a55'" onmouseout="this.style.background='#002675'">
+          Sign in
+        </button>
+        <div id="loginError" style="margin-top: 12px; font-size: 12px; color: #dc2626; text-align: center; min-height: 18px;"></div>
+      </form>
     </div>
-    <div style="margin-bottom: 16px;">
-      <label style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 5px;">Email</label>
-      <input id="loginEmail" type="email" placeholder="you@example.com"
-             style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-family: inherit; box-sizing: border-box;"
-             onkeydown="if(event.key==='Enter') document.getElementById('loginPassword').focus()">
+
+    <!-- VIEW 2: Forgot password — request reset -->
+    <div id="loginView-forgot" style="display: none;">
+      <form id="forgotForm" onsubmit="event.preventDefault(); submitForgotPassword();" autocomplete="on">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="font-size: 22px; font-weight: 700; color: #002675; letter-spacing: 0.5px;">RESET PASSWORD</div>
+          <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Enter your email and we'll send you a reset link.</div>
+        </div>
+        <div style="margin-bottom: 18px;">
+          <label for="forgotEmail" style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 5px;">Email</label>
+          <input id="forgotEmail" name="email" type="email" autocomplete="username" placeholder="you@example.com"
+                 style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-family: inherit; box-sizing: border-box;">
+        </div>
+        <button id="forgotBtn" type="submit"
+                style="width: 100%; padding: 11px; background: #002675; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;">
+          Send reset link
+        </button>
+        <div id="forgotMsg" style="margin-top: 12px; font-size: 12px; text-align: center; min-height: 18px;"></div>
+        <div style="text-align: center; margin-top: 14px;">
+          <a href="#" onclick="event.preventDefault(); showLoginView('signin');" style="font-size: 12px; color: #64748b; text-decoration: none;">← Back to sign in</a>
+        </div>
+      </form>
     </div>
-    <div style="margin-bottom: 20px;">
-      <label style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 5px;">Password</label>
-      <input id="loginPassword" type="password" placeholder="••••••••"
-             style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-family: inherit; box-sizing: border-box;"
-             onkeydown="if(event.key==='Enter') doLogin()">
+
+    <!-- VIEW 3: Set new password (used for both password-reset and invite flows) -->
+    <div id="loginView-setpass" style="display: none;">
+      <form id="setpassForm" onsubmit="event.preventDefault(); submitSetPassword();" autocomplete="on">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div id="setpassTitle" style="font-size: 22px; font-weight: 700; color: #002675; letter-spacing: 0.5px;">SET PASSWORD</div>
+          <div id="setpassSub" style="font-size: 12px; color: #64748b; margin-top: 4px;">Choose a password to access your account.</div>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <label for="setpassNew" style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 5px;">New password</label>
+          <div style="position: relative;">
+            <input id="setpassNew" name="new-password" type="password" autocomplete="new-password" placeholder="Min 10 chars with upper, lower, digit, symbol"
+                   oninput="updateSetPasswordUI()"
+                   style="width: 100%; padding: 10px 40px 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-family: inherit; box-sizing: border-box;">
+            <button type="button" id="setpassToggleNew" onclick="toggleSetPassVisibility('setpassNew', 'setpassToggleNew')" aria-label="Show password"
+                    style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: transparent; border: 0; color: #64748b; font-size: 11px; cursor: pointer; padding: 4px 8px;">Show</button>
+          </div>
+        </div>
+        <ul id="setpassRules" style="list-style: none; padding: 0; margin: 0 0 12px; font-size: 11px; color: #64748b;">
+          <li data-rule="len" style="padding: 2px 0;"><span class="rule-mark">○</span> At least 10 characters</li>
+          <li data-rule="lower" style="padding: 2px 0;"><span class="rule-mark">○</span> A lowercase letter</li>
+          <li data-rule="upper" style="padding: 2px 0;"><span class="rule-mark">○</span> An uppercase letter</li>
+          <li data-rule="digit" style="padding: 2px 0;"><span class="rule-mark">○</span> A digit</li>
+          <li data-rule="symbol" style="padding: 2px 0;"><span class="rule-mark">○</span> A symbol (!@#$% etc.)</li>
+        </ul>
+        <div style="margin-bottom: 14px;">
+          <label for="setpassConfirm" style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 5px;">Confirm password</label>
+          <input id="setpassConfirm" name="confirm-password" type="password" autocomplete="new-password" placeholder="Re-enter password"
+                 oninput="updateSetPasswordUI()"
+                 style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-family: inherit; box-sizing: border-box;">
+        </div>
+        <div id="setpassMatchMsg" style="font-size: 11px; color: #dc2626; margin-bottom: 14px; min-height: 14px;"></div>
+        <button id="setpassBtn" type="submit" disabled
+                style="width: 100%; padding: 11px; background: #cbd5e1; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: not-allowed; font-family: inherit;">
+          Save &amp; sign in
+        </button>
+        <div id="setpassError" style="margin-top: 12px; font-size: 12px; color: #dc2626; text-align: center; min-height: 18px;"></div>
+      </form>
     </div>
-    <button id="loginBtn" onclick="doLogin()"
-            style="width: 100%; padding: 11px; background: #002675; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.15s;"
-            onmouseover="this.style.background='#001a55'" onmouseout="this.style.background='#002675'">
-      Sign in
-    </button>
-    <div id="loginError" style="margin-top: 12px; font-size: 12px; color: #dc2626; text-align: center; min-height: 18px;"></div>
+
   </div>
 </div>
 
@@ -1457,6 +2011,31 @@ input, textarea, select, button {
   <div style="display: flex; align-items: center; gap: 12px;">
     <span id="currentUser" style="font-size: 12px; color: var(--text-tertiary);"></span>
     <button class="btn btn-ghost" onclick="doLogout()" style="font-size: 12px; padding: 6px 12px;" title="Sign out">Sign out</button>
+    <div class="gear-wrap" id="gearWrap" style="display: none;">
+      <button class="gear-btn" id="gearBtn" onclick="toggleGearMenu(event)" title="Admin settings" aria-label="Admin settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span id="gearBadge" class="gear-badge">0</span>
+      </button>
+      <div class="gear-menu" id="gearMenu">
+        <div class="gear-menu-header">Manage</div>
+        <button class="gear-menu-item" onclick="openAdminPage('users')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <span>Users &amp; Agencies</span>
+        </button>
+        <button class="gear-menu-item" onclick="openAdminPage('duplicates')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <span>Duplicate attempts</span>
+          <span id="dupBadge" class="gm-badge" style="display: none;">0</span>
+        </button>
+        <div class="gear-menu-divider"></div>
+        <div class="gear-menu-header">Archive</div>
+        <button class="gear-menu-item" onclick="openAdminPage('deleted')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          <span>Deleted leads</span>
+          <span id="delBadge" class="gm-badge neutral" style="display: none;">0</span>
+        </button>
+      </div>
+    </div>
     <button class="btn btn-primary" onclick="openNewLead()">+ New Lead</button>
   </div>
 </div>
@@ -1558,6 +2137,66 @@ input, textarea, select, button {
     <button class="mv-chip" data-filter="noact" onclick="setMobileFilter('noact')"><span class="mv-chip-dot" style="background: transparent; border: 1.5px dashed #cbd5e1;"></span>No activity <span id="mvNoactCountChip">0</span></button>
   </div>
   <div class="mv-list" id="mobileListContainer"></div>
+</div>
+
+<!-- Admin pages (opened from gear menu, hidden otherwise) -->
+<div class="admin-page" id="adminPage-users"></div>
+<div class="admin-page" id="adminPage-duplicates"></div>
+<div class="admin-page" id="adminPage-deleted"></div>
+
+<!-- Invite modal -->
+<div class="admin-modal-overlay" id="inviteModal" onclick="if(event.target===this) closeInviteModal()">
+  <div class="admin-modal">
+    <div class="admin-modal-head">
+      <h3 class="admin-modal-title" id="inviteModalTitle">Invite user</h3>
+      <p class="admin-modal-sub" id="inviteModalSub">They'll receive an email with a link to set their password.</p>
+    </div>
+    <div class="admin-modal-body">
+      <div class="admin-modal-field">
+        <label>Full name</label>
+        <input type="text" id="inviteName" placeholder="e.g. Jane Smith" autocomplete="off">
+      </div>
+      <div class="admin-modal-field">
+        <label>Email</label>
+        <input type="email" id="inviteEmail" placeholder="jane@example.com" autocomplete="off">
+      </div>
+      <div class="admin-modal-field" id="inviteAgencyField" style="display: none;">
+        <label>Agency</label>
+        <select id="inviteAgencySelect"></select>
+      </div>
+      <div class="admin-modal-field" id="inviteAgencyNameField" style="display: none;">
+        <label>Principal (optional)</label>
+        <input type="text" id="inviteAgencyPrincipal" placeholder="Principal name" autocomplete="off">
+      </div>
+      <div class="admin-modal-error" id="inviteError"></div>
+    </div>
+    <div class="admin-modal-foot">
+      <button class="admin-btn-sm" onclick="closeInviteModal()">Cancel</button>
+      <button class="admin-btn-sm" id="inviteSubmitBtn" onclick="submitInvite()" style="background: #002675; color: white; border-color: #002675;">Send invite</button>
+    </div>
+  </div>
+</div>
+
+<!-- Deactivate modal -->
+<div class="admin-modal-overlay" id="deactivateModal" onclick="if(event.target===this) closeDeactivateModal()">
+  <div class="admin-modal">
+    <div class="admin-modal-head">
+      <h3 class="admin-modal-title" id="deactivateModalTitle">Deactivate user</h3>
+      <p class="admin-modal-sub" id="deactivateModalSub">Their login will be blocked. Their leads need a new owner.</p>
+    </div>
+    <div class="admin-modal-body">
+      <div id="deactivateSummary" style="background: #fef3c7; color: #78350f; padding: 10px 12px; border-radius: 6px; font-size: 12px; margin-bottom: 14px;"></div>
+      <div class="admin-modal-field" id="reassignField">
+        <label id="reassignLabel">Reassign leads to</label>
+        <select id="reassignSelect"></select>
+      </div>
+      <div class="admin-modal-error" id="deactivateError"></div>
+    </div>
+    <div class="admin-modal-foot">
+      <button class="admin-btn-sm" onclick="closeDeactivateModal()">Cancel</button>
+      <button class="admin-btn-sm danger" id="deactivateSubmitBtn" onclick="submitDeactivate()">Deactivate</button>
+    </div>
+  </div>
 </div>
 
 <!-- Edit Lead Drawer -->
@@ -1849,7 +2488,6 @@ input, textarea, select, button {
       <button class="comments-close" onclick="closeCommentsModal()" aria-label="Close">×</button>
     </div>
     <div class="comments-body">
-      <div class="comments-log" id="commentsLog"></div>
       <div class="comments-add">
         <textarea id="newCommentText" placeholder="Type a new comment…" rows="3"
                   onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();addNewComment();}"></textarea>
@@ -1859,6 +2497,7 @@ input, textarea, select, button {
         </div>
         <div id="commentsError" class="comments-error"></div>
       </div>
+      <div class="comments-log" id="commentsLog" style="margin-top: 14px; margin-bottom: 0;"></div>
     </div>
   </div>
 </div>
@@ -1874,6 +2513,11 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Leads data loaded from database
 let leadsData = [];
+
+// Lookup tables: agencies and agents (loaded once after login).
+// Keyed by id so name resolution is a fast object lookup.
+let agencyById = {};
+let agentById = {};
 
 // Current signed-in user profile (populated by enterApp after get_my_role RPC)
 // { id, username, role, agencyId, agentId, email }
@@ -1951,10 +2595,546 @@ async function enterApp() {
     `;
   }
 
+  await loadLookupTables();
+  showGearForRole();
   await loadLeadsFromSupabase();
   renderTable();
   renderMobileList();
   updateCounts();
+}
+
+// ─── Lookup tables: agencies + agents ──────────────
+async function loadLookupTables() {
+  const [{ data: agencies, error: agErr }, { data: agents, error: agtErr }] = await Promise.all([
+    sb.from('agencies').select('id, name'),
+    sb.from('agents').select('id, name, agency_id')
+  ]);
+
+  if (agErr) console.error('Agencies load error:', agErr);
+  if (agtErr) console.error('Agents load error:', agtErr);
+
+  agencyById = {};
+  (agencies || []).forEach(a => { agencyById[a.id] = a; });
+  agentById = {};
+  (agents || []).forEach(a => { agentById[a.id] = a; });
+
+  console.log(`✅ Loaded ${Object.keys(agencyById).length} agencies, ${Object.keys(agentById).length} agents`);
+}
+
+function agencyName(id) {
+  if (!id || id === '—') return '—';
+  return agencyById[id]?.name || id;
+}
+function agentName(id) {
+  if (!id || id === '—') return '—';
+  return agentById[id]?.name || id;
+}
+
+// ─── Gear menu + admin pages ───────────────────────
+// Only visible when me.role === 'admin'. Opens a dropdown that routes to admin pages.
+
+let currentAdminPage = null;
+
+function showGearForRole() {
+  const wrap = document.getElementById('gearWrap');
+  if (!wrap) return;
+  wrap.style.display = (me && me.role === 'admin') ? 'block' : 'none';
+}
+
+function toggleGearMenu(e) {
+  if (e) e.stopPropagation();
+  const menu = document.getElementById('gearMenu');
+  const btn = document.getElementById('gearBtn');
+  if (!menu || !btn) return;
+  const willOpen = !menu.classList.contains('open');
+  menu.classList.toggle('open', willOpen);
+  btn.classList.toggle('active', willOpen);
+}
+
+function closeGearMenu() {
+  document.getElementById('gearMenu')?.classList.remove('open');
+  document.getElementById('gearBtn')?.classList.remove('active');
+}
+
+// Close gear menu if user clicks outside
+document.addEventListener('click', (e) => {
+  const wrap = document.getElementById('gearWrap');
+  if (wrap && !wrap.contains(e.target)) closeGearMenu();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeGearMenu();
+    if (currentAdminPage) closeAdminPage();
+  }
+});
+
+async function openAdminPage(key) {
+  closeGearMenu();
+  if (me?.role !== 'admin') return;
+
+  // Hide main leads view and mobile view
+  const mainEl = document.querySelector('.main-content');
+  if (mainEl) mainEl.style.display = 'none';
+  const mv = document.getElementById('mobileView');
+  if (mv) mv.style.display = 'none';
+
+  // Hide all admin pages first
+  document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('open'));
+
+  const pageEl = document.getElementById('adminPage-' + key);
+  if (!pageEl) return;
+  pageEl.classList.add('open');
+  currentAdminPage = key;
+
+  // Show loading state
+  pageEl.innerHTML = '<div class="admin-empty">Loading…</div>';
+
+  if (key === 'users') await renderUsersPage();
+  else if (key === 'duplicates') await renderDuplicatesPage();
+  else if (key === 'deleted') await renderDeletedPage();
+}
+
+function closeAdminPage() {
+  document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('open'));
+  const mainEl = document.querySelector('.main-content');
+  if (mainEl) mainEl.style.display = '';
+  // Mobile view display is controlled by media query; only show if narrow
+  const mv = document.getElementById('mobileView');
+  if (mv) mv.style.display = '';
+  currentAdminPage = null;
+}
+
+// ─── Users & Agencies page ─────────────────────────
+async function renderUsersPage() {
+  const pageEl = document.getElementById('adminPage-users');
+
+  // Fetch fresh data from users + agencies + agents
+  const [{ data: users }, { data: agencies }, { data: agents }] = await Promise.all([
+    sb.from('users').select('id, username, role, agency_id, agent_id, deactivated, deactivated_at, created_at').order('created_at', { ascending: false }),
+    sb.from('agencies').select('id, name, principal, email, color, created_at').order('name'),
+    sb.from('agents').select('id, name, agency_id, email, color, created_at').order('name')
+  ]);
+
+  // Compute lead counts per assignee (from leadsData we already have in memory)
+  const leadsByAgent = {};
+  const leadsByAgency = {};
+  leadsData.forEach(l => {
+    if (l.assignedAgent && l.assignedAgent !== '—') {
+      leadsByAgent[l.assignedAgent] = (leadsByAgent[l.assignedAgent] || 0) + 1;
+    }
+    if (l.assignedAgency && l.assignedAgency !== '—') {
+      leadsByAgency[l.assignedAgency] = (leadsByAgency[l.assignedAgency] || 0) + 1;
+    }
+  });
+
+  // Users keyed by agency_id / agent_id — so we know which agency row corresponds to which user row
+  const userByAgencyId = {};
+  const userByAgentId = {};
+  (users || []).forEach(u => {
+    if (u.role === 'agency' && u.agency_id) userByAgencyId[u.agency_id] = u;
+    if (u.role === 'agent' && u.agent_id) userByAgentId[u.agent_id] = u;
+  });
+
+  // Agents grouped by agency
+  const agentsByAgency = {};
+  (agents || []).forEach(a => {
+    if (!agentsByAgency[a.agency_id]) agentsByAgency[a.agency_id] = [];
+    agentsByAgency[a.agency_id].push(a);
+  });
+
+  // Totals for the header line
+  const totalAgencies = (agencies || []).length;
+  const totalAgents = (agents || []).length;
+  const totalDeactivated = (users || []).filter(u => u.deactivated).length;
+
+  function initials(name) {
+    if (!name) return '—';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  function buildAgentRow(agt) {
+    const user = userByAgentId[agt.id];
+    const deactivated = user?.deactivated;
+    const leadCount = leadsByAgent[agt.id] || 0;
+    const statusChip = deactivated
+      ? '<span class="ag-chip deactivated"><span class="ag-dot"></span>Deactivated</span>'
+      : '<span class="ag-chip active"><span class="ag-dot"></span>Active</span>';
+    const action = user ? (deactivated
+      ? `<button class="ag-btn success" onclick="reactivateUser('${user.id}', '${escapeHtml(agt.name).replace(/'/g,"\\'")}')">Reactivate</button>`
+      : `<button class="ag-btn danger" onclick="openDeactivateModal('${user.id}', 'agent', '${escapeHtml(agt.name).replace(/'/g,"\\'")}', '${agt.agency_id}')">Deactivate</button>`
+    ) : '<span style="color:#94a3b8;font-size:11px;">No login</span>';
+
+    return `
+      <div class="agent-row ${deactivated ? 'deactivated' : ''}">
+        <div class="agent-avatar">${escapeHtml(initials(agt.name))}</div>
+        <div class="agent-info-block">
+          <div class="agent-name">${escapeHtml(agt.name || '—')}</div>
+        </div>
+        <div class="agent-leads"><b>${leadCount}</b> lead${leadCount === 1 ? '' : 's'}</div>
+        ${statusChip}
+        ${action}
+      </div>`;
+  }
+
+  function buildAgencyCard(ag) {
+    const user = userByAgencyId[ag.id];
+    const deactivated = user?.deactivated;
+    const leadCount = leadsByAgency[ag.id] || 0;
+    const theseAgents = agentsByAgency[ag.id] || [];
+    const agentCount = theseAgents.length;
+
+    const statusChip = deactivated
+      ? '<span class="ag-chip deactivated"><span class="ag-dot"></span>Deactivated</span>'
+      : '<span class="ag-chip active"><span class="ag-dot"></span>Active</span>';
+    const action = user ? (deactivated
+      ? `<button class="ag-btn success" onclick="event.stopPropagation(); reactivateUser('${user.id}', '${escapeHtml(ag.name).replace(/'/g,"\\'")}')">Reactivate</button>`
+      : `<button class="ag-btn danger" onclick="event.stopPropagation(); openDeactivateModal('${user.id}', 'agency', '${escapeHtml(ag.name).replace(/'/g,"\\'")}', '${ag.id}')">Deactivate</button>`
+    ) : '';
+
+    // Agency avatar uses stored color field if present, otherwise default indigo
+    const accent = ag.color || '#4338ca';
+    const accentBg = accent + '22'; // faded tint — 22 hex = ~13% alpha
+
+    const agentsHtml = agentCount === 0
+      ? '<div class="agents-empty">No agents yet — invite one to start assigning leads</div>'
+      : theseAgents.map(buildAgentRow).join('');
+
+    return `
+      <div class="agency-card ${deactivated ? 'deactivated' : ''}" data-agency="${ag.id}">
+        <div class="agency-head" onclick="toggleAgencyCard('${ag.id}')">
+          <span class="agency-caret">▸</span>
+          <div class="agency-icon" style="background: ${accentBg}; color: ${accent};">${escapeHtml(initials(ag.name))}</div>
+          <div class="agency-info-block">
+            <div class="agency-name">${escapeHtml(ag.name || '—')}</div>
+            <div class="agency-meta">Principal: ${escapeHtml(ag.principal || '—')}</div>
+          </div>
+          <div class="agency-stats">
+            <div class="agency-stat"><b>${agentCount}</b>agents</div>
+            <div class="agency-stat"><b>${leadCount}</b>leads</div>
+          </div>
+          ${statusChip}
+          <div class="agency-head-actions">
+            ${!deactivated ? `<button class="ag-btn primary" onclick="event.stopPropagation(); openInviteModal('agent', '${ag.id}')">+ Agent</button>` : ''}
+            ${action}
+          </div>
+        </div>
+        <div class="agents-list" style="display: none;">${agentsHtml}</div>
+      </div>`;
+  }
+
+  pageEl.innerHTML = `
+    <div class="admin-page-header">
+      <div>
+        <h2 class="admin-page-title">Users &amp; Agencies</h2>
+        <p class="admin-page-sub">${totalAgencies} agencies · ${totalAgents} agents${totalDeactivated > 0 ? ' · ' + totalDeactivated + ' deactivated' : ''}</p>
+      </div>
+      <div>
+        <button class="ag-btn primary" onclick="openInviteModal('agency')">+ Invite agency</button>
+        <button class="admin-btn-sm" style="margin-left: 8px;" onclick="closeAdminPage()">← Back to leads</button>
+      </div>
+    </div>
+    ${totalAgencies === 0
+      ? '<div class="admin-empty">No agencies yet. Click "+ Invite agency" to get started.</div>'
+      : (agencies || []).map(buildAgencyCard).join('')
+    }
+  `;
+}
+
+// Toggle expand/collapse on an agency card
+function toggleAgencyCard(agencyId) {
+  const card = document.querySelector(`[data-agency="${agencyId}"]`);
+  if (!card) return;
+  const list = card.querySelector('.agents-list');
+  const caret = card.querySelector('.agency-caret');
+  const willOpen = list.style.display === 'none';
+  list.style.display = willOpen ? 'block' : 'none';
+  caret.classList.toggle('open', willOpen);
+}
+
+// ─── Invite modal ──────────────────────────────────
+let inviteMode = null; // 'agency' or 'agent'
+
+function openInviteModal(mode, preselectAgencyId) {
+  inviteMode = mode;
+  document.getElementById('inviteName').value = '';
+  document.getElementById('inviteEmail').value = '';
+  document.getElementById('inviteAgencyPrincipal').value = '';
+  document.getElementById('inviteError').textContent = '';
+
+  const title = mode === 'agency' ? 'Invite an agency' : 'Invite an agent';
+  document.getElementById('inviteModalTitle').textContent = title;
+
+  // Agency field visible only for agent invite
+  const agencyField = document.getElementById('inviteAgencyField');
+  agencyField.style.display = mode === 'agent' ? 'block' : 'none';
+
+  // Principal field visible only for agency invite
+  document.getElementById('inviteAgencyNameField').style.display = mode === 'agency' ? 'block' : 'none';
+
+  // Populate agency dropdown for agent invite
+  if (mode === 'agent') {
+    const sel = document.getElementById('inviteAgencySelect');
+    const opts = Object.values(agencyById).map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
+    sel.innerHTML = '<option value="">— Select agency —</option>' + opts;
+    if (preselectAgencyId) sel.value = preselectAgencyId;
+  }
+
+  document.getElementById('inviteModal').classList.add('open');
+  setTimeout(() => document.getElementById('inviteName').focus(), 50);
+}
+
+function closeInviteModal() {
+  document.getElementById('inviteModal').classList.remove('open');
+  inviteMode = null;
+}
+
+async function submitInvite() {
+  const name = document.getElementById('inviteName').value.trim();
+  const email = document.getElementById('inviteEmail').value.trim();
+  const errEl = document.getElementById('inviteError');
+  const btn = document.getElementById('inviteSubmitBtn');
+  errEl.textContent = '';
+
+  if (!name || !email) { errEl.textContent = 'Name and email are required.'; return; }
+  if (!email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) { errEl.textContent = 'Invalid email address.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const body = { name, email };
+
+    if (inviteMode === 'agency') {
+      // Generate a new agency id + row first, then invite with that agency_id
+      const newAgencyId = 'ag_' + Date.now();
+      const principal = document.getElementById('inviteAgencyPrincipal').value.trim() || null;
+      const { error: agErr } = await sb.from('agencies').insert({
+        id: newAgencyId, name, principal, email
+      });
+      if (agErr) { errEl.textContent = 'Could not create agency: ' + agErr.message; btn.disabled = false; btn.textContent = 'Send invite'; return; }
+
+      body.role = 'agency';
+      body.agency_id = newAgencyId;
+    } else if (inviteMode === 'agent') {
+      const agencyId = document.getElementById('inviteAgencySelect').value;
+      if (!agencyId) { errEl.textContent = 'Please select an agency.'; btn.disabled = false; btn.textContent = 'Send invite'; return; }
+
+      // Create agent row with a generated id
+      const newAgentId = 'agt_' + Date.now();
+      const { error: agtErr } = await sb.from('agents').insert({
+        id: newAgentId, name, agency_id: agencyId, email
+      });
+      if (agtErr) { errEl.textContent = 'Could not create agent: ' + agtErr.message; btn.disabled = false; btn.textContent = 'Send invite'; return; }
+
+      body.role = 'agent';
+      body.agency_id = agencyId;
+      body.agent_id = newAgentId;
+    }
+
+    // Call invite-user edge function
+    const resp = await fetch('https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/invite-user', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    const respData = await resp.json();
+    if (!resp.ok) {
+      errEl.textContent = respData.error || 'Invite failed';
+      btn.disabled = false; btn.textContent = 'Send invite';
+      return;
+    }
+
+    // Success — reload lookups + refresh page
+    closeInviteModal();
+    await loadLookupTables();
+    await renderUsersPage();
+    alert('Invite sent to ' + email);
+  } catch (err) {
+    errEl.textContent = err.message || 'Something went wrong.';
+    btn.disabled = false; btn.textContent = 'Send invite';
+  }
+}
+
+// ─── Deactivate modal ──────────────────────────────
+let deactivateTarget = null; // { user_id, role, name, agency_id }
+
+async function openDeactivateModal(userId, role, name, agencyId) {
+  deactivateTarget = { user_id: userId, role, name, agency_id: agencyId };
+  document.getElementById('deactivateError').textContent = '';
+  document.getElementById('deactivateModalTitle').textContent = `Deactivate ${name}`;
+
+  const sel = document.getElementById('reassignSelect');
+  const label = document.getElementById('reassignLabel');
+  const summaryEl = document.getElementById('deactivateSummary');
+
+  // Fetch user rows so we can map user_id ↔ agent_id
+  const { data: users } = await sb.from('users').select('id, role, agency_id, agent_id, username, deactivated');
+  const usersList = users || [];
+
+  if (role === 'agent') {
+    label.textContent = 'Reassign their leads to';
+    // Find the target user's agent_id
+    const targetUser = usersList.find(u => u.id === userId);
+    const targetAgentId = targetUser?.agent_id;
+    // Peers: other active agents in same agency (by looking up user rows)
+    const peers = usersList.filter(u =>
+      u.role === 'agent' && u.agency_id === agencyId && u.id !== userId && !u.deactivated
+    );
+    const opts = peers.map(u => `<option value="user:${u.id}">${escapeHtml(u.username)}</option>`).join('');
+    sel.innerHTML = '<option value="unassign">— Leave unassigned (agency keeps leads) —</option>' + opts;
+    // Lead count
+    const count = targetAgentId ? leadsData.filter(l => l.assignedAgent === targetAgentId).length : 0;
+    summaryEl.textContent = count > 0
+      ? `${count} lead${count === 1 ? '' : 's'} will need to be reassigned.`
+      : 'No leads currently assigned to this agent.';
+  } else if (role === 'agency') {
+    label.textContent = 'Move all leads to agency';
+    const otherAgencies = Object.values(agencyById).filter(a => a.id !== agencyId);
+    sel.innerHTML = otherAgencies.map(a => `<option value="agency:${a.id}">${escapeHtml(a.name)}</option>`).join('');
+    const count = leadsData.filter(l => l.assignedAgency === agencyId).length;
+    summaryEl.textContent = count > 0
+      ? `${count} lead${count === 1 ? '' : 's'} will be moved. All of this agency's agents will be deactivated.`
+      : `All of this agency's agents will be deactivated.`;
+    if (otherAgencies.length === 0) {
+      summaryEl.textContent += ' There are no other agencies to move them to — create one first.';
+      document.getElementById('deactivateSubmitBtn').disabled = true;
+      document.getElementById('deactivateModal').classList.add('open');
+      return;
+    }
+  }
+
+  document.getElementById('deactivateSubmitBtn').disabled = false;
+  document.getElementById('deactivateModal').classList.add('open');
+}
+
+// Deprecated stubs (no longer used but keep for safety)
+function findUserIdForAgent() { return null; }
+function findAgentIdForUser() { return null; }
+
+function closeDeactivateModal() {
+  document.getElementById('deactivateModal').classList.remove('open');
+  deactivateTarget = null;
+}
+
+async function submitDeactivate() {
+  if (!deactivateTarget) return;
+  const errEl = document.getElementById('deactivateError');
+  const btn = document.getElementById('deactivateSubmitBtn');
+  errEl.textContent = '';
+
+  const sel = document.getElementById('reassignSelect');
+  const choice = sel.value;
+
+  const body = { target_user_id: deactivateTarget.user_id };
+
+  if (deactivateTarget.role === 'agent') {
+    if (choice.startsWith('user:')) {
+      body.reassign_to_user_id = choice.substring(5) || null;
+    } else {
+      body.reassign_to_user_id = null;
+    }
+  } else if (deactivateTarget.role === 'agency') {
+    if (choice.startsWith('agency:')) {
+      body.reassign_to_agency_id = choice.substring(7);
+    }
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Deactivating…';
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const resp = await fetch('https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/deactivate-user', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      errEl.textContent = data.error || 'Deactivation failed';
+      btn.disabled = false; btn.textContent = 'Deactivate';
+      return;
+    }
+
+    closeDeactivateModal();
+    await loadLookupTables();
+    await loadLeadsFromSupabase();
+    await renderUsersPage();
+    renderTable();
+    renderMobileList();
+    updateCounts();
+    alert('User deactivated');
+  } catch (err) {
+    errEl.textContent = err.message || 'Something went wrong.';
+    btn.disabled = false; btn.textContent = 'Deactivate';
+  }
+}
+
+// ─── Reactivate ────────────────────────────────────
+async function reactivateUser(userId, displayName) {
+  if (!confirm(`Reactivate ${displayName}? They will regain login access.`)) return;
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const resp = await fetch('https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/reactivate-user', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ target_user_id: userId })
+    });
+    const data = await resp.json();
+    if (!resp.ok) { alert('Reactivation failed: ' + (data.error || 'unknown error')); return; }
+
+    await loadLookupTables();
+    await renderUsersPage();
+    alert(displayName + ' reactivated');
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+}
+
+// ─── Placeholder pages for duplicates & deleted ────
+async function renderDuplicatesPage() {
+  const pageEl = document.getElementById('adminPage-duplicates');
+  pageEl.innerHTML = `
+    <div class="admin-page-header">
+      <div>
+        <h2 class="admin-page-title">Duplicate attempts</h2>
+        <p class="admin-page-sub">Leads that couldn't be created because they matched existing records.</p>
+      </div>
+      <button class="admin-btn-sm" onclick="closeAdminPage()">← Back to leads</button>
+    </div>
+    <div class="admin-card">
+      <div class="admin-empty">No duplicate attempts yet. This page will populate once duplicate detection is wired into lead creation.</div>
+    </div>
+  `;
+}
+
+async function renderDeletedPage() {
+  const pageEl = document.getElementById('adminPage-deleted');
+  pageEl.innerHTML = `
+    <div class="admin-page-header">
+      <div>
+        <h2 class="admin-page-title">Deleted leads</h2>
+        <p class="admin-page-sub">Soft-deleted leads. Admin can restore them.</p>
+      </div>
+      <button class="admin-btn-sm" onclick="closeAdminPage()">← Back to leads</button>
+    </div>
+    <div class="admin-card">
+      <div class="admin-empty">Deleted leads page will be built in a future step.</div>
+    </div>
+  `;
 }
 
 // ─── Supabase → v2 field mapping ───────────────────
@@ -2076,14 +3256,199 @@ let selectedClosed = null;
 let selectedSettleOk = null;
 
 // Initialize — check session, show login OR load app
+// ─── Login view switching + forgot password + set-new-password ──
+// Three views inside #loginScreen: signin / forgot / setpass.
+// setpass is triggered either by the user clicking a recovery email link
+// (URL contains type=recovery) or an invite link (type=invite).
+
+const PASSWORD_RULES = [
+  { id: 'len',    test: p => p.length >= 10,               label: 'At least 10 characters' },
+  { id: 'lower',  test: p => /[a-z]/.test(p),              label: 'A lowercase letter' },
+  { id: 'upper',  test: p => /[A-Z]/.test(p),              label: 'An uppercase letter' },
+  { id: 'digit',  test: p => /\d/.test(p),                 label: 'A digit' },
+  { id: 'symbol', test: p => /[^A-Za-z0-9]/.test(p),       label: 'A symbol (!@#$% etc.)' }
+];
+
+function showLoginView(view) {
+  ['signin', 'forgot', 'setpass'].forEach(v => {
+    const el = document.getElementById('loginView-' + v);
+    if (el) el.style.display = (v === view) ? 'block' : 'none';
+  });
+  // Clear transient messages when switching
+  document.getElementById('loginError').textContent = '';
+  document.getElementById('forgotMsg').textContent = '';
+  const setpassErr = document.getElementById('setpassError');
+  if (setpassErr) setpassErr.textContent = '';
+}
+
+async function submitForgotPassword() {
+  const email = document.getElementById('forgotEmail').value.trim();
+  const msgEl = document.getElementById('forgotMsg');
+  const btn = document.getElementById('forgotBtn');
+  msgEl.style.color = '#dc2626';
+  msgEl.textContent = '';
+
+  if (!email) { msgEl.textContent = 'Please enter your email.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  // Use current origin + path so it works on localhost, live site, or anywhere deployed
+  const redirectTo = window.location.origin + window.location.pathname;
+
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
+
+  btn.disabled = false;
+  btn.textContent = 'Send reset link';
+
+  if (error) {
+    // Don't leak whether the email exists — Supabase usually handles this for us,
+    // but if there's a rate-limit or network error, show it
+    msgEl.textContent = error.message || 'Could not send reset link. Please try again.';
+    return;
+  }
+
+  msgEl.style.color = '#059669';
+  msgEl.textContent = 'If that email has an account, a reset link has been sent. Check your inbox.';
+}
+
+function toggleSetPassVisibility(inputId, btnId) {
+  const inp = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if (!inp || !btn) return;
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = 'Hide';
+  } else {
+    inp.type = 'password';
+    btn.textContent = 'Show';
+  }
+}
+
+function updateSetPasswordUI() {
+  const pw = document.getElementById('setpassNew').value;
+  const confirm = document.getElementById('setpassConfirm').value;
+  const list = document.getElementById('setpassRules');
+  const matchMsg = document.getElementById('setpassMatchMsg');
+  const btn = document.getElementById('setpassBtn');
+
+  // Update each rule indicator
+  let allPass = true;
+  PASSWORD_RULES.forEach(rule => {
+    const li = list.querySelector(`[data-rule="${rule.id}"]`);
+    if (!li) return;
+    const pass = rule.test(pw);
+    if (!pass) allPass = false;
+    li.style.color = pass ? '#059669' : '#64748b';
+    const mark = li.querySelector('.rule-mark');
+    if (mark) mark.textContent = pass ? '✓' : '○';
+  });
+
+  // Confirm match
+  let matches = false;
+  if (!confirm) {
+    matchMsg.textContent = '';
+  } else if (pw === confirm) {
+    matchMsg.style.color = '#059669';
+    matchMsg.textContent = '✓ Passwords match';
+    matches = true;
+  } else {
+    matchMsg.style.color = '#dc2626';
+    matchMsg.textContent = 'Passwords do not match';
+  }
+
+  // Enable button only when all rules pass AND match
+  const ok = allPass && matches;
+  btn.disabled = !ok;
+  btn.style.background = ok ? '#002675' : '#cbd5e1';
+  btn.style.cursor = ok ? 'pointer' : 'not-allowed';
+}
+
+async function submitSetPassword() {
+  const pw = document.getElementById('setpassNew').value;
+  const confirm = document.getElementById('setpassConfirm').value;
+  const errEl = document.getElementById('setpassError');
+  const btn = document.getElementById('setpassBtn');
+  errEl.textContent = '';
+
+  // Defensive re-check
+  if (pw !== confirm) { errEl.textContent = 'Passwords do not match.'; return; }
+  for (const rule of PASSWORD_RULES) {
+    if (!rule.test(pw)) { errEl.textContent = 'Password does not meet requirements.'; return; }
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  const { error } = await sb.auth.updateUser({ password: pw });
+
+  btn.disabled = false;
+  btn.textContent = 'Save & sign in';
+
+  if (error) {
+    errEl.textContent = error.message || 'Could not update password.';
+    return;
+  }
+
+  // Supabase keeps the user signed in after updateUser — drop them into the app
+  await enterApp();
+}
+
+// On page load: check if URL indicates a password-recovery or invite flow.
+// Supabase typically uses hash-based tokens (#access_token=...&type=recovery),
+// but we also detect query-param variants just in case.
+function detectRecoveryFlow() {
+  const hash = window.location.hash || '';
+  const search = window.location.search || '';
+  const combined = hash + ' ' + search;
+  return /type=recovery|type=invite/.test(combined);
+}
+
 document.addEventListener('DOMContentLoaded', async function() {
   initCellTooltips();
+
+  // Listen for recovery/invite auth events from Supabase
+  // When a user clicks a recovery or invite link, Supabase parses the URL hash and
+  // fires a 'PASSWORD_RECOVERY' event. We intercept it to show the set-password view
+  // instead of dropping the user into the app with a partially authenticated session.
+  let recoveryMode = detectRecoveryFlow();
+
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      recoveryMode = true;
+      // Show login screen (in case app had already been loaded) and switch to setpass
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.querySelector('.header')?.style && (document.querySelector('.header').style.display = 'none');
+      showLoginView('setpass');
+      // Tailor the title for recovery vs invite
+      const hash = window.location.hash || '';
+      if (hash.includes('type=invite')) {
+        document.getElementById('setpassTitle').textContent = 'WELCOME';
+        document.getElementById('setpassSub').textContent = 'Choose a password to activate your account.';
+      } else {
+        document.getElementById('setpassTitle').textContent = 'NEW PASSWORD';
+        document.getElementById('setpassSub').textContent = 'Choose a new password for your account.';
+      }
+    }
+  });
+
+  // Allow Supabase a moment to parse the URL hash and fire the event
+  await new Promise(r => setTimeout(r, 100));
+
   const { data: { session } } = await sb.auth.getSession();
+
+  if (recoveryMode) {
+    // Don't auto-enter the app when user came here via recovery/invite link
+    document.getElementById('loginScreen').style.display = 'flex';
+    showLoginView('setpass');
+    console.log('✅ Recovery/invite flow detected');
+    return;
+  }
+
   if (session) {
-    // Already logged in — go straight to app
     await enterApp();
   }
-  // Otherwise login screen stays visible (default HTML state)
+
   console.log('✅ Leads manager ready');
 });
 
@@ -2210,8 +3575,8 @@ function renderTable() {
       <td style="text-align: center; color: ${lead.followUp && lead.followUp !== '—' ? 'var(--success)' : 'var(--text-tertiary)'};">${lead.followUp || '—'}</td>
       <td style="text-align: center; color: ${lead.closed && lead.closed !== '—' ? 'var(--error)' : 'var(--text-tertiary)'};">${lead.closed || '—'}</td>
       <td style="text-align: center; color: ${lead.settleOk === 'Yes' ? 'var(--success)' : lead.settleOk === 'TBD' ? 'var(--warning)' : 'var(--text-tertiary)'};">${lead.settleOk || '—'}</td>
-      <td style="font-weight: 500; font-size: 11px;">${lead.assignedAgency || '—'}</td>
-      <td style="font-size: 11px;">${lead.assignedAgent || '—'}</td>
+      <td style="font-weight: 500; font-size: 11px;">${escapeHtml(agencyName(lead.assignedAgency))}</td>
+      <td style="font-size: 11px;">${escapeHtml(agentName(lead.assignedAgent))}</td>
     </tr>
   `}).join('');
 }
@@ -2295,7 +3660,8 @@ function matchesSearch(lead) {
   if (!currentSearch) return true;
   const haystack = [
     lead.name, lead.email, lead.mobile, lead.leadMessage,
-    lead.pocComments, lead.suburbPostcode, lead.assignedAgent, lead.assignedAgency
+    lead.pocComments, lead.suburbPostcode,
+    agentName(lead.assignedAgent), agencyName(lead.assignedAgency)
   ].map(v => (v || '').toLowerCase()).join(' ');
   return haystack.includes(currentSearch);
 }
@@ -2391,30 +3757,56 @@ function parseLastComment(pocComments) {
 function parseAllComments(pocComments) {
   if (!pocComments || !pocComments.trim()) return [];
 
-  // JSON array path
+  // If the WHOLE string is a JSON array, use it directly
   try {
     const arr = JSON.parse(pocComments);
     if (Array.isArray(arr)) {
       return arr.map(e => {
         const ds = (e.ts || '').split(' ')[0];
-        return { displayDate: formatShortDate(ds) || ds, text: e.text || '' };
+        return { displayDate: formatShortDate(ds) || ds || '—', text: e.text || '' };
       });
     }
-  } catch (e) { /* not JSON */ }
+  } catch (e) { /* fall through to line-by-line */ }
 
-  // Plain text: split on lines, parse each
+  // Otherwise parse line-by-line. Each line can independently be:
+  //   - a JSON array (legacy import block)
+  //   - a plain text line with [DD-MM-YY] stamp
+  //   - a bare plain text line (no stamp)
+  const entries = [];
   const lines = pocComments.split('\n').filter(l => l.trim().length > 0);
-  return lines.map(line => {
-    // Match [DD-MM-YY] or [DD-MM-YYYY] optionally followed by HH:MM, optional author before colon
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    // 1) JSON array inline? e.g. [{"ts":"Imported",...}]
+    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+      try {
+        const arr = JSON.parse(trimmed);
+        if (Array.isArray(arr)) {
+          arr.forEach(e => {
+            const ds = (e.ts || '').split(' ')[0];
+            entries.push({ displayDate: formatShortDate(ds) || ds || '—', text: e.text || '' });
+          });
+          continue;
+        }
+      } catch (e) { /* not JSON, treat as plain */ }
+    }
+
+    // 2) Stamped plain line: [DD-MM-YY] or [DD-MM-YYYY] optionally HH:MM, optional author
     const m = line.match(/^\[(\d{1,2})-(\d{1,2})-(\d{2,4})(?:\s+\d{1,2}:\d{1,2})?\]\s*(?:[\w@.]+:\s*)?(.+)$/);
     if (m) {
       const [, d, mo, y, text] = m;
       const fullYear = y.length === 2 ? '20' + y : y;
       const dateStr = `${d.padStart(2,'0')}-${mo.padStart(2,'0')}-${fullYear}`;
-      return { displayDate: formatShortDate(dateStr), text };
+      entries.push({ displayDate: formatShortDate(dateStr), text });
+      continue;
     }
-    return { displayDate: '', text: line };
-  });
+
+    // 3) Bare line with no stamp
+    entries.push({ displayDate: '—', text: line });
+  }
+
+  return entries;
 }
 
 // ─── Comments modal ────────────────────────────────
@@ -3041,8 +4433,8 @@ function buildCardHTML(lead) {
       </div>
 
       <div class="lc-pane" data-pane="assignment">
-        ${rowHtml('Agency', escapeHtml(lead.assignedAgency || '—'))}
-        ${rowHtml('Agent',  escapeHtml(lead.assignedAgent  || '—'))}
+        ${rowHtml('Agency', escapeHtml(agencyName(lead.assignedAgency)))}
+        ${rowHtml('Agent',  escapeHtml(agentName(lead.assignedAgent)))}
       </div>
     </div>
 
