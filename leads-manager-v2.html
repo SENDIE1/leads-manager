@@ -972,6 +972,10 @@ input, textarea, select, button {
   align-items: center;
   z-index: 5;
 }
+/* Mobile: push header actions below iOS safe-area (status bar / notch) so they stay tappable */
+@media (max-width: 899px) {
+  .lc-header-actions { top: calc(12px + env(safe-area-inset-top, 0px)); right: calc(12px + env(safe-area-inset-right, 0px)); }
+}
 .lc-close, .lc-header-action {
   background: rgba(255, 255, 255, 0.15);
   border: none;
@@ -1020,7 +1024,26 @@ input, textarea, select, button {
   background: linear-gradient(to bottom, #000d35 0%, var(--brand-blue) 100%);
   color: #ffffff;
 }
+/* Mobile: respect iOS safe-area so status bar / Dynamic Island doesn't overlap the header */
+@media (max-width: 899px) {
+  .lc-header {
+    padding-top: calc(20px + env(safe-area-inset-top, 0px));
+    padding-left: calc(20px + env(safe-area-inset-left, 0px));
+    padding-right: calc(20px + env(safe-area-inset-right, 0px));
+  }
+}
 .lc-header-row { display: flex; gap: 12px; align-items: flex-start; padding-right: 150px; }
+/* Mobile: allow wrap and drop the right-padding (actions still absolute, just give name-block full width,
+   pills sit below). Reserves ~48px at top for the absolute header actions. */
+@media (max-width: 899px) {
+  .lc-header-row {
+    flex-wrap: wrap;
+    padding-right: 0;
+    padding-top: 36px;
+  }
+  .lc-name-block { flex: 1 1 100%; min-width: 0; }
+  .lc-pills { flex-direction: row; align-items: center; flex: 1 1 100%; margin-top: 10px; }
+}
 .lc-avatar {
   width: 44px; height: 44px; border-radius: 50%;
   background: rgba(255, 255, 255, 0.15); color: #ffffff;
