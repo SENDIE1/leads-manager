@@ -71,7 +71,7 @@ body {
   background: var(--bg-secondary);
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -1638,6 +1638,22 @@ input, textarea, select, button {
   gap: 16px;
 }
 
+/* On small screens, stack form fields in a single column. Two-column at 393px
+   makes each field ~165px wide which is too narrow for date or full-name inputs. */
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  /* iOS Safari auto-zooms when an input <16px gains focus. Bumping to 16px on
+     mobile prevents that jarring zoom-and-recentre behaviour. */
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    font-size: 16px;
+  }
+}
+
 .form-field {
   display: flex;
   flex-direction: column;
@@ -1947,7 +1963,13 @@ input, textarea, select, button {
 }
 
 
-.mobile-view { display: none; flex-direction: column; height: 100vh; background: #f1f5f9; }
+/* The mobile-view fills the body, which is already constrained to 100dvh.
+   We deliberately do NOT set height: 100dvh here. iOS Safari has a layout quirk
+   when both a flex parent and its column-direction child specify height: 100dvh —
+   the child's leading content (the navy header) gets cropped off the top of
+   the visible area. iOS Chrome handles it fine, but we want consistent behaviour.
+   `flex: 1` makes the mobile-view fill the body's available height naturally. */
+.mobile-view { display: none; flex-direction: column; flex: 1; min-height: 0; background: #f1f5f9; }
 
 .mv-header {
   background: #002675;
@@ -3294,6 +3316,11 @@ input, textarea, select, button {
 @media (max-width: 768px) {
   .header { display: none; }
   .main-content { display: none; }
+  /* The desktop unassigned banner is a body-level sibling of the mobile-view.
+     If we let it render on mobile too, it eats vertical space at the top and
+     pushes the mobile-view's navy header out of view. The mobile-view has its
+     own banner (#mvUnassignedBanner) inside it, so suppress this one entirely. */
+  #unassignedBanner { display: none !important; }
   .mobile-view { display: flex; }
 }
 
