@@ -1911,6 +1911,35 @@ input, textarea, select, button {
   white-space: nowrap;
 }
 
+/* Active filter summary bar — appears below the search/filter UI when one or more
+   filters are active. Hidden completely when no filters are active. */
+.filter-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  margin: 0 0 8px;
+  background: #f8fafc;
+  border: 0.5px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #475569;
+}
+.filter-summary strong { color: var(--brand-blue); font-weight: 600; }
+.filter-summary-clear {
+  background: transparent; border: 0; color: #dc2626;
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; padding: 4px 10px; border-radius: 4px;
+  font-family: inherit;
+}
+.filter-summary-clear:hover { background: #fee2e2; }
+@media (max-width: 768px) {
+  /* Mobile uses a different filter UI with its own summary placement.
+     This desktop-style bar is hidden on mobile via the column layout. */
+  .filter-summary { font-size: 12px; padding: 7px 12px; gap: 8px; }
+  .filter-summary-text { line-height: 1.4; }
+}
+
 .mv-search {
   background: white;
   padding: 10px 14px 6px;
@@ -1996,12 +2025,88 @@ input, textarea, select, button {
 .mv-chip[data-filter="hot"].active { background: #fef2f2; color: #dc2626; }
 .mv-chip[data-filter="warm"].active { background: #fef3c7; color: #d97706; }
 .mv-chip[data-filter="cold"].active { background: #f0f9ff; color: #2563eb; }
+.mv-chip[data-filter="noact"].active { background: #f1f5f9; color: #475569; }
+.mv-chip[data-filter="callback"].active { background: #ecfdf5; color: #047857; }
+.mv-chip[data-filter="noAgency"].active { background: #faf5ff; color: #7c3aed; }
+.mv-chip[data-filter="noAgent"].active { background: #faf5ff; color: #7c3aed; }
+
+/* Mobile active-filter summary bar — sits between the chip row and the list.
+   Same data as the desktop summary, restyled compact for the mobile layout. */
+.mv-filter-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #f8fafc;
+  border-bottom: 0.5px solid #e2e8f0;
+  font-size: 11px;
+  color: #475569;
+  flex-shrink: 0;
+}
+.mv-filter-summary .mv-filter-summary-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mv-filter-summary strong {
+  color: var(--brand-blue, #002675);
+  font-weight: 600;
+}
+.mv-filter-summary-clear {
+  background: transparent;
+  border: 0;
+  color: #dc2626;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+.mv-filter-summary-clear:hover { background: #fee2e2; }
 
 .mv-list {
   padding: 10px;
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Floating action button — fixed at bottom-right of the mobile view.
+   `position: fixed` keeps it visible while the list scrolls. The
+   bottom offset accounts for iOS Safari's home-indicator safe-area. */
+.mv-fab {
+  position: fixed;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--brand-blue, #002675);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 38, 117, 0.4);
+  cursor: pointer;
+  display: none;  /* shown only when mobile-view is visible (see mobile media query) */
+  align-items: center;
+  justify-content: center;
+  z-index: 90;  /* above list rows but below modals (modals use z-index 1000+) */
+  transition: transform 0.12s, box-shadow 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.mv-fab:hover { background: var(--brand-blue-dark, #001a55); }
+.mv-fab:active {
+  transform: scale(0.94);
+  box-shadow: 0 2px 8px rgba(0, 38, 117, 0.4);
+}
+.mv-fab svg { width: 28px; height: 28px; }
+@media (max-width: 768px) {
+  /* Show the FAB only inside the mobile view */
+  .mobile-view .mv-fab { display: flex; }
 }
 /* Swipe-to-delete wrapper: positions card above a red delete action.
    The card slides left on touch to reveal the action underneath. */
@@ -3446,6 +3551,15 @@ input, textarea, select, button {
     <span id="searchResult" class="search-result"></span>
   </div>
 
+  <!-- Active filter summary — visible only when one or more filters are active -->
+  <div id="filterSummary" class="filter-summary" style="display: none;">
+    <span class="filter-summary-text">
+      Showing <strong id="filterSummaryCount">0</strong> of <strong id="filterSummaryTotal">0</strong> leads ·
+      Filtering by <strong id="filterSummaryWhat"></strong>
+    </span>
+    <button class="filter-summary-clear" onclick="clearAllFilters()">Clear filters</button>
+  </div>
+
   <!-- Bulk actions bar — appears when rows are selected -->
   <div id="bulkActionsBar" style="display: none; align-items: center; gap: 12px; padding: 8px 16px; margin: 0 0 8px; background: #eff6ff; border: 0.5px solid #bfdbfe; border-radius: 8px; font-size: 13px;">
     <span style="font-weight: 500; color: #1e40af;"><span id="bulkSelCount">0</span> selected</span>
@@ -3551,6 +3665,16 @@ input, textarea, select, button {
       </div>
     </div>
   </div>
+
+  <!-- Mobile unassigned banner (admin/agency only). Mirrors the desktop banner above .main-content. -->
+  <div id="mvUnassignedBanner" style="display: none; align-items: center; gap: 8px; padding: 8px 12px; background: #fef7ed; border-bottom: 0.5px solid #fed7aa; color: #9a3412; font-size: 12px; flex-shrink: 0;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c2410c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+    <span style="font-weight: 500;" id="mvUnassignedBannerCount"></span>
+    <span id="mvUnassignedBannerMessage" style="flex: 1; min-width: 0;"></span>
+    <button onclick="bannerGoToUnassigned()" style="padding: 4px 10px; background: #c2410c; color: white; border: none; border-radius: 4px; font-size: 11px; font-weight: 500; cursor: pointer; flex-shrink: 0;">Assign</button>
+    <button onclick="hideUnassignedBanner()" title="Dismiss" aria-label="Dismiss" style="padding: 2px 8px; background: transparent; border: 0.5px solid #fed7aa; border-radius: 4px; color: #9a3412; cursor: pointer; font-size: 14px; line-height: 1; flex-shrink: 0;">×</button>
+  </div>
+
   <div class="mv-search">
     <div class="mv-search-wrap">
       <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -3566,8 +3690,31 @@ input, textarea, select, button {
     <button class="mv-chip" data-filter="cold" onclick="setMobileFilter('cold')"><span class="mv-chip-dot" style="background: #2563eb;"></span>❄️ 12 wks <span id="mvColdCountChip">0</span></button>
     <button class="mv-chip" data-filter="noact" onclick="setMobileFilter('noact')"><span class="mv-chip-dot" style="background: transparent; border: 1.5px dashed #cbd5e1;"></span>No activity <span id="mvNoactCountChip">0</span></button>
     <button class="mv-chip" data-filter="callback" onclick="setMobileFilter('callback')"><span class="mv-chip-dot" style="background: #10b981;"></span>Call back <span id="mvCallbackCountChip">0</span></button>
+    <!-- Role-conditional admin/agency chips. Visibility set in syncRoleVisibility() at login. -->
+    <button class="mv-chip" id="mvFilterChip-noAgency" data-filter="noAgency" onclick="setMobileFilter('noAgency')" style="display: none;"><span class="mv-chip-dot" style="background: #7c3aed;"></span>No agency <span id="mvNoAgencyCountChip">0</span></button>
+    <button class="mv-chip" id="mvFilterChip-noAgent" data-filter="noAgent" onclick="setMobileFilter('noAgent')" style="display: none;"><span class="mv-chip-dot" style="background: #7c3aed;"></span>No agent <span id="mvNoAgentCountChip">0</span></button>
   </div>
+
+  <!-- Mobile filter summary — appears when one or more filters are active. Same content as the
+       desktop summary, restyled for the cramped mobile layout. -->
+  <div id="mvFilterSummary" class="mv-filter-summary" style="display: none;">
+    <span class="mv-filter-summary-text">
+      <strong id="mvFilterSummaryCount">0</strong> of <strong id="mvFilterSummaryTotal">0</strong> ·
+      <span id="mvFilterSummaryWhat"></span>
+    </span>
+    <button class="mv-filter-summary-clear" onclick="clearAllFilters()">Clear</button>
+  </div>
+
   <div class="mv-list" id="mobileListContainer"></div>
+
+  <!-- Floating action button — fixed at bottom-right of the mobile view.
+       Always visible while scrolling. Tapping opens the New Lead drawer. -->
+  <button class="mv-fab" onclick="openNewLead()" aria-label="Add new lead" title="Add new lead">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+  </button>
 </div>
 
 <!-- Admin pages (opened from gear menu, hidden otherwise) -->
@@ -4214,20 +4361,29 @@ function showUnassignedBanner() {
   const banner = document.getElementById('unassignedBanner');
   const countEl = document.getElementById('unassignedBannerCount');
   const msgEl = document.getElementById('unassignedBannerMessage');
-  if (!banner || !countEl || !msgEl) return;
+  const mvBanner = document.getElementById('mvUnassignedBanner');
+  const mvCountEl = document.getElementById('mvUnassignedBannerCount');
+  const mvMsgEl = document.getElementById('mvUnassignedBannerMessage');
 
-  countEl.textContent = count;
-  msgEl.textContent = count === 1
+  const message = count === 1
     ? '1 lead needs assignment.'
     : `${count} leads need assignment.`;
 
-  banner.style.display = 'flex';
+  if (countEl) countEl.textContent = count;
+  if (msgEl) msgEl.textContent = message;
+  if (banner) banner.style.display = 'flex';
+
+  if (mvCountEl) mvCountEl.textContent = count;
+  if (mvMsgEl) mvMsgEl.textContent = message;
+  if (mvBanner) mvBanner.style.display = 'flex';
 }
 
 function hideUnassignedBanner() {
   unassignedBannerDismissed = true;
   const banner = document.getElementById('unassignedBanner');
+  const mvBanner = document.getElementById('mvUnassignedBanner');
   if (banner) banner.style.display = 'none';
+  if (mvBanner) mvBanner.style.display = 'none';
 }
 
 function bannerGoToUnassigned() {
@@ -4467,6 +4623,9 @@ function showGearForRole() {
   // Main-table filter chips — admin gets both, agency gets noAgent only
   show('filterChip-noAgency', isAdmin);
   show('filterChip-noAgent', isAdmin || isAgency);
+  // Mobile equivalents
+  show('mvFilterChip-noAgency', isAdmin);
+  show('mvFilterChip-noAgent', isAdmin || isAgency);
 }
 
 function toggleGearMenu(e) {
@@ -7094,8 +7253,11 @@ function renderTable() {
   const tableWrap = document.getElementById('mainTableWrapper');
   const cbView = document.getElementById('callbackView');
 
-  // If the Call back filter is active, show the dedicated card-list view
-  if (currentFilter === 'callback') {
+  // Show the dedicated card-list view only when "Call back" is the ONLY active filter.
+  // (When combined with other filters, fall through to the normal table so the
+  // combination is visible.)
+  const isCallbackSolo = activeFilters.size === 1 && activeFilters.has('callback');
+  if (isCallbackSolo) {
     if (tableWrap) tableWrap.style.display = 'none';
     if (cbView) cbView.style.display = 'block';
     renderCallbackView();
@@ -7105,30 +7267,7 @@ function renderTable() {
   if (tableWrap) tableWrap.style.display = '';
   if (cbView) cbView.style.display = 'none';
 
-  let rows;
-  if (currentFilter === 'all') {
-    rows = [...leadsData];
-  } else if (currentFilter === 'noact') {
-    rows = leadsData.filter(l => !l.pocComments || !l.pocComments.trim());
-  } else if (currentFilter === 'noAgency') {
-    rows = leadsData.filter(l => !l.assignedAgency || l.assignedAgency === '—');
-  } else if (currentFilter === 'noAgent') {
-    // Agency: scoped to their own agency. Admin: any lead with agency but no agent.
-    if (me?.role === 'agency') {
-      rows = leadsData.filter(l => l.assignedAgency === me.agencyId && (!l.assignedAgent || l.assignedAgent === '—'));
-    } else {
-      rows = leadsData.filter(l => l.assignedAgency && l.assignedAgency !== '—' && (!l.assignedAgent || l.assignedAgent === '—'));
-    }
-  } else if (currentFilter === 'unassigned') {
-    // Combined — admin view of everything needing attention (no agency OR no agent)
-    rows = leadsData.filter(l => {
-      const noAgency = !l.assignedAgency || l.assignedAgency === '—';
-      const noAgent = !l.assignedAgent || l.assignedAgent === '—';
-      return noAgency || noAgent;
-    });
-  } else {
-    rows = leadsData.filter(l => l.hotWarmStatus === currentFilter);
-  }
+  let rows = leadsData.filter(matchesActiveFilters);
 
   if (currentSearch) rows = rows.filter(matchesSearch);
 
@@ -7205,9 +7344,9 @@ function renderTable() {
   syncBulkActionsBar();
 }
 
-// Render the agency cell — editable when the admin is viewing the "No agency" or combined filter
+// Render the agency cell — editable when the admin has the "No agency" or combined filter active
 function renderAgencyCell(lead) {
-  const isEditableFilter = (currentFilter === 'noAgency' || currentFilter === 'unassigned') && me?.role === 'admin';
+  const isEditableFilter = (activeFilters.has('noAgency') || activeFilters.has('unassigned')) && me?.role === 'admin';
   const hasNoAgency = !lead.assignedAgency || lead.assignedAgency === '—';
   if (isEditableFilter && hasNoAgency) {
     const agenciesList = Object.values(agencyById || {}).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
@@ -7223,7 +7362,7 @@ function renderAgencyCell(lead) {
 
 // Render the agent cell — editable when "No agent" or combined filter is active AND the lead has an agency
 function renderAgentCell(lead) {
-  const isEditableFilter = currentFilter === 'noAgent' || currentFilter === 'unassigned';
+  const isEditableFilter = activeFilters.has('noAgent') || activeFilters.has('unassigned');
   const hasAgency = lead.assignedAgency && lead.assignedAgency !== '—';
   const hasNoAgent = !lead.assignedAgent || lead.assignedAgent === '—';
   if (isEditableFilter && hasAgency && hasNoAgent) {
@@ -7494,48 +7633,65 @@ async function submitBulkAssign() {
   }
 }
 
-// Update counts
+// Update pill counts.
+//   - ACTIVE pill:   shows the intrinsic count for that filter alone (within the
+//                    current search, ignoring other active filters). Tells you
+//                    "this many leads match this property" — stable, unambiguous.
+//   - INACTIVE pill: shows the predictive count — what the result would be if
+//                    you ADDED this filter to the current set. Tells you
+//                    "click this and you'll see this many leads".
 function updateCounts() {
-  const hot = leadsData.filter(l => l.hotWarmStatus === 'hot').length;
-  const warm = leadsData.filter(l => l.hotWarmStatus === 'warm').length;
-  const cold = leadsData.filter(l => l.hotWarmStatus === 'cold').length;
-  const noact = leadsData.filter(l => !l.pocComments || !l.pocComments.trim()).length;
-  const callback = leadsData.filter(l => l.callbackAt).length;
-  const total = leadsData.length;
+  // Apply search to the universe first — pill counts reflect visible-after-search reality.
+  const universe = currentSearch ? leadsData.filter(matchesSearch) : leadsData;
+  const total = universe.length;
 
-  // Unassigned counts — scoped by role
-  const noAgency = leadsData.filter(l => !l.assignedAgency || l.assignedAgency === '—').length;
-  let noAgent;
-  if (me?.role === 'agency') {
-    noAgent = leadsData.filter(l =>
-      l.assignedAgency === me.agencyId &&
-      (!l.assignedAgent || l.assignedAgent === '—')
-    ).length;
-  } else {
-    noAgent = leadsData.filter(l =>
-      l.assignedAgency && l.assignedAgency !== '—' &&
-      (!l.assignedAgent || l.assignedAgent === '—')
-    ).length;
-  }
+  // Helper: count leads matching a hypothetical filter set (pure AND).
+  const countWith = (filterSet) => {
+    if (filterSet.size === 0) return universe.length;
+    return universe.filter(lead => {
+      for (const f of filterSet) {
+        if (!leadMatchesFilter(lead, f)) return false;
+      }
+      return true;
+    }).length;
+  };
 
-  // Desktop counts
+  // For each chip:
+  //   - If active: count of leads matching JUST this filter (under current search)
+  //   - If inactive: count of leads matching (current activeFilters + this one)
+  const countFor = (key) => {
+    if (key === 'all') return universe.length;
+    if (activeFilters.has(key)) {
+      // Intrinsic count — ignore other active filters
+      return universe.filter(lead => leadMatchesFilter(lead, key)).length;
+    }
+    // Predictive — current filters PLUS this one
+    const next = new Set(activeFilters);
+    next.add(key);
+    return countWith(next);
+  };
+
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  set('allCount', total);
-  set('hotCount', hot);
-  set('warmCount', warm);
-  set('coldCount', cold);
-  set('noactCount', noact);
-  set('callbackCount', callback);
-  set('noAgencyCount', noAgency);
-  set('noAgentCount', noAgent);
 
-  // Mobile chip counts
+  // Desktop pill counts
+  set('allCount', total);
+  set('hotCount', countFor('hot'));
+  set('warmCount', countFor('warm'));
+  set('coldCount', countFor('cold'));
+  set('noactCount', countFor('noact'));
+  set('callbackCount', countFor('callback'));
+  set('noAgencyCount', countFor('noAgency'));
+  set('noAgentCount', countFor('noAgent'));
+
+  // Mobile chip counts (mobile uses same predictive rule — same chips)
   set('mvAllCount', total);
-  set('mvHotCountChip', hot);
-  set('mvWarmCountChip', warm);
-  set('mvColdCountChip', cold);
-  set('mvNoactCountChip', noact);
-  set('mvCallbackCountChip', callback);
+  set('mvHotCountChip', countFor('hot'));
+  set('mvWarmCountChip', countFor('warm'));
+  set('mvColdCountChip', countFor('cold'));
+  set('mvNoactCountChip', countFor('noact'));
+  set('mvCallbackCountChip', countFor('callback'));
+  set('mvNoAgencyCountChip', countFor('noAgency'));
+  set('mvNoAgentCountChip', countFor('noAgent'));
 
   // Mobile header (label + count reflects current filter)
   updateMobileHeader();
@@ -7543,18 +7699,122 @@ function updateCounts() {
 
 // ─── Desktop filter ────────────────────────────────
 // Shared filter state — desktop and mobile stay in sync
-let currentFilter = 'all';
+// Multi-select filter state. Replaces the older single-string currentFilter.
+//
+// Rule: every active filter must pass (pure AND). Empty Set = no filtering.
+// Within ready-to-buy (hot/warm/cold/noact), filters are mutually exclusive on
+// the data, so combining them yields zero results — by design, this is honest.
+let activeFilters = new Set();
 let currentSearch = '';
+
+// Returns true if a lead passes ALL active filters (pure AND across all chips).
+function matchesActiveFilters(lead) {
+  if (activeFilters.size === 0) return true;
+  for (const f of activeFilters) {
+    if (!leadMatchesFilter(lead, f)) return false;
+  }
+  return true;
+}
+
+// Single-filter matcher — returns true if lead matches this one filter key
+function leadMatchesFilter(lead, f) {
+  if (f === 'hot' || f === 'warm' || f === 'cold') {
+    return lead.hotWarmStatus === f;
+  }
+  if (f === 'noact') {
+    return !lead.pocComments || !lead.pocComments.trim();
+  }
+  if (f === 'callback') {
+    return !!lead.callbackAt;
+  }
+  if (f === 'noAgency') {
+    return !lead.assignedAgency || lead.assignedAgency === '—';
+  }
+  if (f === 'noAgent') {
+    if (me?.role === 'agency') {
+      return lead.assignedAgency === me.agencyId && (!lead.assignedAgent || lead.assignedAgent === '—');
+    }
+    return lead.assignedAgency && lead.assignedAgency !== '—' && (!lead.assignedAgent || lead.assignedAgent === '—');
+  }
+  if (f === 'unassigned') {
+    const noAgency = !lead.assignedAgency || lead.assignedAgency === '—';
+    const noAgent = !lead.assignedAgent || lead.assignedAgent === '—';
+    return noAgency || noAgent;
+  }
+  return true;
+}
 
 function setDesktopFilter(filter) {
   // If an admin page is open, close it first so the user can see the filtered table
   if (currentAdminPage) closeAdminPage();
-  // Toggle: clicking the currently-active filter clears it back to 'all'
-  currentFilter = (currentFilter === filter && filter !== 'all') ? 'all' : filter;
+  toggleFilter(filter);
+}
+
+// Toggle one filter in/out of the active set. The "all" chip is a special clear-all.
+function toggleFilter(filter) {
+  if (filter === 'all') {
+    activeFilters.clear();
+  } else if (activeFilters.has(filter)) {
+    activeFilters.delete(filter);
+  } else {
+    activeFilters.add(filter);
+  }
   syncFilterUI();
   renderTable();
   renderMobileList();
   updateMobileHeader();
+  updateCounts();
+  updateFilterSummary();
+}
+
+function clearAllFilters() {
+  activeFilters.clear();
+  syncFilterUI();
+  renderTable();
+  renderMobileList();
+  updateMobileHeader();
+  updateCounts();
+  updateFilterSummary();
+}
+
+// Show/hide and populate the "Showing X of Y leads · Filtering by …" bar.
+// Hidden completely when no filters are active. Mirrored to mobile.
+function updateFilterSummary() {
+  const bar = document.getElementById('filterSummary');
+  const mvBar = document.getElementById('mvFilterSummary');
+  const isHidden = activeFilters.size === 0;
+  if (bar) bar.style.display = isHidden ? 'none' : 'flex';
+  if (mvBar) mvBar.style.display = isHidden ? 'none' : 'flex';
+  if (isHidden) return;
+
+  const labels = {
+    hot: 'Hot',
+    warm: 'Warm',
+    cold: 'Cold',
+    noact: 'No activity',
+    callback: 'Call back',
+    noAgency: 'No agency',
+    noAgent: 'No agent',
+    unassigned: 'Unassigned'
+  };
+
+  // All filters AND together — join their labels with " + " for display.
+  const parts = [...activeFilters].map(f => labels[f] || f);
+  const whatText = parts.join(' + ');
+  const whatEl = document.getElementById('filterSummaryWhat');
+  const mvWhatEl = document.getElementById('mvFilterSummaryWhat');
+  if (whatEl) whatEl.textContent = whatText;
+  if (mvWhatEl) mvWhatEl.textContent = whatText;
+
+  // Counts
+  let pool = leadsData.filter(matchesActiveFilters);
+  if (currentSearch) pool = pool.filter(matchesSearch);
+  const total = leadsData.length;
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('filterSummaryCount', pool.length);
+  set('filterSummaryTotal', total);
+  set('mvFilterSummaryCount', pool.length);
+  set('mvFilterSummaryTotal', total);
 }
 
 // ─── Search ────────────────────────────────────────
@@ -7567,6 +7827,8 @@ function setSearch(value) {
   renderMobileList();
   updateMobileHeader();
   updateSearchResultLabel();
+  updateCounts();
+  updateFilterSummary();
 }
 
 function clearSearch() {
@@ -7580,6 +7842,8 @@ function clearSearch() {
   renderMobileList();
   updateMobileHeader();
   updateSearchResultLabel();
+  updateCounts();
+  updateFilterSummary();
 }
 
 function syncSearchUI() {
@@ -7619,43 +7883,57 @@ function updateMobileHeader() {
   const countEl = document.getElementById('mvTotalCount');
   if (!labelEl || !countEl) return;
 
+  // Build a label from the active filter set
   const labels = {
-    all: 'All leads',
-    hot: 'Hot leads',
-    warm: 'Warm leads',
-    cold: 'Cold leads',
+    hot: 'Hot',
+    warm: 'Warm',
+    cold: 'Cold',
     noact: 'No activity',
-    callback: 'Call backs'
+    callback: 'Call back',
+    noAgency: 'No agency',
+    noAgent: 'No agent',
+    unassigned: 'Unassigned'
   };
-  labelEl.textContent = labels[currentFilter] || 'All leads';
 
-  let pool;
-  if (currentFilter === 'all') pool = leadsData;
-  else if (currentFilter === 'noact') pool = leadsData.filter(l => !l.pocComments || !l.pocComments.trim());
-  else if (currentFilter === 'callback') pool = leadsData.filter(l => l.callbackAt);
-  else pool = leadsData.filter(l => l.hotWarmStatus === currentFilter);
+  if (activeFilters.size === 0) {
+    labelEl.textContent = 'All leads';
+  } else if (activeFilters.size === 1) {
+    const f = [...activeFilters][0];
+    labelEl.textContent = (labels[f] || 'Filtered') + ' leads';
+  } else {
+    labelEl.textContent = activeFilters.size + ' filters active';
+  }
 
+  let pool = leadsData.filter(matchesActiveFilters);
   if (currentSearch) pool = pool.filter(matchesSearch);
   countEl.textContent = pool.length;
 }
 
 // ─── Mobile list view ──────────────────────────────
 function setMobileFilter(filter) {
-  // Toggle: tapping the currently-active chip clears it back to 'all'
-  currentFilter = (currentFilter === filter && filter !== 'all') ? 'all' : filter;
-  syncFilterUI();
-  updateMobileHeader();
-  renderMobileList();
-  renderTable();
+  toggleFilter(filter);
 }
 
-// Keep both sets of filter UI (desktop pills + mobile chips) visually in sync
+// Keep both sets of filter UI (desktop pills + mobile chips) visually in sync.
+// "All" chip is active when no specific filters are set; specific chips are active
+// when their key is in activeFilters.
 function syncFilterUI() {
+  const isAllActive = activeFilters.size === 0;
   document.querySelectorAll('.stat-pill').forEach(p => {
-    p.classList.toggle('active', p.dataset.filter === currentFilter);
+    const f = p.dataset.filter;
+    if (f === 'all') {
+      p.classList.toggle('active', isAllActive);
+    } else {
+      p.classList.toggle('active', activeFilters.has(f));
+    }
   });
   document.querySelectorAll('.mv-chip').forEach(c => {
-    c.classList.toggle('active', c.dataset.filter === currentFilter);
+    const f = c.dataset.filter;
+    if (f === 'all') {
+      c.classList.toggle('active', isAllActive);
+    } else {
+      c.classList.toggle('active', activeFilters.has(f));
+    }
   });
 }
 
@@ -8109,7 +8387,7 @@ function buildMobileCard(lead) {
   const leadDate = formatShortDate(lead.date);
   const fullName = lead.name || '';
   const hasComments = lead.pocComments && lead.pocComments.trim();
-  const isCallbackView = currentFilter === 'callback' && lead.callbackAt;
+  const isCallbackView = activeFilters.size === 1 && activeFilters.has('callback') && lead.callbackAt;
 
   let row2;
   if (isCallbackView) {
@@ -8224,24 +8502,16 @@ function renderMobileList() {
   const container = document.getElementById('mobileListContainer');
   if (!container) return;
 
-  let rows;
-  if (currentFilter === 'all') {
-    rows = [...leadsData];
-  } else if (currentFilter === 'noact') {
-    rows = leadsData.filter(l => !l.pocComments || !l.pocComments.trim());
-  } else if (currentFilter === 'callback') {
-    rows = leadsData.filter(l => l.callbackAt);
-  } else {
-    rows = leadsData.filter(l => l.hotWarmStatus === currentFilter);
-  }
+  let rows = leadsData.filter(matchesActiveFilters);
 
   if (currentSearch) rows = rows.filter(matchesSearch);
 
-  if (currentFilter === 'callback') {
-    // Soonest callback first, overdue at top
+  // When "Call back" is the only active filter, sort by soonest callback first.
+  // Otherwise, default newest-first by date.
+  const isCallbackSolo = activeFilters.size === 1 && activeFilters.has('callback');
+  if (isCallbackSolo) {
     rows.sort((a, b) => new Date(a.callbackAt).getTime() - new Date(b.callbackAt).getTime());
   } else {
-    // Newest-first. Tie-break by id (higher id = more recent insert) so same-day leads have a stable order.
     rows.sort((a, b) => {
       const diff = parseDateForSort(b.date) - parseDateForSort(a.date);
       return diff !== 0 ? diff : (b.id - a.id);
