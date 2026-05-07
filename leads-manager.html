@@ -8092,11 +8092,27 @@ function toggleCommentsExpanded(btn) {
   switchCardTab(currentTab);
 }
 
+// The lead card renders the comments block twice (once for mobile layout, once
+// for desktop layout — see buildCardHTML around lines 10333 + 10483). Both have
+// id="lc-comment-new" — invalid HTML, but a quick fix is to find whichever copy
+// is currently visible and operate on that one. Long-term: render once, reposition
+// via CSS only, OR give them unique IDs and refactor the helpers.
+function getActiveCommentTextarea() {
+  const all = document.querySelectorAll('[id="lc-comment-new"]');
+  for (const ta of all) {
+    // offsetParent is null for elements that are hidden via display:none
+    if (ta.offsetParent !== null) return ta;
+  }
+  return all[0] || null;   // fallback: nothing visible (still return one if exists)
+}
+
 // Enable/disable the post button based on whether the textarea has content
 function updateCommentPostState() {
-  const ta = document.getElementById('lc-comment-new');
-  const btn = document.querySelector('.lc-comment-post');
-  if (!ta || !btn) return;
+  const ta = getActiveCommentTextarea();
+  if (!ta) return;
+  // Find the button SIBLING of this textarea — not just any .lc-comment-post in the DOM
+  const btn = ta.parentElement.querySelector('.lc-comment-post');
+  if (!btn) return;
   btn.disabled = !ta.value.trim();
 }
 
@@ -8141,12 +8157,13 @@ function toggleStepsStrip(leadId) {
 // Submit a new comment from the in-card quick-add box.
 async function submitCardComment() {
   if (!currentViewingLead) return;
-  const ta = document.getElementById('lc-comment-new');
+  // Use the visible textarea (mobile vs desktop layout — same id rendered twice)
+  const ta = getActiveCommentTextarea();
   if (!ta) return;
   const text = ta.value.trim();
   if (!text) return;
 
-  const btn = document.querySelector('.lc-comment-post');
+  const btn = ta.parentElement.querySelector('.lc-comment-post');
   if (btn) { btn.disabled = true; btn.classList.add('sending'); }
 
   // Timestamp in DD-MM-YYYY HH:MM (24h) to match the existing comment format
