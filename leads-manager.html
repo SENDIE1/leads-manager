@@ -4246,8 +4246,8 @@ input, textarea, select, button {
 
 <script>
 // ─── Supabase setup ────────────────────────────────
-const SUPABASE_URL = 'https://qcrxkfntbqqbjpkajcvf.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjcnhrZm50YnFxYmpwa2FqY3ZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1Mzg5NTIsImV4cCI6MjA5MTExNDk1Mn0.7Tah6gqcbjfcl_jFAfJpVSLo104WXypE9-ZJikNQpxE';
+const SUPABASE_URL = 'https://uwrmnwdtldmlxsbwypbo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3cm1ud2R0bGRtbHhzYnd5cGJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxMjQyMTAsImV4cCI6MjA5MzcwMDIxMH0.4JGzdw7YKM5kDaKjCHAuBR1Dgj5c5csdC1eHNi0aDQY';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Leads data loaded from database
@@ -4457,7 +4457,7 @@ async function refreshGearBadges() {
     let delN = 0;
     try {
       const { data: { session } } = await sb.auth.getSession();
-      const r = await fetch('https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/deleted-leads', {
+      const r = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/deleted-leads', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
@@ -5310,7 +5310,7 @@ async function submitInvite() {
     }
 
     // Call invite-user edge function
-    const resp = await fetch('https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/invite-user', {
+    const resp = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/invite-user', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
@@ -5425,7 +5425,7 @@ async function submitDeactivate() {
 
   try {
     const { data: { session } } = await sb.auth.getSession();
-    const resp = await fetch('https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/deactivate-user', {
+    const resp = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/deactivate-user', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
@@ -5484,7 +5484,7 @@ async function reactivateUser(userId, displayName) {
 
   try {
     const { data: { session } } = await sb.auth.getSession();
-    const resp = await fetch('https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/reactivate-user', {
+    const resp = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/reactivate-user', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
@@ -5687,7 +5687,7 @@ async function renderDeletedPage() {
   let resp;
   try {
     const { data: { session } } = await sb.auth.getSession();
-    const r = await fetch('https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/deleted-leads', {
+    const r = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/deleted-leads', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
@@ -6065,7 +6065,7 @@ async function restoreDeletedLeads(leadIds) {
 
   try {
     const { data: { session } } = await sb.auth.getSession();
-    const r = await fetch('https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/deleted-leads', {
+    const r = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/deleted-leads', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
@@ -6121,7 +6121,7 @@ async function hardDeleteConfirm(leadIds) {
 
   try {
     const { data: { session } } = await sb.auth.getSession();
-    const r = await fetch('https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/deleted-leads', {
+    const r = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/deleted-leads', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
@@ -9468,7 +9468,7 @@ async function saveLead() {
       // It enforces the 4-week lock, logs duplicate attempts, and handles
       // ownership transfer when the lock has expired.
       const { data: { session } } = await sb.auth.getSession();
-      const resp = await fetch('https://qcrxkfntbqqbjpkajcvf.supabase.co/functions/v1/submit-lead', {
+      const resp = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/submit-lead', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
