@@ -1002,6 +1002,28 @@ input, textarea, select, button {
     overflow: visible;
     flex: 1;
   }
+
+  /* Desktop card body text — match the front-page table's 12px so the card
+     doesn't look heavier than the list it sits on top of. Mobile sizes are
+     untouched (mobile media queries take precedence). The header name stays
+     14px / bold so the visual hierarchy still reads. */
+  .lead-card.desktop-layout .lc-pn,
+  .lead-card.desktop-layout input.lc-header-input.lc-pn { font-size: 14px; }
+  .lead-card.desktop-layout .lc-pnsub,
+  .lead-card.desktop-layout .lc-phone,
+  .lead-card.desktop-layout .lc-email,
+  .lead-card.desktop-layout .lc-email-empty,
+  .lead-card.desktop-layout input.lc-header-input.lc-phone,
+  .lead-card.desktop-layout input.lc-header-input.lc-email { font-size: 12px; }
+  .lead-card.desktop-layout .lc-row,
+  .lead-card.desktop-layout .lc-row-label { font-size: 12px; }
+  .lead-card.desktop-layout .lc-section-label { font-size: 12px; }
+  .lead-card.desktop-layout .lc-comments p,
+  .lead-card.desktop-layout .lc-comments-empty,
+  .lead-card.desktop-layout .lc-comments-entry,
+  .lead-card.desktop-layout .lc-comment-add textarea { font-size: 12px; }
+  .lead-card.desktop-layout .lc-inline-input,
+  .lead-card.desktop-layout .lc-inline-select { font-size: 12px; }
 }
 
 .lc-hdrctls {
@@ -1093,7 +1115,14 @@ input, textarea, select, button {
   .lc-pnblk .lc-pn,
   .lc-pnblk .lc-pnsub,
   .lc-pnblk .lc-phone,
-  .lc-pnblk .lc-email { display: block; color: #ffffff; min-width: 0; }
+  .lc-pnblk .lc-email,
+  .lc-pnblk input.lc-header-input.lc-pn,
+  .lc-pnblk input.lc-header-input.lc-phone,
+  .lc-pnblk input.lc-header-input.lc-email { display: block; color: #ffffff; min-width: 0; }
+  .lc-pnblk input.lc-header-input.lc-pn { font-size: 18px; }
+  .lc-pnblk input.lc-header-input.lc-phone { font-size: 13px; }
+  .lc-pnblk input.lc-header-input.lc-email { font-size: 13px; color: #a8c7ff; }
+  .lc-pnblk .lc-email-row { padding-right: 120px; }
   /* Name sits flush at the top, top-aligned with the Status pill.
      Reserve ~120px on the right for the pills stack. */
   .lc-pnblk .lc-pn     {
@@ -1153,6 +1182,72 @@ input, textarea, select, button {
 .lc-phone { font-size: 14px; margin: 8px 0 0; color: #ffffff; }
 .lc-email { font-size: 14px; color: #a8c7ff; margin: 2px 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
 .lc-pills { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0; }
+
+/* Inline-edit inputs in the dark card header. Look like plain text until
+   hovered/focused — same commit flow as inlineTextRow (queueEdit → Save). */
+.lc-header-input {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed transparent;
+  color: inherit;
+  font: inherit;
+  font-family: inherit;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  outline: none;
+  cursor: text;
+  border-radius: 2px;
+  transition: background-color 0.15s, border-color 0.15s;
+  box-sizing: border-box;
+}
+.lc-header-input::placeholder { color: rgba(255, 255, 255, 0.45); font-weight: 400; }
+.lc-header-input:hover { border-bottom-color: rgba(255, 255, 255, 0.3); }
+.lc-header-input:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-bottom-color: rgba(255, 255, 255, 0.6);
+}
+.lc-header-input.invalid {
+  background: rgba(220, 38, 38, 0.28);
+  border-bottom-color: #fca5a5;
+}
+input.lc-header-input.lc-pn { font-weight: 600; font-size: 16px; }
+input.lc-header-input.lc-phone { font-size: 14px; margin-top: 8px; }
+input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
+
+/* Email row: link (or empty placeholder) + small pencil edit button. */
+.lc-email-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 0;
+  min-width: 0;
+}
+.lc-email-row > .lc-email,
+.lc-email-row > .lc-email-empty,
+.lc-email-row > .lc-header-input { flex: 1; min-width: 0; margin: 0; }
+.lc-email-empty {
+  font-size: 14px;
+  color: rgba(168, 199, 255, 0.55);
+  font-style: italic;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lc-email-edit-btn {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: 0;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 11px;
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0.55;
+  transition: opacity 0.15s, background-color 0.15s;
+}
+.lc-email-edit-btn:hover { opacity: 1; background: rgba(255, 255, 255, 0.22); }
 
 /* HWC status pills - matching the front page badge colours */
 .lc-chip-hot  { background: #fef2f2; color: #dc2626; font-weight: 600; }
@@ -1257,7 +1352,7 @@ input, textarea, select, button {
 }
 .lc-comments-entry {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   font-size: 14px;
   line-height: 1.5;
   padding: 10px 0;
@@ -1323,15 +1418,15 @@ input, textarea, select, button {
 .lc-comment-post.sending { opacity: 0.7; cursor: wait; }
 .lc-comment-post svg { display: block; }
 .lc-comments-date {
-  flex-shrink: 0;
+  flex: 0 0 52px;
   color: #94a3b8;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.3px;
   white-space: nowrap;
   padding-top: 2px;
-  min-width: 48px;
+  font-variant-numeric: tabular-nums;
 }
 .lc-comments-text {
   color: #1e293b;
@@ -5049,7 +5144,7 @@ async function renderUnassignedPage() {
     const agentOpts = '<option value="">— No agent —</option>';
     return `
       <tr class="un-row" data-lead-id="${lead.id}">
-        <td class="un-date">${escapeHtml(lead.date || '—')}</td>
+        <td class="un-date">${escapeHtml(formatShortDate(lead.date))}</td>
         <td class="un-name">${escapeHtml(lead.name || '—')}</td>
         <td class="un-contact">${escapeHtml(formatMobileDisplay(lead.mobile) || lead.email || '—')}</td>
         <td>
@@ -5071,7 +5166,7 @@ async function renderUnassignedPage() {
       myAgents.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
     return `
       <tr class="un-row" data-lead-id="${lead.id}">
-        <td class="un-date">${escapeHtml(lead.date || '—')}</td>
+        <td class="un-date">${escapeHtml(formatShortDate(lead.date))}</td>
         <td class="un-name">${escapeHtml(lead.name || '—')}</td>
         <td class="un-contact">${escapeHtml(formatMobileDisplay(lead.mobile) || lead.email || '—')}</td>
         <td>
@@ -7181,7 +7276,7 @@ function renderCallbackView() {
 
     return `
       <tr class="${overdue ? 'overdue' : ''}" onclick="viewLead(${lead.id})">
-        <td class="cb-col-date">${escapeHtml(lead.date || '—')}</td>
+        <td class="cb-col-date">${escapeHtml(formatShortDate(lead.date))}</td>
         <td class="cb-col-name">${escapeHtml(lead.name || '—')}</td>
         <td class="cb-col-phone">${escapeHtml(formatMobileDisplay(lead.mobile) || '—')}</td>
         <td class="cb-col-email">${emailCell}</td>
@@ -7323,7 +7418,7 @@ function renderTable() {
     <tr onclick="viewLead(${lead.id})" style="cursor: pointer;">
       <td class="frozen-1"><input type="checkbox" class="row-cb" data-lead-id="${lead.id}" onclick="event.stopPropagation()" onchange="onRowCheckboxChange()"></td>
       <td class="frozen-2">${lead.id}</td>
-      <td class="frozen-3">${lead.date}</td>
+      <td class="frozen-3">${escapeHtml(formatShortDate(lead.date))}</td>
       <td class="frozen-4" style="font-weight: 600;">${lead.name}</td>
       <td>${escapeHtml(formatMobileDisplay(lead.mobile))}</td>
       <td style="color: var(--accent);">${lead.email}</td>
@@ -7973,15 +8068,16 @@ function formatNameCompact(fullName) {
 
 function formatShortDate(dateStr) {
   if (!dateStr || dateStr === '—') return '—';
-  const m = dateStr.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
-  if (!m) return dateStr;
-  const [, d, mo, y] = m;
+  // Accept both DD-MM-YYYY (canonical) and ISO YYYY-MM-DD (legacy data).
+  const ddmmyyyy = String(dateStr).match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+  const iso      = String(dateStr).match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  let d, mo;
+  if (ddmmyyyy)   { d = ddmmyyyy[1]; mo = ddmmyyyy[2]; }
+  else if (iso)   { d = iso[3];      mo = iso[2]; }
+  else return dateStr;
   const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const month = monthNames[parseInt(mo, 10) - 1];
-  const currentYear = new Date().getFullYear();
-  return parseInt(y, 10) === currentYear
-    ? `${parseInt(d, 10)} ${month}`
-    : `${parseInt(d, 10)} ${month} ${y}`;
+  const dd = String(parseInt(d, 10)).padStart(2, '0');
+  return `${dd}-${monthNames[parseInt(mo, 10) - 1]}`;
 }
 
 function parseDateForSort(dateStr) {
@@ -8056,9 +8152,10 @@ function renderCommentsForCard(rawComments) {
     const textHtml = paragraphs.length > 0
       ? paragraphs.map(p => `<p class="lc-comments-para">${escapeHtml(p)}</p>`).join('')
       : '<p class="lc-comments-para">&nbsp;</p>';
+    const dateLabel = e.displayDate && e.displayDate !== '—' ? escapeHtml(e.displayDate) : '';
     return `
       <li class="lc-comments-entry">
-        <span class="lc-comments-date">${escapeHtml(e.displayDate || '—')}</span>
+        <span class="lc-comments-date">${dateLabel}</span>
         <div class="lc-comments-text">${textHtml}</div>
       </li>`;
   }).join('');
@@ -8166,10 +8263,12 @@ async function submitCardComment() {
   const btn = ta.parentElement.querySelector('.lc-comment-post');
   if (btn) { btn.disabled = true; btn.classList.add('sending'); }
 
-  // Timestamp in DD-MM-YYYY HH:MM (24h) to match the existing comment format
+  // Stamp as [DD-MM-YYYY] — date only, no time. Brackets so the existing
+  // parseAllComments step-2 regex picks the date out into its own column;
+  // time is intentionally dropped (we don't need that precision in the UI).
   const d = new Date();
   const pad = n => String(n).padStart(2, '0');
-  const stamp = `${pad(d.getDate())}-${pad(d.getMonth()+1)}-${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const stamp = `[${pad(d.getDate())}-${pad(d.getMonth()+1)}-${d.getFullYear()}]`;
   const newEntry = `${stamp} ${text}`;
   const existing = currentViewingLead.pocComments || '';
   const merged = existing.trim() ? `${newEntry}\n${existing}` : newEntry;
@@ -8244,6 +8343,18 @@ function parseAllComments(pocComments) {
       const [, d, mo, y, text] = m;
       const fullYear = y.length === 2 ? '20' + y : y;
       const dateStr = `${d.padStart(2,'0')}-${mo.padStart(2,'0')}-${fullYear}`;
+      entries.push({ displayDate: formatShortDate(dateStr), text });
+      continue;
+    }
+
+    // 2b) Legacy unbracketed format from older in-card writes:
+    //     `DD-MM-YYYY HH:MM text` or `DD-MM-YYYY text`. Time portion (if any)
+    //     is dropped — the date alone populates the date column. Lets old
+    //     comments display correctly without a data migration.
+    const m2 = line.match(/^(\d{1,2})-(\d{1,2})-(\d{4})(?:\s+\d{1,2}:\d{1,2})?\s+(.+)$/);
+    if (m2) {
+      const [, d, mo, y, text] = m2;
+      const dateStr = `${d.padStart(2,'0')}-${mo.padStart(2,'0')}-${y}`;
       entries.push({ displayDate: formatShortDate(dateStr), text });
       continue;
     }
@@ -9547,13 +9658,17 @@ function getInitials(name) {
 
 function formatDate(raw) {
   if (!raw || raw === '—') return '—';
-  // Accept DD-MM-YYYY (primary app format) → DD-MM-YY
-  const m = /^(\d{2})-(\d{2})-(\d{4})$/.exec(raw);
-  if (m) return `${m[1]}-${m[2]}-${m[3].slice(2)}`;
-  // Also accept ISO yyyy-mm-dd just in case
-  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
-  if (iso) return `${iso[3]}-${iso[2]}-${iso[1].slice(2)}`;
-  return raw;
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // Accept DD-MM-YYYY (primary app format) and ISO YYYY-MM-DD (legacy data).
+  // Output dd-mmm-yy (e.g. 08-May-26) for the lead-card header.
+  const m   = /^(\d{1,2})-(\d{1,2})-(\d{4})$/.exec(raw);
+  const iso = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(raw);
+  let d, mo, y;
+  if (m)        { d = m[1];   mo = m[2];   y = m[3]; }
+  else if (iso) { d = iso[3]; mo = iso[2]; y = iso[1]; }
+  else return raw;
+  const dd = String(parseInt(d, 10)).padStart(2, '0');
+  return `${dd}-${monthNames[parseInt(mo, 10) - 1]}-${y.slice(2)}`;
 }
 
 function escapeHtml(s) {
@@ -10132,6 +10247,179 @@ async function commitInlineSelect(el) {
   }
 }
 
+// Header click-to-edit: name / mobile / email in the lead-card header.
+// Each commits via the same queueEdit pipeline as inlineTextRow, so the
+// existing Save button / unsaved-changes flow applies. Mobile uses
+// normalizeAusPhone for validation; email uses isValidEmail. Invalid
+// values flash red briefly and revert without queueing an edit.
+
+function onHeaderInputKey(event, el) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    el.blur();
+  } else if (event.key === 'Escape') {
+    event.preventDefault();
+    const leadId = parseInt(el.dataset.leadId, 10);
+    const lead = leadsData.find(l => l.id === leadId);
+    if (lead) {
+      const f = el.dataset.field;
+      if (f === 'name')        el.value = lead.name && lead.name !== '—' ? lead.name : '';
+      else if (f === 'mobile') el.value = formatMobileDisplay(lead.mobile) || '';
+      else if (f === 'email')  el.value = lead.email && lead.email !== '—' ? lead.email : '';
+    }
+    el.classList.remove('invalid');
+    el.dataset.skipCommit = '1';
+    el.blur();
+  }
+}
+
+async function commitHeaderName(el) {
+  if (el.dataset.skipCommit) { delete el.dataset.skipCommit; return; }
+  const leadId = parseInt(el.dataset.leadId, 10);
+  const lead = leadsData.find(l => l.id === leadId);
+  if (!lead) return;
+  const newVal = el.value.trim();
+  const oldVal = lead.name && lead.name !== '—' ? lead.name : '';
+  if (newVal === oldVal) return;
+  queueEdit(leadId, { name: newVal || null });
+  const i = leadsData.findIndex(l => l.id === leadId);
+  if (i >= 0) {
+    leadsData[i].name = newVal || '—';
+    if (currentViewingLead && currentViewingLead.id === leadId) currentViewingLead = leadsData[i];
+  }
+  // Refresh avatar initials so they match the new name immediately
+  const card = document.getElementById('leadCardContent');
+  const av = card && card.querySelector('.lc-avatar');
+  if (av) av.textContent = getInitials(newVal);
+}
+
+// As the user types in the mobile field, auto-format digits as 0000 000 000.
+// Mirrors onMobileInput but doesn't touch the dedicated edit-form's error labels.
+function formatMobileWhileTyping(inp) {
+  const original = inp.value;
+  const caretPos = inp.selectionStart;
+  const digits = original.replace(/\D/g, '');
+  let local = digits;
+  if (local.startsWith('61') && local.length > 10) local = '0' + local.substring(2);
+  if (local.length > 10) local = local.substring(0, 10);
+  let formatted = local;
+  if (local.length > 4 && local.length <= 7) {
+    formatted = local.substring(0, 4) + ' ' + local.substring(4);
+  } else if (local.length > 7) {
+    formatted = local.substring(0, 4) + ' ' + local.substring(4, 7) + ' ' + local.substring(7);
+  }
+  if (formatted !== original) {
+    inp.value = formatted;
+    const diff = formatted.length - original.length;
+    try { inp.setSelectionRange(caretPos + diff, caretPos + diff); } catch (_) {}
+  }
+  inp.classList.remove('invalid');
+}
+
+async function commitHeaderMobile(el) {
+  if (el.dataset.skipCommit) { delete el.dataset.skipCommit; return; }
+  const leadId = parseInt(el.dataset.leadId, 10);
+  const lead = leadsData.find(l => l.id === leadId);
+  if (!lead) return;
+  const newRaw = el.value.trim();
+  const oldDigits = lead.mobile ? String(lead.mobile).replace(/\D/g, '') : '';
+
+  if (!newRaw) {
+    if (oldDigits) {
+      queueEdit(leadId, { mobile: null });
+      const i = leadsData.findIndex(l => l.id === leadId);
+      if (i >= 0) {
+        leadsData[i].mobile = '';
+        if (currentViewingLead && currentViewingLead.id === leadId) currentViewingLead = leadsData[i];
+      }
+    }
+    el.classList.remove('invalid');
+    el.value = '';
+    return;
+  }
+
+  const formatted = normalizeAusPhone(newRaw);
+  if (!formatted) {
+    el.classList.add('invalid');
+    setTimeout(() => {
+      el.classList.remove('invalid');
+      el.value = formatMobileDisplay(lead.mobile) || '';
+    }, 1500);
+    return;
+  }
+
+  const newDigits = formatted.replace(/\D/g, '');
+  if (newDigits === oldDigits) { el.value = formatted; return; }
+
+  queueEdit(leadId, { mobile: newDigits });
+  const i = leadsData.findIndex(l => l.id === leadId);
+  if (i >= 0) {
+    leadsData[i].mobile = newDigits;
+    if (currentViewingLead && currentViewingLead.id === leadId) currentViewingLead = leadsData[i];
+  }
+  el.value = formatted;
+  el.classList.remove('invalid');
+}
+
+function renderEmailDisplay(lead) {
+  const pencil = `<button type="button" class="lc-email-edit-btn" onclick="editHeaderEmail(${lead.id})" title="Edit email" aria-label="Edit email">✏️</button>`;
+  if (lead.email && lead.email !== '—') {
+    return `<a href="mailto:${escapeHtml(lead.email)}" class="lc-email">${escapeHtml(lead.email)}</a>${pencil}`;
+  }
+  return `<span class="lc-email-empty" onclick="editHeaderEmail(${lead.id})">— add email —</span>${pencil}`;
+}
+
+function editHeaderEmail(leadId) {
+  const row = document.getElementById('lcEmailRow_' + leadId);
+  if (!row) return;
+  const lead = leadsData.find(l => l.id === leadId);
+  if (!lead) return;
+  const current = lead.email && lead.email !== '—' ? lead.email : '';
+  row.innerHTML = `<input type="email" class="lc-header-input lc-email" value="${escapeHtml(current)}" placeholder="email@example.com" data-field="email" data-lead-id="${leadId}" onblur="commitHeaderEmail(this)" onkeydown="onHeaderInputKey(event, this)" aria-label="Edit email" />`;
+  const inp = row.firstElementChild;
+  inp.focus();
+  inp.select();
+}
+
+async function commitHeaderEmail(el) {
+  const leadId = parseInt(el.dataset.leadId, 10);
+  const lead = leadsData.find(l => l.id === leadId);
+  if (!lead) { restoreEmailDisplay(leadId); return; }
+
+  if (el.dataset.skipCommit) {
+    delete el.dataset.skipCommit;
+    restoreEmailDisplay(leadId);
+    return;
+  }
+
+  const newVal = el.value.trim().toLowerCase();
+  const oldVal = lead.email && lead.email !== '—' ? lead.email : '';
+
+  if (newVal && !isValidEmail(newVal)) {
+    el.classList.add('invalid');
+    setTimeout(() => { restoreEmailDisplay(leadId); }, 1500);
+    return;
+  }
+
+  if (newVal !== oldVal) {
+    queueEdit(leadId, { email: newVal || null });
+    const i = leadsData.findIndex(l => l.id === leadId);
+    if (i >= 0) {
+      leadsData[i].email = newVal || '';
+      if (currentViewingLead && currentViewingLead.id === leadId) currentViewingLead = leadsData[i];
+    }
+  }
+  restoreEmailDisplay(leadId);
+}
+
+function restoreEmailDisplay(leadId) {
+  const row = document.getElementById('lcEmailRow_' + leadId);
+  if (!row) return;
+  const lead = leadsData.find(l => l.id === leadId);
+  if (!lead) return;
+  row.innerHTML = renderEmailDisplay(lead);
+}
+
 // Deposit: stored as three booleans (deposit5, deposit5plus5, deposit10)
 function inlineDepositRow(lead, leadId) {
   const current = lead.deposit5 === '✓' ? '5'
@@ -10467,10 +10755,21 @@ function buildCardHTML(lead) {
       <div class="lc-header-row">
         <div class="lc-avatar">${escapeHtml(getInitials(lead.name))}</div>
         <div class="lc-pnblk">
-          <div class="lc-pn">${escapeHtml(lead.name || '—')}</div>
+          <input type="text" class="lc-header-input lc-pn"
+                 value="${escapeHtml(lead.name || '')}" placeholder="Lead name"
+                 data-field="name" data-lead-id="${lead.id}"
+                 onblur="commitHeaderName(this)"
+                 onkeydown="onHeaderInputKey(event, this)"
+                 aria-label="Edit lead name" />
           <div class="lc-pnsub">Lead #${lead.id} · Added ${formatDate(lead.date)}</div>
-          <p class="lc-phone">${escapeHtml(formatMobileDisplay(lead.mobile) || '—')}</p>
-          ${lead.email ? `<a href="mailto:${escapeHtml(lead.email)}" class="lc-email">${escapeHtml(lead.email)}</a>` : ''}
+          <input type="tel" class="lc-header-input lc-phone"
+                 value="${escapeHtml(formatMobileDisplay(lead.mobile) || '')}" placeholder="Mobile"
+                 data-field="mobile" data-lead-id="${lead.id}"
+                 oninput="formatMobileWhileTyping(this)"
+                 onblur="commitHeaderMobile(this)"
+                 onkeydown="onHeaderInputKey(event, this)"
+                 aria-label="Edit mobile" />
+          <div class="lc-email-row" id="lcEmailRow_${lead.id}">${renderEmailDisplay(lead)}</div>
         </div>
         <div class="lc-pills">
           ${hwcChipHtml}
