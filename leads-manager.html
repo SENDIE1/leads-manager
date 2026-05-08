@@ -269,13 +269,15 @@ input, textarea, select, button {
 .cb-email { color: #3b82f6; text-decoration: none; }
 .cb-email:hover { text-decoration: underline; }
 .cb-col-comment { color: #475569; font-size: 12px; }
-.cb-comment-date {
+.cb-comment-date,
+.cell-comment-date {
   font-size: 10px;
   font-weight: 600;
   color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.3px;
   margin-right: 6px;
+  font-variant-numeric: tabular-nums;
 }
 .cb-col-notes { color: #1e293b; font-size: 12px; }
 .cb-col-when .cb-when-label {
@@ -1502,6 +1504,65 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
 }
 .lc-comments-text .lc-comments-para:last-child {
   margin-bottom: 0;
+}
+
+/* Comment moderation — hide / restore. Hidden comments stay in place but
+   are greyed out, line-through, and clamped to one line. Click the text to
+   expand/collapse. The hide/restore button reveals on row hover (desktop)
+   and stays visible at low opacity on touch devices. */
+.lc-comments-entry.is-hidden { background: #fafafa; }
+.lc-comments-entry.is-hidden .lc-comments-date { color: #cbd5e1; }
+.lc-comments-entry.is-hidden .lc-comments-text {
+  color: #94a3b8;
+  cursor: pointer;
+}
+.lc-comments-entry.is-hidden .lc-comments-text .lc-comments-para {
+  text-decoration: line-through;
+  text-decoration-color: rgba(148, 163, 184, 0.55);
+}
+/* Collapsed: hide all but first paragraph; clamp first paragraph to one line. */
+.lc-comments-entry.is-hidden.is-collapsed .lc-comments-text .lc-comments-para:not(:first-child) {
+  display: none;
+}
+.lc-comments-entry.is-hidden.is-collapsed .lc-comments-text .lc-comments-para:first-child {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0;
+}
+
+.lc-comment-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.lc-comment-action-btn {
+  background: transparent;
+  color: #94a3b8;
+  border: 0;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 13px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s, background-color 0.15s;
+  line-height: 1;
+  font-family: inherit;
+}
+.lc-comments-entry:hover .lc-comment-action-btn { opacity: 0.85; }
+.lc-comment-action-btn:hover { opacity: 1; }
+.lc-comment-action-btn.btn-hide:hover    { color: #d97706; background: #fef3c7; }
+.lc-comment-action-btn.btn-restore:hover { color: #047857; background: #ecfdf5; }
+/* Restore button on hidden rows is faintly visible even before hover so the
+   "this is greyed for a reason" signal pairs with a visible way to undo. */
+.lc-comments-entry.is-hidden .lc-comment-action-btn.btn-restore { opacity: 0.5; }
+/* Touch devices: keep buttons visible (no hover) so admins on iPad / phone
+   have a way to trigger them. */
+@media (hover: none) {
+  .lc-comment-action-btn { opacity: 0.55; }
 }
 
 .lc-divider {
@@ -7481,7 +7542,7 @@ function renderTable() {
     <tr onclick="viewLead(${lead.id})" style="cursor: pointer;">
       <td class="frozen-1"><input type="checkbox" class="row-cb" data-lead-id="${lead.id}" onclick="event.stopPropagation()" onchange="onRowCheckboxChange()"></td>
       <td class="frozen-2">${lead.id}</td>
-      <td class="frozen-3">${escapeHtml(formatShortDate(lead.date))}</td>
+      <td class="frozen-3">${escapeHtml(formatDate(lead.date))}</td>
       <td class="frozen-4" style="font-weight: 600;">${lead.name}</td>
       <td>${escapeHtml(formatMobileDisplay(lead.mobile))}</td>
       <td style="color: var(--accent);">${lead.email}</td>
@@ -7489,7 +7550,13 @@ function renderTable() {
         <span class="cell-trigger" style="font-style: italic;">${lead.leadMessage ? escapeHtml(lead.leadMessage) : '—'}</span>
       </td>
       <td class="hover-bubble" data-tooltip-type="comments" data-tooltip="${(lead.pocComments && lead.pocComments.trim()) ? escapeHtml(lead.pocComments) : ''}">
-        <span class="cell-trigger">${(lead.pocComments && lead.pocComments.trim()) ? escapeHtml(lead.pocComments.split('\n')[0]) : '—'}</span>
+        ${(() => {
+          if (!lead.pocComments || !lead.pocComments.trim()) return '<span class="cell-trigger">—</span>';
+          const { lastDate, preview } = parseLastComment(lead.pocComments);
+          if (!preview) return '<span class="cell-trigger">—</span>';
+          const datePart = lastDate ? `<span class="cell-comment-date">${escapeHtml(lastDate)}</span> ` : '';
+          return `<span class="cell-trigger">${datePart}${escapeHtml(preview)}</span>`;
+        })()}
       </td>
       <td>${lead.roiEmail || '—'}</td>
       <td>${lead.call1 || '—'}</td>
@@ -8175,9 +8242,11 @@ function toggleDateSort() {
 
 function parseLastComment(pocComments) {
   const entries = parseAllComments(pocComments);
-  if (entries.length === 0) return { lastDate: '', preview: '' };
-  // Storage order is newest-first (addNewComment prepends), so first entry IS latest
-  return { lastDate: entries[0].displayDate, preview: entries[0].text };
+  // Skip hidden entries — they're "disregard this", so the table preview
+  // should show the most recent visible comment, not a struck-through one.
+  const visible = entries.find(e => !e.hidden);
+  if (!visible) return { lastDate: '', preview: '' };
+  return { lastDate: visible.displayDate, preview: visible.text };
 }
 
 // Parse comments into structured entries. Handles:
@@ -8210,16 +8279,38 @@ function renderCommentsForCard(rawComments) {
   const isExpanded = window._commentsExpanded === currentViewingLead?.id;
 
   // Newest-first in storage; render in order (prepended earlier = top).
-  const listItems = entries.map(e => {
+  const leadId = currentViewingLead?.id;
+  const listItems = entries.map((e, entryIdx) => {
     const paragraphs = (e.text || '').split('\n').map(p => p.trim()).filter(p => p);
     const textHtml = paragraphs.length > 0
       ? paragraphs.map(p => `<p class="lc-comments-para">${escapeHtml(p)}</p>`).join('')
       : '<p class="lc-comments-para">&nbsp;</p>';
     const dateLabel = e.displayDate && e.displayDate !== '—' ? escapeHtml(e.displayDate) : '';
+
+    // Hide/restore controls — only when the entry has a known source line
+    // (line-based storage). JSON-stored entries don't get moderation buttons.
+    const canModerate = typeof e.firstLineIdx === 'number' && leadId != null;
+    let actionsHtml = '';
+    if (canModerate) {
+      actionsHtml = e.hidden
+        ? `<div class="lc-comment-actions"><button type="button" class="lc-comment-action-btn btn-restore" onclick="event.stopPropagation(); restoreComment(${leadId}, ${entryIdx})" title="Restore comment" aria-label="Restore comment">↺</button></div>`
+        : `<div class="lc-comment-actions"><button type="button" class="lc-comment-action-btn btn-hide" onclick="event.stopPropagation(); hideComment(${leadId}, ${entryIdx})" title="Hide comment" aria-label="Hide comment">🗑️</button></div>`;
+    }
+
+    // Hidden rows render greyed + collapsed (one-line clamp). Click on the
+    // text element toggles is-collapsed so the user can read the full thing.
+    const rowClasses = ['lc-comments-entry'];
+    if (e.hidden) {
+      rowClasses.push('is-hidden');
+      rowClasses.push('is-collapsed');
+    }
+    const textOnclick = e.hidden ? ' onclick="toggleHiddenCommentExpanded(this)"' : '';
+
     return `
-      <li class="lc-comments-entry">
+      <li class="${rowClasses.join(' ')}">
         <span class="lc-comments-date">${dateLabel}</span>
-        <div class="lc-comments-text">${textHtml}</div>
+        <div class="lc-comments-text"${textOnclick}>${textHtml}</div>
+        ${actionsHtml}
       </li>`;
   }).join('');
 
@@ -8314,6 +8405,83 @@ function toggleStepsStrip(leadId) {
   } catch (e) {}
 }
 
+// ── Comment moderation: hide / restore ──────────────────────────────────────
+// Hide prepends [HIDDEN] to the entry's source line in poc_comments. Restore
+// strips it. Greyed display + line-clamp + click-to-expand all happen in CSS;
+// these handlers just mutate the underlying line and save.
+
+// Toggle expand/collapse on a hidden comment's text. Pure DOM, no save.
+function toggleHiddenCommentExpanded(textEl) {
+  const row = textEl.closest('.lc-comments-entry');
+  if (!row) return;
+  row.classList.toggle('is-collapsed');
+}
+
+async function hideComment(leadId, entryIdx) {
+  await mutateCommentHidden(leadId, entryIdx, /*hide=*/true);
+}
+
+async function restoreComment(leadId, entryIdx) {
+  await mutateCommentHidden(leadId, entryIdx, /*hide=*/false);
+}
+
+async function mutateCommentHidden(leadId, entryIdx, hide) {
+  const lead = leadsData.find(l => l.id === leadId);
+  if (!lead) return;
+
+  // Re-parse from the in-memory pocComments to find the entry's source line
+  // index. Using firstLineIdx avoids any guesswork about which line maps to
+  // which rendered row, even when entries span multiple lines.
+  const raw = lead.pocComments || '';
+  const entries = parseAllComments(raw);
+  const entry = entries[entryIdx];
+  if (!entry || typeof entry.firstLineIdx !== 'number') {
+    showToast('Cannot moderate this comment', 'error');
+    return;
+  }
+
+  const lines = raw.split('\n');
+  const targetLine = lines[entry.firstLineIdx];
+  if (targetLine == null) {
+    showToast('Comment line not found', 'error');
+    return;
+  }
+
+  const alreadyHidden = /^\[HIDDEN\]\s*/.test(targetLine);
+  if (hide && alreadyHidden) return;     // no-op
+  if (!hide && !alreadyHidden) return;   // no-op
+
+  lines[entry.firstLineIdx] = hide
+    ? '[HIDDEN] ' + targetLine
+    : targetLine.replace(/^\[HIDDEN\]\s*/, '');
+  const merged = lines.join('\n');
+
+  try {
+    const { error } = await sb.from('leads').update({ poc_comments: merged }).eq('id', leadId);
+    if (error) {
+      showToast(hide ? 'Could not hide comment' : 'Could not restore comment', 'error', error.message);
+      return;
+    }
+    // Mirror locally + re-render
+    const i = leadsData.findIndex(l => l.id === leadId);
+    if (i >= 0) {
+      leadsData[i].pocComments = merged;
+      if (currentViewingLead && currentViewingLead.id === leadId) currentViewingLead = leadsData[i];
+    }
+    if (currentViewingLead && currentViewingLead.id === leadId) {
+      const activeTab = document.querySelector('#leadCardContent .lc-tab.active');
+      const currentTab = activeTab ? activeTab.dataset.tab : 'qualifying';
+      const card = document.getElementById('leadCardContent');
+      card.innerHTML = buildCardHTML(currentViewingLead);
+      card.classList.toggle('desktop-layout', window.innerWidth >= 900);
+      switchCardTab(currentTab);
+    }
+    renderTable();
+  } catch (err) {
+    showToast('Could not update comment', 'error', err.message || 'unknown error');
+  }
+}
+
 // Submit a new comment from the in-card quick-add box.
 async function submitCardComment() {
   if (!currentViewingLead) return;
@@ -8367,32 +8535,59 @@ async function submitCardComment() {
 function parseAllComments(pocComments) {
   if (!pocComments || !pocComments.trim()) return [];
 
-  // If the WHOLE string is a JSON array, use it directly
+  // If the WHOLE string is a JSON array, use it directly. JSON-stored entries
+  // can't be moderated in place (no line index) — render hides the hide/restore
+  // buttons for them via the missing firstLineIdx.
   try {
     const arr = JSON.parse(pocComments);
     if (Array.isArray(arr)) {
       return arr.map(e => {
         const ds = (e.ts || '').split(' ')[0];
-        return { displayDate: formatShortDate(ds) || ds || '—', text: e.text || '' };
+        const rawText = e.text || '';
+        const isHidden = rawText.startsWith('[HIDDEN]');
+        return {
+          displayDate: formatShortDate(ds) || ds || '—',
+          text: isHidden ? rawText.replace(/^\[HIDDEN\]\s*/, '') : rawText,
+          hidden: isHidden,
+          firstLineIdx: null,
+        };
       });
     }
   } catch (e) { /* fall through to line-by-line */ }
 
   // Parse line-by-line, keeping blank lines for paragraph spacing.
+  // For each entry we track:
+  //   - hidden: true if the source line was prefixed with [HIDDEN]
+  //   - firstLineIdx: index in `lines` of the entry's first line, used by
+  //     hide/restore handlers to mutate the right line in poc_comments.
   const entries = [];
   const lines = pocComments.split('\n');  // Keep empty lines — they create paragraph breaks
 
-  for (const line of lines) {
+  for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+    const line = lines[lineIdx];
     const trimmed = line.trim();
 
+    // Detect the [HIDDEN] moderation marker first so the rest of the regex
+    // chain doesn't have to know about it. Strip for the purposes of matching;
+    // remember it for the entry record.
+    const hiddenMatch = line.match(/^\[HIDDEN\]\s*/);
+    const isHidden = !!hiddenMatch;
+    const lineForMatch = isHidden ? line.slice(hiddenMatch[0].length) : line;
+    const trimmedForMatch = lineForMatch.trim();
+
     // 1) JSON array inline? e.g. [{"ts":"Imported",...}]
-    if (trimmed.startsWith('[') && trimmed.endsWith(']') && trimmed.length > 2) {
+    if (!isHidden && trimmed.startsWith('[') && trimmed.endsWith(']') && trimmed.length > 2) {
       try {
         const arr = JSON.parse(trimmed);
         if (Array.isArray(arr)) {
           arr.forEach(e => {
             const ds = (e.ts || '').split(' ')[0];
-            entries.push({ displayDate: formatShortDate(ds) || ds || '—', text: e.text || '' });
+            entries.push({
+              displayDate: formatShortDate(ds) || ds || '—',
+              text: e.text || '',
+              hidden: false,
+              firstLineIdx: null,  // inline JSON — no per-entry line correspondence
+            });
           });
           continue;
         }
@@ -8400,35 +8595,48 @@ function parseAllComments(pocComments) {
     }
 
     // 2) Stamped plain line: [DD-MM-YY] or [DD-MM-YYYY] optionally HH:MM, optional author
-    //    Matches only if the line actually starts with [DD-...
-    const m = line.match(/^\[(\d{1,2})-(\d{1,2})-(\d{2,4})(?:\s+\d{1,2}:\d{1,2})?\]\s*(?:[\w@.]+:\s*)?(.+)$/);
+    const m = lineForMatch.match(/^\[(\d{1,2})-(\d{1,2})-(\d{2,4})(?:\s+\d{1,2}:\d{1,2})?\]\s*(?:[\w@.]+:\s*)?(.+)$/);
     if (m) {
       const [, d, mo, y, text] = m;
       const fullYear = y.length === 2 ? '20' + y : y;
       const dateStr = `${d.padStart(2,'0')}-${mo.padStart(2,'0')}-${fullYear}`;
-      entries.push({ displayDate: formatShortDate(dateStr), text });
+      entries.push({
+        displayDate: formatShortDate(dateStr),
+        text,
+        hidden: isHidden,
+        firstLineIdx: lineIdx,
+      });
       continue;
     }
 
     // 2b) Legacy unbracketed format from older in-card writes:
     //     `DD-MM-YYYY HH:MM text` or `DD-MM-YYYY text`. Time portion (if any)
-    //     is dropped — the date alone populates the date column. Lets old
-    //     comments display correctly without a data migration.
-    const m2 = line.match(/^(\d{1,2})-(\d{1,2})-(\d{4})(?:\s+\d{1,2}:\d{1,2})?\s+(.+)$/);
+    //     is dropped — the date alone populates the date column.
+    const m2 = lineForMatch.match(/^(\d{1,2})-(\d{1,2})-(\d{4})(?:\s+\d{1,2}:\d{1,2})?\s+(.+)$/);
     if (m2) {
       const [, d, mo, y, text] = m2;
       const dateStr = `${d.padStart(2,'0')}-${mo.padStart(2,'0')}-${y}`;
-      entries.push({ displayDate: formatShortDate(dateStr), text });
+      entries.push({
+        displayDate: formatShortDate(dateStr),
+        text,
+        hidden: isHidden,
+        firstLineIdx: lineIdx,
+      });
       continue;
     }
 
     // 3) Bare line (including blank lines for paragraph spacing):
     //    Append to previous entry if one exists.
     if (entries.length > 0) {
-      entries[entries.length - 1].text += '\n' + line;
-    } else if (trimmed.length > 0) {
+      entries[entries.length - 1].text += '\n' + lineForMatch;
+    } else if (trimmedForMatch.length > 0) {
       // No prior entry and not a blank line → start a new entry
-      entries.push({ displayDate: '—', text: line });
+      entries.push({
+        displayDate: '—',
+        text: lineForMatch,
+        hidden: isHidden,
+        firstLineIdx: lineIdx,
+      });
     }
     // If no prior entry AND blank line, just skip (nothing to attach to)
   }
