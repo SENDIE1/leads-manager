@@ -952,6 +952,69 @@ input, textarea, select, button {
     font-size: 12px; font-style: italic; color: var(--text-secondary);
     margin: 0 0 16px; line-height: 1.5;
   }
+  /* Lead-enquiry row: read-only quote (or empty placeholder) + pencil edit button.
+     Click pencil OR click the empty placeholder to swap into a textarea. Same
+     queueEdit → Save flow as the other inline edits. */
+  .lead-card.desktop-layout .lc-desktop-left .lc-enquiry-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0 0 16px;
+  }
+  .lead-card.desktop-layout .lc-desktop-left .lc-enquiry-row > .lc-enquiry { margin: 0; flex: 1; min-width: 0; }
+  .lead-card.desktop-layout .lc-desktop-left .lc-enquiry-row > .lc-enquiry-empty {
+    flex: 1;
+    min-width: 0;
+    font-size: 12px;
+    color: #94a3b8;
+    font-style: italic;
+    cursor: pointer;
+    padding: 8px 10px;
+    border: 1px dashed transparent;
+    border-radius: 4px;
+    line-height: 1.5;
+    transition: background-color 0.15s, border-color 0.15s;
+  }
+  .lead-card.desktop-layout .lc-desktop-left .lc-enquiry-row > .lc-enquiry-empty:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+  }
+  .lead-card.desktop-layout .lc-desktop-left .lc-enquiry-edit-btn {
+    background: #f1f5f9;
+    color: #475569;
+    border: 0;
+    border-radius: 3px;
+    padding: 4px 6px;
+    font-size: 11px;
+    cursor: pointer;
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: opacity 0.15s, background-color 0.15s;
+  }
+  .lead-card.desktop-layout .lc-desktop-left .lc-enquiry-edit-btn:hover {
+    opacity: 1;
+    background: #e2e8f0;
+  }
+  .lead-card.desktop-layout .lc-desktop-left .lc-enquiry-input {
+    width: 100%;
+    min-height: 80px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 1.5;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    resize: vertical;
+    color: #1e293b;
+    background: #fff;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.12s, box-shadow 0.12s;
+  }
+  .lead-card.desktop-layout .lc-desktop-left .lc-enquiry-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12);
+  }
   .lead-card.desktop-layout .lc-desktop-left .lc-comments-list {
     max-height: none;
   }
@@ -10420,6 +10483,68 @@ function restoreEmailDisplay(leadId) {
   row.innerHTML = renderEmailDisplay(lead);
 }
 
+// Lead-enquiry click-to-edit (desktop card only). Same pattern as the email
+// pencil: read-only quote + pencil button, click swaps to a textarea. Commits
+// via queueEdit so the Save button picks up the change. Empty state shows a
+// "No initial enquiry message." placeholder that's also clickable.
+function enquiryRowInner(lead) {
+  const message = lead.leadMessage && lead.leadMessage !== '—' ? lead.leadMessage : '';
+  const pencil = `<button type="button" class="lc-enquiry-edit-btn" onclick="editLeadEnquiry(${lead.id})" title="Edit lead enquiry" aria-label="Edit lead enquiry">✏️</button>`;
+  if (message) {
+    return `<div class="lc-enquiry">"${escapeHtml(message)}"</div>${pencil}`;
+  }
+  return `<div class="lc-enquiry-empty" onclick="editLeadEnquiry(${lead.id})">No initial enquiry message.</div>${pencil}`;
+}
+
+function renderEnquiryRowHtml(lead) {
+  return `<div class="lc-enquiry-row" id="lcEnquiryRow_${lead.id}">${enquiryRowInner(lead)}</div>`;
+}
+
+function editLeadEnquiry(leadId) {
+  const row = document.getElementById('lcEnquiryRow_' + leadId);
+  if (!row) return;
+  const lead = leadsData.find(l => l.id === leadId);
+  if (!lead) return;
+  const current = lead.leadMessage && lead.leadMessage !== '—' ? lead.leadMessage : '';
+  row.innerHTML = `<textarea class="lc-enquiry-input" placeholder="Add the lead's initial enquiry message…" data-lead-id="${leadId}" onblur="commitLeadEnquiry(this)" onkeydown="if(event.key==='Escape'){event.preventDefault();this.dataset.skipCommit='1';this.blur();}">${escapeHtml(current)}</textarea>`;
+  const ta = row.firstElementChild;
+  ta.focus();
+  ta.select();
+}
+
+async function commitLeadEnquiry(el) {
+  const leadId = parseInt(el.dataset.leadId, 10);
+  const lead = leadsData.find(l => l.id === leadId);
+  if (!lead) { restoreEnquiryDisplay(leadId); return; }
+
+  if (el.dataset.skipCommit) {
+    delete el.dataset.skipCommit;
+    restoreEnquiryDisplay(leadId);
+    return;
+  }
+
+  const newVal = el.value.trim();
+  const oldVal = lead.leadMessage && lead.leadMessage !== '—' ? lead.leadMessage : '';
+
+  if (newVal !== oldVal) {
+    queueEdit(leadId, { lead_msg: newVal || null });
+    const i = leadsData.findIndex(l => l.id === leadId);
+    if (i >= 0) {
+      leadsData[i].leadMessage = newVal || '';
+      if (currentViewingLead && currentViewingLead.id === leadId) currentViewingLead = leadsData[i];
+    }
+  }
+  restoreEnquiryDisplay(leadId);
+}
+
+function restoreEnquiryDisplay(leadId) {
+  const row = document.getElementById('lcEnquiryRow_' + leadId);
+  if (!row) return;
+  const lead = leadsData.find(l => l.id === leadId);
+  if (!lead) return;
+  row.innerHTML = enquiryRowInner(lead);
+}
+
 // Deposit: stored as three booleans (deposit5, deposit5plus5, deposit10)
 function inlineDepositRow(lead, leadId) {
   const current = lead.deposit5 === '✓' ? '5'
@@ -10634,7 +10759,7 @@ function buildCardHTML(lead) {
   // Comments block (used in mobile as-is; in desktop, CSS moves it into .lc-desktop-left)
   const commentsBlockHtml = `
     <div class="lc-comments">
-      <div class="lc-section-label">Comments / interactions</div>
+      <div class="lc-section-label">Comments / Interactions</div>
       ${renderCommentsForCard(comments)}
     </div>`;
 
@@ -10793,9 +10918,9 @@ function buildCardHTML(lead) {
 
     <div class="lc-desktop-body">
       <div class="lc-desktop-left">
-        <div class="lc-section-label">Enquiry</div>
-        ${desktopEnquiryHtml || '<div style="font-size:12px;color:#94a3b8;font-style:italic;margin-bottom:16px;">No initial enquiry message.</div>'}
-        <div class="lc-section-label">Comments / interactions</div>
+        <div class="lc-section-label">Lead Enquiry</div>
+        ${renderEnquiryRowHtml(lead)}
+        <div class="lc-section-label">Comments / Interactions</div>
         ${renderCommentsForCard(comments)}
       </div>
       <div class="lc-desktop-right">
