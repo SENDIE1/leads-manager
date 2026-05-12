@@ -4542,6 +4542,34 @@ async function doLogout() {
   window.location.reload();
 }
 
+// ─── Inactivity-based session timeout ──────────────────────────
+// After INACTIVITY_TIMEOUT_MS of no user activity (mousedown / keydown /
+// touchstart / scroll), the user is silently signed out and the page is
+// reloaded back to the login screen. Started once from enterApp() after a
+// successful login. Applies to all roles equally.
+const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+
+let inactivityTimerId = null;
+let inactivitySessionStarted = false;
+
+function resetInactivityTimer() {
+  if (inactivityTimerId) clearTimeout(inactivityTimerId);
+  inactivityTimerId = setTimeout(handleInactivityTimeout, INACTIVITY_TIMEOUT_MS);
+}
+
+async function handleInactivityTimeout() {
+  try { await sb.auth.signOut(); } catch (e) { console.error('signOut on inactivity failed:', e); }
+  window.location.reload();
+}
+
+function startInactivitySession() {
+  if (inactivitySessionStarted) return; // idempotent — only wire listeners once
+  inactivitySessionStarted = true;
+  const events = ['mousedown', 'keydown', 'touchstart', 'scroll'];
+  events.forEach(ev => window.addEventListener(ev, resetInactivityTimer, { passive: true }));
+  resetInactivityTimer();
+}
+
 async function enterApp() {
   document.getElementById('loginScreen').style.display = 'none';
 
@@ -4602,6 +4630,9 @@ async function enterApp() {
 
   // Show a banner if this user has unassigned leads (admin or agency)
   showUnassignedBanner();
+
+  // Start the 30-minute inactivity-based session timeout.
+  startInactivitySession();
 }
 
 // ─── Unassigned leads banner ───────────────────────
@@ -8561,6 +8592,8 @@ async function submitCardComment() {
     card.classList.toggle('desktop-layout', window.innerWidth >= 900);
     switchCardTab(currentTab);
     renderTable();
+    renderMobileList();
+    updateCounts();
   } catch (err) {
     showToast('Could not save comment', 'error', err.message || 'unknown error');
     if (btn) { btn.disabled = false; btn.classList.remove('sending'); }
