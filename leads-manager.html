@@ -401,6 +401,7 @@ input, textarea, select, button {
   flex: 1;
   overflow: auto;
   background: var(--bg-primary);
+  position: relative;
 }
 
 .leads-table {
@@ -413,7 +414,8 @@ input, textarea, select, button {
 .leads-table thead {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 40;
+  isolation: isolate;
 }
 
 .leads-table th {
@@ -454,6 +456,7 @@ input, textarea, select, button {
   flex: 1;
   overflow: auto;
   background: var(--bg-primary);
+  position: relative;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -468,7 +471,7 @@ input, textarea, select, button {
   color: var(--text-secondary);
   text-align: left;
   white-space: nowrap;
-  /* Removed default background - let group colors override */
+  background: var(--bg-tertiary);
 }
 
 .leads-table td {
@@ -486,7 +489,8 @@ input, textarea, select, button {
 .leads-table thead {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 40;
+  isolation: isolate;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1917,6 +1921,29 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
   margin-top: 4px;
   min-height: 14px;
   line-height: 1.3;
+}
+
+/* Locked Lead Date on new-lead entry: prefilled with today, not editable.
+   Prevents agency/agents from back-dating leads. */
+.form-field input[readonly].locked-today {
+  background: #f1f5f9;
+  color: #475569;
+  cursor: not-allowed;
+  border-color: #cbd5e1;
+}
+.form-field input[readonly].locked-today:focus {
+  border-color: #cbd5e1;
+  box-shadow: none;
+}
+.lead-date-lock-note {
+  display: none;
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 4px;
+  line-height: 1.3;
+}
+.lead-date-lock-note.show {
+  display: block;
 }
 
 /* Pill Selectors */
@@ -4058,6 +4085,7 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
             <input type="text" id="edit-date" placeholder="DD-MM-YYYY (or DD/MM/YY, DD.MM.YY)"
                    oninput="clearFieldError('edit-date')" onblur="validateDateField()">
             <div class="field-error" id="err-date"></div>
+            <div class="lead-date-lock-note" id="leadDateLockNote">Locked to today — back-dating is not permitted.</div>
           </div>
           <div class="form-field">
             <label>Full Name *</label>
@@ -9173,10 +9201,68 @@ function showUndoableCallbackToast(lead, backup) {
 }
 
 // Open new lead
+// Today's date in the app's canonical DD-MM-YYYY format. Used to prefill
+// the Lead Date on new lead entry (back-dating is not permitted).
+function todayDDMMYYYY() {
+  const t = new Date();
+  const dd = String(t.getDate()).padStart(2, '0');
+  const mm = String(t.getMonth() + 1).padStart(2, '0');
+  const yyyy = t.getFullYear();
+  return `${dd}-${mm}-${yyyy}`;
+}
+
+// Lock the Lead Date input to today (used on new lead entry to prevent
+// back-dating by agency/agents). Sets readonly, applies the locked-today
+// style, and shows the hint note. Admin behaviour is the same — if the
+// admin needs a different date for some reason they can edit it after
+// saving via the Edit drawer (which keeps the field unlocked).
+function lockLeadDateToToday() {
+  const inp = document.getElementById('edit-date');
+  const note = document.getElementById('leadDateLockNote');
+  if (!inp) return;
+  inp.value = todayDDMMYYYY();
+  clearFieldError('edit-date');
+  // Admin keeps full freedom to back-date; only agency/agent users are locked.
+  if (me && me.role === 'admin') {
+    inp.readOnly = false;
+    inp.classList.remove('locked-today');
+    inp.removeAttribute('title');
+    if (note) note.classList.remove('show');
+    return;
+  }
+  inp.readOnly = true;
+  inp.classList.add('locked-today');
+  inp.title = 'Lead Date is locked to today — back-dating is not permitted.';
+  if (note) note.classList.add('show');
+}
+
+// Set up the Lead Date input when opening an existing lead in the Edit drawer.
+// Admin keeps full freedom to change the date; agency/agent users get a
+// read-only field (the lead's existing date is preserved — they just can't
+// modify it).
+function unlockLeadDate() {
+  const inp = document.getElementById('edit-date');
+  const note = document.getElementById('leadDateLockNote');
+  if (!inp) return;
+  if (me && me.role === 'admin') {
+    inp.readOnly = false;
+    inp.classList.remove('locked-today');
+    inp.removeAttribute('title');
+    if (note) note.classList.remove('show');
+    return;
+  }
+  inp.readOnly = true;
+  inp.classList.add('locked-today');
+  inp.title = 'Lead Date cannot be changed.';
+  if (note) note.classList.remove('show');
+}
+
 function openNewLead() {
   currentEditingLead = null;
   clearForm();
   syncAssignmentFieldsForNewLead();
+  // Lock Lead Date to today on new lead entry — agency/agents cannot back-date.
+  lockLeadDateToToday();
   document.getElementById('editDrawer').classList.add('active');
   document.querySelector('.drawer-title').textContent = 'New Lead';
   // Hide delete on new lead — there's nothing to delete yet
@@ -9192,6 +9278,8 @@ function editLead(id) {
   currentEditingLead = lead;
   populateForm(lead);
   syncAssignmentFieldsForEdit(lead);
+  // Existing leads keep an editable Lead Date — the lock only applies to NEW lead entry.
+  unlockLeadDate();
   document.getElementById('editDrawer').classList.add('active');
   document.querySelector('.drawer-title').textContent = 'Edit Lead';
 
