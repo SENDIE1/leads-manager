@@ -4570,6 +4570,60 @@ function startInactivitySession() {
   resetInactivityTimer();
 }
 
+// ─── Refresh-on-focus ──────────────────────────────────────────
+// When the tab regains visibility/focus, silently re-fetch leads so
+// changes made on another device (or by other users) appear without a
+// manual reload. Skipped while a lead card or edit drawer is open to
+// avoid disrupting in-progress work. Debounced so rapid tab switching
+// doesn't hammer the server.
+const REFRESH_ON_FOCUS_MIN_INTERVAL_MS = 30 * 1000; // 30s between refreshes
+let lastRefreshAt = 0;
+let refreshOnFocusStarted = false;
+
+function isEditingOrViewingLead() {
+  if (currentEditingLead) return true;
+  const overlay = document.getElementById('leadCardOverlay');
+  if (overlay && overlay.classList.contains('active')) return true;
+  return false;
+}
+
+async function silentRefreshLeads() {
+  // Fetch leads without showing the "Loading leads…" placeholder used by
+  // loadLeadsFromSupabase(). Errors are logged but not surfaced — a stale
+  // list is better than scary error UI on a background refresh.
+  try {
+    const { data, error } = await sb
+      .from('leads')
+      .select('*')
+      .order('id', { ascending: true });
+    if (error) { console.warn('Silent refresh failed:', error); return; }
+    leadsData = (data || []).filter(r => !r.deleted).map(mapLeadFromDb);
+    renderTable();
+    renderMobileList();
+    updateCounts();
+    refreshGearBadges();
+  } catch (err) {
+    console.warn('Silent refresh threw:', err);
+  }
+}
+
+function handleFocusForRefresh() {
+  if (document.visibilityState !== 'visible') return;
+  if (!me) return;
+  if (isEditingOrViewingLead()) return;
+  const now = Date.now();
+  if (now - lastRefreshAt < REFRESH_ON_FOCUS_MIN_INTERVAL_MS) return;
+  lastRefreshAt = now;
+  silentRefreshLeads();
+}
+
+function startRefreshOnFocus() {
+  if (refreshOnFocusStarted) return;
+  refreshOnFocusStarted = true;
+  document.addEventListener('visibilitychange', handleFocusForRefresh);
+  window.addEventListener('focus', handleFocusForRefresh);
+}
+
 async function enterApp() {
   document.getElementById('loginScreen').style.display = 'none';
 
@@ -4633,6 +4687,11 @@ async function enterApp() {
 
   // Start the 30-minute inactivity-based session timeout.
   startInactivitySession();
+
+  // Re-fetch leads silently whenever the tab regains visibility/focus, so
+  // changes made on another device or by other users appear without a manual
+  // reload. Skipped while a lead card or edit drawer is open.
+  startRefreshOnFocus();
 }
 
 // ─── Unassigned leads banner ───────────────────────
