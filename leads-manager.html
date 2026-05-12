@@ -7257,6 +7257,11 @@ function detectRecoveryFlow() {
 document.addEventListener('DOMContentLoaded', async function() {
   initCellTooltips();
 
+  // Push a history sentinel so the browser / iOS back gesture stays in the app
+  // rather than leaving it. The popstate handler near the bottom of the file
+  // re-pushes this sentinel after each back press.
+  try { history.pushState({ trap: true }, '', location.href); } catch (_) {}
+
   // Listen for recovery/invite auth events from Supabase
   // When a user clicks a recovery or invite link, Supabase parses the URL hash and
   // fires a 'PASSWORD_RECOVERY' event. We intercept it to show the set-password view
@@ -11283,8 +11288,11 @@ function doCloseLeadCard() {
   } catch (e) {}
 }
 
-// Handle browser / iOS back button: if a lead card is open, close it.
-// Dirty-check the same way the footer Close button does.
+// Handle browser / iOS back button:
+//   - If a lead card is open → close it (dirty-check the same way the footer
+//     Close button does).
+//   - Otherwise → re-push the history sentinel so back-swipe / back-button
+//     keeps the user inside the app instead of leaving it.
 window.addEventListener('popstate', (e) => {
   const overlay = document.getElementById('leadCardOverlay');
   if (overlay && overlay.classList.contains('active')) {
@@ -11296,7 +11304,14 @@ window.addEventListener('popstate', (e) => {
     }
     overlay.classList.remove('active');
     currentViewingLead = null;
+    // After closing the card, re-arm the sentinel so the next back press
+    // still stays in the app instead of leaving it.
+    try { history.pushState({ trap: true }, '', location.href); } catch (_) {}
+    return;
   }
+  // No card was open — user tapped back from the main view. Re-push the
+  // sentinel so they don't navigate away from the app.
+  try { history.pushState({ trap: true }, '', location.href); } catch (_) {}
 });
 
 function switchCardTab(name) {
