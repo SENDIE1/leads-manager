@@ -111,13 +111,6 @@ input, textarea, select, button {
   -webkit-text-fill-color: transparent;
   letter-spacing: 0.2px;
 }
-/* Inverted variant for the navy mobile header — white gradient to brand-blue-tint */
-.lm-wordmark-inverse {
-  font-weight: 600;
-  color: #ffffff;
-  letter-spacing: 0.2px;
-}
-
 .breadcrumb {
   display: flex;
   align-items: center;
@@ -139,6 +132,47 @@ input, textarea, select, button {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+
+/* Dashboard nav pill — sits next to .status-badge in the breadcrumb (desktop)
+   and inside .mv-brand (mobile). Toggles between leads list and dashboard view. */
+.nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fff;
+  color: var(--accent);
+  border: 1px solid var(--border-primary);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  user-select: none;
+}
+.nav-pill:hover { background: #eef2ff; border-color: var(--accent); }
+.nav-pill.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.nav-pill.active:hover { background: #001a55; }
+
+/* Mobile variant — white-on-navy header, so invert colours */
+.mv-header .nav-pill {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border-color: rgba(255,255,255,0.25);
+}
+.mv-header .nav-pill:hover { background: rgba(255,255,255,0.22); }
+.mv-header .nav-pill.active {
+  background: #fff;
+  color: var(--accent);
+  border-color: #fff;
+}
+.mv-header .nav-pill.active:hover { background: #f1f5f9; }
 
 .stats-pills {
   display: flex;
@@ -166,6 +200,7 @@ input, textarea, select, button {
 .stat-pill.hot { background: #fef2f2; color: #dc2626; }
 .stat-pill.warm { background: #fef3c7; color: #d97706; }
 .stat-pill.cold { background: #f0f9ff; color: #2563eb; }
+.stat-pill.star { background: #fefce8; color: #a16207; }
 .stat-pill.noact {
   background: #f8fafc;
   color: #64748b;
@@ -354,6 +389,7 @@ input, textarea, select, button {
 .stat-dot.hot { background: #dc2626; }
 .stat-dot.warm { background: #d97706; }
 .stat-dot.cold { background: #2563eb; }
+.stat-dot.star { background: #a16207; }
 .stat-dot.noact {
   background: transparent;
   border: 1.5px dashed #94a3b8;
@@ -503,11 +539,13 @@ input, textarea, select, button {
   max-width: none;
 }
 
-/* Specific minimum widths for important columns */
-.leads-table th:nth-child(4), .leads-table td:nth-child(4) { min-width: 200px; } /* Name */
-.leads-table th:nth-child(6), .leads-table td:nth-child(6) { min-width: 180px; } /* Email */
-.leads-table th:nth-child(7), .leads-table td:nth-child(7),
-.leads-table th:nth-child(8), .leads-table td:nth-child(8) {
+/* Specific minimum widths for important columns. NB: indices are 1-based and
+   shifted by +1 vs the original layout because the temp emoji column was
+   inserted at position 4 (between LEAD DATE and NAME). */
+.leads-table th:nth-child(5), .leads-table td:nth-child(5) { min-width: 200px; } /* Name */
+.leads-table th:nth-child(7), .leads-table td:nth-child(7) { min-width: 180px; } /* Email */
+.leads-table th:nth-child(8), .leads-table td:nth-child(8),
+.leads-table th:nth-child(9), .leads-table td:nth-child(9) {
   width: 260px;
   min-width: 260px;
   max-width: 260px;
@@ -591,9 +629,30 @@ input, textarea, select, button {
   max-width: 120px;
 }
 
+/* Temp emoji column — frozen between LEAD DATE and NAME so users can see
+   Hot/Warm/Cold/Star status at a glance without scrolling right. Width is
+   forced to just the emoji glyph (font-size 14px + no horizontal padding). */
+.leads-table .frozen-temp {
+  position: sticky !important;
+  left: 200px !important;
+  z-index: 35;
+  min-width: 22px;
+  width: 22px;
+  max-width: 22px;
+}
+/* Higher specificity than `.leads-table thead tr:nth-child(2) th { padding: 8px 4px }`
+   so the temp column actually gets the narrow padding it asked for. Also force
+   font-size so the emoji doesn't dictate a wider column than the CSS width. */
+.leads-table thead tr:nth-child(2) th.frozen-temp,
+.leads-table tbody td.frozen-temp {
+  padding: 4px 0 !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+}
+
 .leads-table .frozen-4 {
   position: sticky;
-  left: 200px;
+  left: 222px; /* was 200px — shifted to make room for .frozen-temp (22px) */
   z-index: 35;
   border-right: 3px solid var(--accent);
   min-width: 180px;
@@ -604,7 +663,8 @@ input, textarea, select, button {
 /* Background colors for frozen data cells */
 .leads-table tbody .frozen-1,
 .leads-table tbody .frozen-2,
-.leads-table tbody .frozen-3 {
+.leads-table tbody .frozen-3,
+.leads-table tbody .frozen-temp {
   background: #f1f5f9 !important;
   z-index: 35;
 }
@@ -620,6 +680,7 @@ input, textarea, select, button {
 .leads-table thead .frozen-1,
 .leads-table thead .frozen-2,
 .leads-table thead .frozen-3,
+.leads-table thead .frozen-temp,
 .leads-table thead .frozen-4 {
   z-index: 35;
 }
@@ -629,9 +690,10 @@ input, textarea, select, button {
    ═══════════════════════════════════════════════════════════════ */
 .leads-table td:nth-child(1) { text-align: center; }
 .leads-table td:nth-child(2) { text-align: center; font-weight: 600; }
-.leads-table td:nth-child(4) { font-weight: 600; }
-.leads-table td:nth-child(6) { color: var(--accent); }
-.leads-table td:nth-child(7) { font-style: italic; }
+/* Cols 4+ shifted by +1 because the temp emoji column was inserted at pos 4. */
+.leads-table td:nth-child(5) { font-weight: 600; }       /* Name */
+.leads-table td:nth-child(7) { color: var(--accent); }    /* Email */
+.leads-table td:nth-child(8) { font-style: italic; }      /* Lead message */
 
 /* ═══════════════════════════════════════════════════════════════
    8. HOVER STATES
@@ -643,7 +705,8 @@ input, textarea, select, button {
 /* Maintain frozen column colors on hover for data cells only */
 .leads-table tbody tr:hover .frozen-1,
 .leads-table tbody tr:hover .frozen-2,
-.leads-table tbody tr:hover .frozen-3 {
+.leads-table tbody tr:hover .frozen-3,
+.leads-table tbody tr:hover .frozen-temp {
   background: #e2e8f0 !important; /* Slightly darker gray for hover */
   z-index: 35;
 }
@@ -667,10 +730,6 @@ input, textarea, select, button {
   z-index: 5;
 }
 
-.group-header.frozen-group {
-  z-index: 35;
-}
-
 /* COLORED COLUMN HEADERS TO MATCH GROUPS - HIGH SPECIFICITY */
 /* Colors are now applied directly in HTML for maximum control */
 
@@ -686,6 +745,7 @@ input, textarea, select, button {
 .leads-table thead tr:nth-child(2) th.frozen-1,
 .leads-table thead tr:nth-child(2) th.frozen-2,
 .leads-table thead tr:nth-child(2) th.frozen-3,
+.leads-table thead tr:nth-child(2) th.frozen-temp,
 .leads-table thead tr:nth-child(2) th.frozen-4 {
   background: #f1f5f9 !important;
   color: #64748b !important;
@@ -750,10 +810,6 @@ input, textarea, select, button {
   font-weight: 600;
   text-transform: uppercase;
 }
-
-.badge-hot { background: #fef2f2; color: #dc2626; }
-.badge-warm { background: #fef3c7; color: #d97706; }
-.badge-cold { background: #f0f9ff; color: #2563eb; }
 
 /* Edit Drawer */
 .drawer-overlay {
@@ -1097,50 +1153,7 @@ input, textarea, select, button {
   .lead-card.desktop-layout .lc-inline-select { font-size: 12px; }
 }
 
-.lc-hdrctls {
-  position: absolute;
-  top: 12px; right: 12px;
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  z-index: 5;
-}
-/* Mobile: push header actions below iOS safe-area (status bar / notch) so they stay tappable */
-@media (max-width: 899px) {
-  .lc-hdrctls { top: calc(12px + env(safe-area-inset-top, 0px)); right: calc(12px + env(safe-area-inset-right, 0px)); }
-}
-.lc-xbtn, .lc-hdrctl {
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  color: #ffffff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-.lc-xbtn {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  font-size: 20px;
-  line-height: 1;
-}
-.lc-hdrctl {
-  height: 32px;
-  border-radius: 16px;
-  padding: 0 12px;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  font-family: inherit;
-  white-space: nowrap;
-}
-.lc-xbtn:hover, .lc-hdrctl:hover { background: rgba(255, 255, 255, 0.25); }
-
 /* Green dot indicator on the Call back pill when a callback is set */
-.lc-ring { position: relative; }
-.lc-ring.has-callback { background: rgba(16, 185, 129, 0.25); }
-.lc-ring.has-callback:hover { background: rgba(16, 185, 129, 0.35); }
 .lc-callback-dot {
   width: 7px;
   height: 7px;
@@ -1324,12 +1337,10 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
 .lc-chip-hot  { background: #fef2f2; color: #dc2626; font-weight: 600; }
 .lc-chip-warm { background: #fef3c7; color: #d97706; font-weight: 600; }
 .lc-chip-cold { background: #f0f9ff; color: #2563eb; font-weight: 600; }
+.lc-chip-star { background: #fefce8; color: #a16207; font-weight: 600; }
 
 .lc-chip { font-size: 12px; padding: 3px 10px; border-radius: 20px; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
-.lc-chip-navy-filled { background: var(--brand-blue); color: #fff; font-weight: 500; }
 .lc-chip-gold-filled { background: var(--brand-gold); color: #fff; }
-.lc-chip-grey-filled { background: var(--brand-grey-6); color: #fff; }
-.lc-chip-navy-tint { background: var(--brand-blue-tint); color: var(--brand-blue); }
 .lc-chip-gold-tint { background: var(--brand-gold-tint); color: var(--brand-gold-dark); }
 .lc-chip-grey-tint { background: var(--brand-grey-tint); color: #6e6e6e; }
 
@@ -1583,7 +1594,6 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
 .lc-scroll::-webkit-scrollbar { width: 4px; }
 .lc-scroll::-webkit-scrollbar-thumb { background: var(--brand-grey-2); border-radius: 2px; }
 
-.lc-process { padding: 16px 20px; }
 .lc-steps { display: flex; gap: 4px; }
 .lc-step { flex: 1; text-align: center; padding: 8px 4px; background: var(--bg-secondary); border-radius: 8px; }
 .lc-step-pending { opacity: 0.55; }
@@ -1629,7 +1639,6 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
   font-size: 14px; padding: 5px 0; gap: 8px;
 }
 .lc-row-label { color: var(--text-secondary); flex-shrink: 0; }
-.lc-price { color: var(--brand-blue); font-weight: 600; }
 
 /* Mobile: labels and inputs BOTH at 16px so question and answer are visually identical.
    (The earlier 14/16 split was technically correct for CSS but looked wrong in practice
@@ -1826,8 +1835,6 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
   font-weight: 500;
   min-height: 44px;
 }
-.lc-btn-primary { background: var(--brand-blue); color: #fff; border: none; }
-.lc-btn-primary:hover { background: var(--brand-blue-dark); }
 .lc-btn-secondary { background: transparent; color: var(--brand-blue); border: 1px solid var(--brand-blue); }
 .lc-btn-secondary:hover { background: var(--brand-blue-tint); }
 .lc-btn-save { background: var(--success, #10b981); color: #fff; border: none; }
@@ -2225,11 +2232,6 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
   padding: 14px 16px 12px;
   flex-shrink: 0;
 }
-.mv-header-title {
-  font-size: 11px;
-  color: rgba(255,255,255,0.65);
-  letter-spacing: 1.5px;
-}
 /* Mobile brand lockup — logo on top, wordmark below, stacked left of the filter label */
 .mv-brand {
   display: flex;
@@ -2295,6 +2297,7 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
 .mv-chip[data-filter="hot"].active { background: #fef2f2; color: #dc2626; }
 .mv-chip[data-filter="warm"].active { background: #fef3c7; color: #d97706; }
 .mv-chip[data-filter="cold"].active { background: #f0f9ff; color: #2563eb; }
+.mv-chip[data-filter="star"].active { background: #fefce8; color: #a16207; }
 .mv-chip[data-filter="noact"].active { background: #f1f5f9; color: #475569; }
 .mv-chip[data-filter="callback"].active { background: #ecfdf5; color: #047857; }
 .mv-chip[data-filter="noAgency"].active { background: #faf5ff; color: #7c3aed; }
@@ -2418,7 +2421,6 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
 .mv-card:active { background: #f8fafc; }
 
 .mv-row1 { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.mv-row1.has-process { margin-bottom: 10px; }
 .mv-date { font-size: 11px; color: #64748b; white-space: nowrap; }
 /* Name container: single line, hides overflow. Marquee kicks in via JS when content overflows. */
 .mv-name {
@@ -2462,6 +2464,8 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
 .mv-hwc.warm .mv-hwc-dot { background: #d97706; }
 .mv-hwc.cold { background: #f0f9ff; color: #2563eb; }
 .mv-hwc.cold .mv-hwc-dot { background: #2563eb; }
+.mv-hwc.star { background: #fefce8; color: #a16207; }
+.mv-hwc.star .mv-hwc-dot { background: #a16207; }
 
 .mv-row2 { display: flex; align-items: center; gap: 10px; font-size: 11px; color: #64748b; }
 
@@ -3068,62 +3072,6 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
 }
 .inline-assign-select:hover { border-color: #fb923c; }
 .inline-assign-select:focus { outline: none; border-color: #fb923c; box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.2); }
-.admin-card {
-  background: white;
-  border: 0.5px solid #e2e8f0;
-  border-radius: 10px;
-  margin-bottom: 16px;
-  overflow: hidden;
-}
-.admin-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 18px;
-  border-bottom: 0.5px solid #e2e8f0;
-}
-.admin-card-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0;
-}
-.admin-card-sub {
-  font-size: 11px;
-  color: #94a3b8;
-  margin: 0;
-}
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-.admin-table th {
-  background: #f8fafc;
-  text-align: left;
-  padding: 10px 14px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 0.5px solid #e2e8f0;
-}
-.admin-table td {
-  padding: 12px 14px;
-  border-bottom: 0.5px solid #f1f5f9;
-  color: #1e293b;
-}
-.admin-table tr:last-child td { border-bottom: 0; }
-.admin-table tr.deactivated td {
-  color: #94a3b8;
-  background: #fafafa;
-}
-.admin-table .tbl-actions {
-  display: flex;
-  gap: 6px;
-  justify-content: flex-end;
-}
 .admin-btn-sm {
   font-size: 11px;
   padding: 4px 10px;
@@ -3328,25 +3276,6 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
   color: #94a3b8;
   font-style: italic;
 }
-
-.status-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.status-chip.active { background: #ecfdf5; color: #059669; }
-.status-chip.deactivated { background: #fef2f2; color: #dc2626; }
-.status-chip.pending { background: #fef3c7; color: #b45309; }
-.status-chip-dot { width: 5px; height: 5px; border-radius: 50%; }
-.status-chip.active .status-chip-dot { background: #10b981; }
-.status-chip.deactivated .status-chip-dot { background: #dc2626; }
-.status-chip.pending .status-chip-dot { background: #f59e0b; }
 
 /* Invite/deactivate modals */
 .admin-modal-overlay {
@@ -3572,6 +3501,441 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
   .mobile-view { display: flex; }
 }
 
+/* ─── Progress Tracker dashboard (backlog #8) ──────────────── */
+/* Kanban-style: dashboard-view is a non-scrolling flex shell. Vertical scroll
+   happens INSIDE each .dash-col-body so headers and the page title stay locked. */
+.dashboard-view {
+  display: none;
+  flex-direction: column;
+  padding: 18px 22px 18px;
+  background: var(--bg-tertiary);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.dash-head {
+  flex: 0 0 auto;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.dash-title { font-size: 20px; font-weight: 700; color: var(--accent); margin: 0; }
+.dash-sub { font-size: 12px; color: var(--text-tertiary); }
+
+/* Admin-only agency filter row above the board. Multi-select pills. */
+.dash-filters {
+  flex: 0 0 auto;
+  display: none; /* hidden by default; shown for admin via JS */
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.dash-filters-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+  margin-right: 4px;
+}
+.dash-filter-pill {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.dash-filter-pill:hover { background: #f1f5f9; border-color: var(--accent); }
+.dash-filter-pill.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.dash-filter-pill.active:hover { background: #001a55; }
+
+.dash-board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0,1fr));
+  gap: 12px;
+  align-items: stretch;
+  flex: 1;
+  min-height: 0;
+}
+@media (max-width: 1280px) {
+  .dash-board { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@media (max-width: 900px) {
+  .dash-board { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+/* Mobile: horizontal carousel — one column per viewport width, snap on swipe.
+   Each column fills the dash-board height; its body scrolls internally. */
+@media (max-width: 768px) {
+  .dash-board {
+    display: flex;
+    grid-template-columns: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 12px;
+    scroll-padding-left: 22px;
+  }
+  .dash-board::-webkit-scrollbar { display: none; }
+  .dash-col {
+    flex: 0 0 calc(100vw - 44px);
+    scroll-snap-align: start;
+    height: 100%;
+  }
+}
+
+.dash-col {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.dash-col-head {
+  flex: 0 0 auto;
+  padding: 10px 12px;
+  border-radius: 8px 8px 0 0;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #cbd5e1;
+  border-bottom: 0;
+  background: #f1f5f9;
+  color: #334155;
+}
+.dash-col-head .count {
+  background: rgba(255,255,255,0.7);
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.dash-col-body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  border: 1px solid #94a3b8;
+  border-top: 0;
+  border-radius: 0 0 8px 8px;
+  /* Neutral shadow-grey body for ALL columns — temp identity stays in the
+     header band + the tile header band. Two stops darker than the page bg
+     and three stops darker than white tiles, so tiles pop uniformly. */
+  background: #cbd5e1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* Column heads keep their temp tints so the column is still instantly
+   identifiable; only the body switches to neutral grey. New Leads gets green
+   so it's clearly distinct from Cold's blue. */
+.dash-col[data-bucket="recent"] .dash-col-head { background: linear-gradient(180deg, #d1fae5, #ecfdf5); color: #047857; border-color: #6ee7b7; }
+.dash-col[data-bucket="hot"]    .dash-col-head { background: linear-gradient(180deg, #fee2e2, #fef2f2); color: #b91c1c; border-color: #fca5a5; }
+.dash-col[data-bucket="warm"]   .dash-col-head { background: linear-gradient(180deg, #fef3c7, #fffbeb); color: #b45309; border-color: #fcd34d; }
+.dash-col[data-bucket="cold"]   .dash-col-head { background: linear-gradient(180deg, #dbeafe, #eff6ff); color: #1d4ed8; border-color: #93c5fd; }
+.dash-col-activity .dash-col-head { background: #fff; color: var(--accent); }
+
+.dash-tile {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  /* Clip the colored header band so it follows the rounded corners */
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.06);
+  transition: box-shadow .12s ease, transform .06s ease;
+  /* Without this the tile shrinks to fit when the column has many leads
+     (it's a flex-column child of .dash-col-body) — collapses to a 4px stripe.
+     `flex-shrink: 0` keeps the tile at content-height and lets overflow scroll. */
+  flex-shrink: 0;
+}
+.dash-tile:hover { box-shadow: 0 4px 12px rgba(15,23,42,0.12); transform: translateY(-1px); }
+
+/* Colored header band — temp icon + lead name. Tinted to match the lead's temp. */
+.dash-tile-head {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 13.5px;
+  border-bottom: 1px solid;
+}
+.dash-tile-head .emoji { font-size: 15px; line-height: 1; flex: 0 0 auto; }
+/* The snowflake ❄️ renders as a pale-blue gradient on Apple systems which
+   washes into the cold tile head's blue background. Darken + saturate to
+   restore contrast. Hot 🔥 and Warm ☀️ have enough native contrast already. */
+.dash-tile-head .emoji.em-cold { filter: brightness(0.7) saturate(1.6); }
+.dash-tile-head .nm {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.dash-tile.t-hot  .dash-tile-head { background: #fee2e2; color: #b91c1c; border-bottom-color: #fca5a5; }
+.dash-tile.t-warm .dash-tile-head { background: #fef3c7; color: #b45309; border-bottom-color: #fcd34d; }
+.dash-tile.t-cold .dash-tile-head { background: #dbeafe; color: #1d4ed8; border-bottom-color: #93c5fd; }
+/* New Leads column: tiles get green headers (matching the green column head)
+   regardless of the lead's assigned temp. The temp emoji still shows so users
+   can see which column the lead will graduate into on first activity. */
+.dash-tile.t-new  .dash-tile-head { background: #d1fae5; color: #047857; border-bottom-color: #6ee7b7; }
+.dash-tile.t-rec  .dash-tile-head { background: #e2e8f0; color: #334155; border-bottom-color: #cbd5e1; }
+
+.dash-tile-body { padding: 8px 10px; }
+.dash-tile-meta {
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.dash-tile-meta .date { white-space: nowrap; flex-shrink: 0; }
+.dash-tile-meta .agency {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #334155;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.dash-tile-meta .agency .ico {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  color: #64748b;
+}
+.dash-tile-meta .agency .nm {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dash-tile-comment {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.dash-tile-comment.empty { color: #94a3b8; font-style: italic; }
+
+.dash-empty {
+  color: #94a3b8;
+  font-size: 12px;
+  font-style: italic;
+  padding: 16px;
+  text-align: center;
+}
+
+/* ─── Recent activity feed items (.dash-col-activity body) ─── */
+.dash-activity-item {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.06);
+  transition: box-shadow .12s ease, transform .06s ease;
+  /* Same shrink protection as .dash-tile — flex children of a flex column
+     would otherwise collapse when there's too many. */
+  flex-shrink: 0;
+}
+.dash-activity-item:hover { box-shadow: 0 4px 12px rgba(15,23,42,0.12); transform: translateY(-1px); }
+.dash-activity-dot {
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-top: 5px;
+  background: #cbd5e1;
+}
+.dash-activity-dot.k-edited     { background: #3b82f6; }
+.dash-activity-dot.k-assigned   { background: #8b5cf6; }
+.dash-activity-dot.k-hidden     { background: #f97316; }
+.dash-activity-dot.k-unhidden   { background: #10b981; }
+.dash-activity-dot.k-deleted    { background: #ef4444; }
+.dash-activity-dot.k-created    { background: #f59e0b; }
+.dash-activity-body {
+  flex: 1 1 auto;
+  font-size: 12px;
+  color: #334155;
+  line-height: 1.35;
+  min-width: 0;
+}
+.dash-activity-who { font-weight: 700; color: #0f172a; }
+.dash-activity-action { color: #475569; }
+.dash-activity-lead {
+  font-weight: 600;
+  color: var(--accent);
+}
+.dash-activity-detail {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dash-activity-time {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 3px;
+}
+
+/* ─── "Close out →" tile footer + modal ─── */
+.dash-tile-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed #e2e8f0;
+}
+.dash-tile-closeout {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 3px 7px;
+  border-radius: 4px;
+  user-select: none;
+  transition: color 0.12s ease, background 0.12s ease;
+}
+.dash-tile-closeout:hover { color: #b91c1c; background: #fef2f2; }
+
+.closeout-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10002;
+  background: rgba(30, 41, 59, 0.55);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.closeout-overlay.open { display: flex; }
+.closeout-modal {
+  background: #fff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: inherit;
+}
+.closeout-head {
+  padding: 14px 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.closeout-head h3 { margin: 0 0 3px; font-size: 16px; color: var(--accent); }
+.closeout-head .sub { font-size: 12px; color: #64748b; }
+.closeout-body { padding: 16px 20px; }
+.closeout-body label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin: 12px 0 5px;
+}
+.closeout-body label:first-child { margin-top: 0; }
+.closeout-body select,
+.closeout-body textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.closeout-body textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+.closeout-foot {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 14px 20px;
+  border-top: 1px solid #e2e8f0;
+}
+.closeout-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #334155;
+  cursor: pointer;
+  font-family: inherit;
+}
+.closeout-btn:hover:not(:disabled) { background: #f1f5f9; }
+.closeout-btn.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.closeout-btn.primary:hover:not(:disabled) { background: #001a55; }
+.closeout-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.closeout-error {
+  font-size: 12px;
+  color: #dc2626;
+  margin-top: 8px;
+  min-height: 16px;
+}
+
+/* When the dashboard view is active, hide the leads list + chrome. */
+body.view-dashboard .main-content { display: none; }
+body.view-dashboard #unassignedBanner { display: none !important; }
+body.view-dashboard .stats-pills { display: none; }
+body.view-dashboard .dashboard-view { display: flex; }
+body.view-dashboard .mv-search,
+body.view-dashboard .mv-chips,
+body.view-dashboard #mvFilterSummary,
+body.view-dashboard #mvUnassignedBanner,
+body.view-dashboard .mv-list,
+body.view-dashboard .mv-fab,
+body.view-dashboard .mv-header-sub { display: none; }
+/* On mobile, the mobile-view contains the navy header. We keep the header
+   visible so the Dashboard nav pill is reachable but hide the rest. The
+   `flex: 0 0 auto` stops .mobile-view from claiming the body's leftover flex
+   space (which would squeeze #dashboardView). `order: -1` renders the mv-header
+   *before* #dashboardView in the flex column so the nav pill stays at the top. */
+@media (max-width: 768px) {
+  body.view-dashboard .mobile-view {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+    order: -1;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3716,6 +4080,8 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
       <span style="width: 6px; height: 6px; background: var(--success); border-radius: 50%; display: inline-block;"></span>
       Live
     </span>
+    <span class="nav-pill" id="dashboardNavPill" onclick="showDashboardView()" title="Open Progress Tracker">Dashboard</span>
+    <span class="nav-pill" id="tableNavPill" onclick="showTableView()" title="Open the full leads table">Table view</span>
   </div>
   
   <div class="stats-pills">
@@ -3730,13 +4096,18 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
     </div>
     <div class="stat-pill warm" data-filter="warm" onclick="setDesktopFilter('warm')">
       <span class="stat-dot warm"></span>
-      <span>🔸 4 wks</span>
+      <span>☀️ 4 wks</span>
       <span id="warmCount">0</span>
     </div>
     <div class="stat-pill cold" data-filter="cold" onclick="setDesktopFilter('cold')">
       <span class="stat-dot cold"></span>
       <span>❄️ 12 wks</span>
       <span id="coldCount">0</span>
+    </div>
+    <div class="stat-pill star" data-filter="star" onclick="setDesktopFilter('star')">
+      <span class="stat-dot star"></span>
+      <span>⭐️ Won</span>
+      <span id="starCount">0</span>
     </div>
     <div class="stat-pill noact" data-filter="noact" onclick="setDesktopFilter('noact')">
       <span class="stat-dot noact"></span>
@@ -3852,6 +4223,7 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
           <th class="frozen-1" style="background: #f1f5f9; color: #64748b; z-index: 35;"></th>
           <th class="frozen-2" style="background: #f1f5f9; color: #64748b; z-index: 35;"></th>
           <th class="frozen-3" style="background: #f1f5f9; color: #64748b; z-index: 35;"></th>
+          <th class="frozen-temp" style="background: #f1f5f9; color: #64748b; z-index: 35;"></th>
           <th class="frozen-4" style="background: #e0f7f4; color: #0d7a6e; z-index: 35; border-right: 2px solid #0d9488;"></th>
           <th class="group-header" colspan="3" style="background: #e0f7f4; color: #0d7a6e; border-bottom: 2px solid #0d9488; z-index: 5; text-align: center;">LEAD DETAILS</th>
           <th class="group-header" colspan="1" style="background: #ffedd5; color: #9a3412; border-bottom: 2px solid #ea580c; z-index: 5; text-align: center;">COMMENTS / INTERACTIONS</th>
@@ -3859,6 +4231,7 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
           <th class="group-header" colspan="1" style="background: #dbeafe; color: #1e40af; border-bottom: 2px solid #2563eb; z-index: 5; text-align: center;">LEAD SOURCE</th>
           <th class="group-header" colspan="13" style="background: #fef9c3; color: #854d0e; border-bottom: 2px solid #ca8a04; z-index: 5; text-align: center;">QUALIFYING QUESTIONS</th>
           <th class="group-header" colspan="4" style="background: #fee2e2; color: #991b1b; border-bottom: 2px solid #dc2626; z-index: 5; text-align: center;">QUALIFYING OUTCOMES</th>
+          <th class="group-header" colspan="2" style="background: #dcfce7; color: #166534; border-bottom: 2px solid #16a34a; z-index: 5; text-align: center;">CONTRACT FOR SALE</th>
           <th class="group-header" colspan="2" style="background: #e0e7ff; color: #3730a3; border-bottom: 2px solid #6366f1; z-index: 5; text-align: center;">ASSIGNMENT</th>
         </tr>
         <tr>
@@ -3868,6 +4241,7 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
             <span>LEAD DATE</span>
             <span id="dateSortArrow" style="margin-left: 4px; font-size: 10px;">▼</span>
           </th>
+          <th class="frozen-temp" style="background: #f1f5f9 !important; color: #64748b !important; z-index: 35; text-align: center; vertical-align: middle;" title="Ready To Buy status"><svg width="11" height="16" viewBox="0 0 12 18" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;"><rect x="4.5" y="1.5" width="3" height="10.5" rx="1.5" fill="#fff" stroke="#475569" stroke-width="0.9"/><rect x="5.2" y="6" width="1.6" height="6.5" fill="#dc2626"/><circle cx="6" cy="13.5" r="3" fill="#dc2626" stroke="#475569" stroke-width="0.9"/></svg></th>
           <th class="frozen-4" style="background: #e0f7f4 !important; color: #0d7a6e !important; z-index: 35; border-right: 2px solid #0d9488; text-align: center;">NAME</th>
           <th style="background: #e0f7f4 !important; color: #0d7a6e !important; text-align: center;">MOBILE</th>
           <th style="background: #e0f7f4 !important; color: #0d7a6e !important; text-align: center;">EMAIL</th>
@@ -3896,6 +4270,8 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
           <th style="background: #fee2e2 !important; color: #991b1b !important; text-align: center;">FOLLOW UP</th>
           <th style="background: #fee2e2 !important; color: #991b1b !important; text-align: center;">CLOSED</th>
           <th style="background: #fee2e2 !important; color: #991b1b !important; text-align: center;">SETTLE TIME OK</th>
+          <th style="background: #dcfce7 !important; color: #166534 !important; text-align: center;">UNDER CFS</th>
+          <th style="background: #dcfce7 !important; color: #166534 !important; text-align: center;">CFS LOT</th>
           <th style="background: #e0e7ff !important; color: #3730a3 !important; text-align: center;">ASSIGNED AGENCY</th>
           <th style="background: #e0e7ff !important; color: #3730a3 !important; text-align: center;">ASSIGNED AGENT</th>
         </tr>
@@ -3907,6 +4283,58 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
   </div>
   <!-- Desktop Call-back view — shown in place of the table when the Call back filter is active -->
   <div id="callbackView" class="cb-view" style="display: none;"></div>
+</div>
+
+<!-- Progress Tracker dashboard (backlog #8). Hidden by default; toggled via the
+     Dashboard nav pill in the desktop breadcrumb and the mobile mv-header.
+     `body.view-dashboard` swaps visibility with `.main-content` / mobile list. -->
+<div id="dashboardView" class="dashboard-view">
+  <div class="dash-head">
+    <h1 class="dash-title">Progress Tracker</h1>
+    <span class="dash-sub" id="dashSub">Active pipeline · click any tile to open the lead</span>
+  </div>
+  <!-- Admin-only agency filter row. populateDashAgencyFilters() injects pills
+       after loadLookupTables() resolves. Hidden via CSS for non-admin roles. -->
+  <div class="dash-filters" id="dashFilters"></div>
+  <!-- Order reads left-to-right as deal progression: most-actionable feed first,
+       then waiting-room (no activity), then Cold → Warm → Hot. -->
+  <div class="dash-board">
+    <div class="dash-col dash-col-activity">
+      <div class="dash-col-head"><span>Recent activity</span></div>
+      <div class="dash-col-body">
+        <!-- Populated by loadDashActivity() → renderDashActivityFeed() from public.audit_log -->
+        <div class="dash-empty">Loading recent activity…</div>
+      </div>
+    </div>
+    <div class="dash-col" data-bucket="recent">
+      <div class="dash-col-head">
+        <span>New Leads</span>
+        <span class="count" id="dashCountRecent">0</span>
+      </div>
+      <div class="dash-col-body" id="dashColRecent"></div>
+    </div>
+    <div class="dash-col" data-bucket="cold">
+      <div class="dash-col-head">
+        <span>❄️ Cold</span>
+        <span class="count" id="dashCountCold">0</span>
+      </div>
+      <div class="dash-col-body" id="dashColCold"></div>
+    </div>
+    <div class="dash-col" data-bucket="warm">
+      <div class="dash-col-head">
+        <span>☀️ Warm</span>
+        <span class="count" id="dashCountWarm">0</span>
+      </div>
+      <div class="dash-col-body" id="dashColWarm"></div>
+    </div>
+    <div class="dash-col" data-bucket="hot">
+      <div class="dash-col-head">
+        <span>🔥 Hot</span>
+        <span class="count" id="dashCountHot">0</span>
+      </div>
+      <div class="dash-col-body" id="dashColHot"></div>
+    </div>
+  </div>
 </div>
 
 <!-- Mobile List View (shown on <768px viewports via media query) -->
@@ -3925,6 +4353,8 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
           </svg>
           <span class="mv-brand-name">Leads Manager</span>
         </div>
+        <span class="nav-pill" id="mvDashboardNavPill" onclick="showDashboardView()" title="Open Progress Tracker">Dashboard</span>
+        <span class="nav-pill" id="mvTableNavPill" onclick="showTableView()" title="Open the full leads table">Table view</span>
         <div>
           <div class="mv-header-sub" style="font-size: 12px; color: rgba(255,255,255,0.75); font-weight: 400;"><span id="mvHeaderLabel">All leads</span> (<span id="mvTotalCount">0</span>)</div>
         </div>
@@ -3961,8 +4391,9 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
   <div class="mv-chips">
     <button class="mv-chip active" data-filter="all" onclick="setMobileFilter('all')">All <span id="mvAllCount">0</span></button>
     <button class="mv-chip" data-filter="hot" onclick="setMobileFilter('hot')"><span class="mv-chip-dot" style="background: #dc2626;"></span>🔥 2 wks <span id="mvHotCountChip">0</span></button>
-    <button class="mv-chip" data-filter="warm" onclick="setMobileFilter('warm')"><span class="mv-chip-dot" style="background: #d97706;"></span>🔸 4 wks <span id="mvWarmCountChip">0</span></button>
+    <button class="mv-chip" data-filter="warm" onclick="setMobileFilter('warm')"><span class="mv-chip-dot" style="background: #d97706;"></span>☀️ 4 wks <span id="mvWarmCountChip">0</span></button>
     <button class="mv-chip" data-filter="cold" onclick="setMobileFilter('cold')"><span class="mv-chip-dot" style="background: #2563eb;"></span>❄️ 12 wks <span id="mvColdCountChip">0</span></button>
+    <button class="mv-chip" data-filter="star" onclick="setMobileFilter('star')"><span class="mv-chip-dot" style="background: #a16207;"></span>⭐️ Won <span id="mvStarCountChip">0</span></button>
     <button class="mv-chip" data-filter="noact" onclick="setMobileFilter('noact')"><span class="mv-chip-dot" style="background: transparent; border: 1.5px dashed #cbd5e1;"></span>No activity <span id="mvNoactCountChip">0</span></button>
     <button class="mv-chip" data-filter="callback" onclick="setMobileFilter('callback')"><span class="mv-chip-dot" style="background: #10b981;"></span>Call back <span id="mvCallbackCountChip">0</span></button>
     <!-- Role-conditional admin/agency chips. Visibility set in syncRoleVisibility() at login. -->
@@ -4292,7 +4723,7 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
               <span>(2 wks)</span>
             </div>
             <div class="pill hwc-pill" data-value="warm" onclick="selectHWC(this)">
-              <span class="emoji">🔸</span>
+              <span class="emoji">☀️</span>
               <span>(4 wks)</span>
             </div>
             <div class="pill hwc-pill" data-value="cold" onclick="selectHWC(this)">
@@ -4490,6 +4921,36 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
   </div>
 </div>
 
+<!-- Close-out modal: opened from a dashboard tile's "Close out →" link.
+     Sets one of the 4 Closed booleans on the lead, optionally prepends a
+     comment prefixed `[Closed: <outcome>]`. The lead then falls off the
+     tracker (filtered out by lead.closed !== '—' in renderDashboardBoard). -->
+<div class="closeout-overlay" id="closeOutOverlay" onclick="if(event.target===this) closeCloseOutModal()">
+  <div class="closeout-modal" role="dialog" aria-modal="true" aria-labelledby="closeOutTitle">
+    <div class="closeout-head">
+      <h3 id="closeOutTitle">Close out lead</h3>
+      <div class="sub">Removes this lead from the Progress Tracker. It stays in the main Leads list with the outcome below.</div>
+    </div>
+    <div class="closeout-body">
+      <label for="closeOutOutcome">Outcome</label>
+      <select id="closeOutOutcome" onchange="updateCloseOutButton()">
+        <option value="">Choose an outcome…</option>
+        <option value="nm">No Mobile</option>
+        <option value="dc">Disconnected</option>
+        <option value="ni">Not Interested</option>
+        <option value="duplicate">Duplicate</option>
+      </select>
+      <label for="closeOutNotes">Notes (optional — posted as a comment)</label>
+      <textarea id="closeOutNotes" rows="3" placeholder="Any context worth keeping with the closed lead…"></textarea>
+      <div class="closeout-error" id="closeOutError"></div>
+    </div>
+    <div class="closeout-foot">
+      <button class="closeout-btn" onclick="closeCloseOutModal()">Cancel</button>
+      <button class="closeout-btn primary" id="closeOutSubmit" onclick="submitCloseOut()" disabled>Close out</button>
+    </div>
+  </div>
+</div>
+
 <!-- Hover tooltip for long-text table cells -->
 <div id="cellTooltip"></div>
 
@@ -4498,6 +4959,22 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
 const SUPABASE_URL = 'https://uwrmnwdtldmlxsbwypbo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3cm1ud2R0bGRtbHhzYnd5cGJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxMjQyMTAsImV4cCI6MjA5MzcwMDIxMH0.4JGzdw7YKM5kDaKjCHAuBR1Dgj5c5csdC1eHNi0aDQY';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1`;
+
+// POSTs `body` (as JSON) to the named Edge Function with the current user's
+// Bearer token. Returns the raw Response — callers handle .ok / .status /
+// .json() themselves so each site can keep its own error UI.
+async function callEdgeFunction(name, body) {
+  const { data: { session } } = await sb.auth.getSession();
+  return fetch(`${SUPABASE_FUNCTIONS_URL}/${name}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+}
 
 // Leads data loaded from database
 let leadsData = [];
@@ -4676,6 +5153,14 @@ async function enterApp() {
   renderMobileList();
   updateCounts();
 
+  // Admin agency filters live on the dashboard. Populate once the lookup is
+  // ready; the function no-ops for non-admin roles.
+  populateDashAgencyFilters();
+
+  // Default landing view = Progress Tracker dashboard. Users switch to the
+  // full leads table via the "Table view" pill next to the Dashboard pill.
+  showDashboardView();
+
   // Show any unread notifications (e.g. lead ownership transfers)
   checkAndShowNotifications();
 
@@ -4795,15 +5280,7 @@ async function refreshGearBadges() {
     // Deleted leads — scoped per role via EF call (only fetch count, not full data)
     let delN = 0;
     try {
-      const { data: { session } } = await sb.auth.getSession();
-      const r = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/deleted-leads', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ action: 'list' })
-      });
+      const r = await callEdgeFunction('deleted-leads', { action: 'list' });
       if (r.ok) {
         const data = await r.json();
         delN = (data.leads || []).length;
@@ -5131,10 +5608,44 @@ async function renderUsersPage() {
   // Users keyed by agency_id / agent_id — so we know which agency row corresponds to which user row
   const userByAgencyId = {};
   const userByAgentId = {};
+  const adminUsers = [];
   (users || []).forEach(u => {
     if (u.role === 'agency' && u.agency_id) userByAgencyId[u.agency_id] = u;
     if (u.role === 'agent' && u.agent_id) userByAgentId[u.agent_id] = u;
+    if (u.role === 'admin') adminUsers.push(u);
   });
+  // Sort admins: active first (alpha), then deactivated (alpha).
+  adminUsers.sort((a, b) => {
+    if (!!a.deactivated !== !!b.deactivated) return a.deactivated ? 1 : -1;
+    return String(a.username || '').localeCompare(String(b.username || ''));
+  });
+  const activeAdminCount = adminUsers.filter(u => !u.deactivated).length;
+  const deactivatedAdminCount = adminUsers.length - activeAdminCount;
+
+  function buildAdminRow(adminUser) {
+    const deactivated = adminUser.deactivated;
+    const isSelf = me && me.id === adminUser.id;
+    const statusChip = deactivated
+      ? '<span class="ag-chip deactivated"><span class="ag-dot"></span>Deactivated</span>'
+      : '<span class="ag-chip active"><span class="ag-dot"></span>Active</span>';
+    // Self can't be deactivated; otherwise toggle Deactivate/Reactivate.
+    let action = '';
+    if (!isSelf) {
+      action = deactivated
+        ? `<button class="ag-btn success" onclick="reactivateUser('${adminUser.id}', '${escapeHtml(adminUser.username).replace(/'/g,"\\'")}')">Reactivate</button>`
+        : `<button class="ag-btn danger" onclick="deactivateAdmin('${adminUser.id}', '${escapeHtml(adminUser.username).replace(/'/g,"\\'")}')">Deactivate</button>`;
+    }
+    const selfTag = isSelf ? '<span style="color:#94a3b8;font-size:11px;margin-left:8px;">(you)</span>' : '';
+    return `
+      <div class="agent-row ${deactivated ? 'deactivated' : ''}">
+        <div class="agent-avatar" style="background: #fee2e2; color: #b91c1c;">${escapeHtml(initials(adminUser.username))}</div>
+        <div class="agent-info-block">
+          <div class="agent-name">${escapeHtml(adminUser.username || '—')}${selfTag}</div>
+        </div>
+        ${statusChip}
+        ${action}
+      </div>`;
+  }
 
   // Agents grouped by agency
   const agentsByAgency = {};
@@ -5225,17 +5736,42 @@ async function renderUsersPage() {
       </div>`;
   }
 
+  // Admins card — sits at the top of the Users & Agencies page, before agencies.
+  // Always shown (even with zero admins) because the empty state is a useful
+  // prompt for the very first admin invite.
+  const adminsCardHtml = `
+    <div class="agency-card admins-card" data-admin-section="1">
+      <div class="agency-head" style="cursor: default;">
+        <div class="agency-icon" style="background: #fee2e2; color: #b91c1c;">⚙</div>
+        <div class="agency-info-block">
+          <div class="agency-name">Admins</div>
+          <div class="agency-meta">Full system access — every lead, the audit log, and admin pages</div>
+        </div>
+        <div class="agency-stats">
+          <div class="agency-stat"><b>${activeAdminCount}</b>active</div>
+          ${deactivatedAdminCount > 0 ? `<div class="agency-stat"><b>${deactivatedAdminCount}</b>deactivated</div>` : ''}
+        </div>
+      </div>
+      <div class="agents-list" style="display: block;">
+        ${adminUsers.length === 0
+          ? '<div class="agents-empty">No admins recorded. Click "+ Invite admin" to add one.</div>'
+          : adminUsers.map(buildAdminRow).join('')}
+      </div>
+    </div>`;
+
   pageEl.innerHTML = `
     <div class="admin-page-header">
       <div>
         <h2 class="admin-page-title">Users &amp; Agencies</h2>
-        <p class="admin-page-sub">${totalAgencies} agencies · ${totalAgents} agents${totalDeactivated > 0 ? ' · ' + totalDeactivated + ' deactivated' : ''}</p>
+        <p class="admin-page-sub">${activeAdminCount} admin${activeAdminCount === 1 ? '' : 's'} · ${totalAgencies} agencies · ${totalAgents} agents${totalDeactivated > 0 ? ' · ' + totalDeactivated + ' deactivated' : ''}</p>
       </div>
       <div>
-        <button class="ag-btn primary" onclick="openInviteModal('agency')">+ Invite agency</button>
+        <button class="ag-btn primary" onclick="openInviteModal('admin')" style="background: #b91c1c; border-color: #b91c1c;">+ Invite admin</button>
+        <button class="ag-btn primary" style="margin-left: 8px;" onclick="openInviteModal('agency')">+ Invite agency</button>
         <button class="admin-btn-sm" style="margin-left: 8px;" onclick="closeAdminPage()">← Back to leads</button>
       </div>
     </div>
+    ${adminsCardHtml}
     ${totalAgencies === 0
       ? '<div class="admin-empty">No agencies yet. Click "+ Invite agency" to get started.</div>'
       : (agencies || []).map(buildAgencyCard).join('')
@@ -5561,8 +6097,21 @@ function openInviteModal(mode, preselectAgencyId) {
   document.getElementById('inviteAgencyPrincipal').value = '';
   document.getElementById('inviteError').textContent = '';
 
-  const title = mode === 'agency' ? 'Invite an agency' : 'Invite an agent';
+  const title = mode === 'agency' ? 'Invite an agency'
+               : mode === 'agent' ? 'Invite an agent'
+               : 'Invite an admin';
   document.getElementById('inviteModalTitle').textContent = title;
+
+  // Admin invites get a louder subtitle warning users about full-read scope.
+  // Other modes use the default subtitle from the modal HTML.
+  const sub = document.getElementById('inviteModalSub');
+  if (sub) {
+    sub.textContent = mode === 'admin'
+      ? '⚠️ Admins see ALL leads, audit events, and admin pages. Only invite people you trust.'
+      : "They'll receive an email with a link to set their password.";
+    sub.style.color = mode === 'admin' ? '#b91c1c' : '';
+    sub.style.fontWeight = mode === 'admin' ? '600' : '';
+  }
 
   // Agency field visible only for agent invite
   const agencyField = document.getElementById('inviteAgencyField');
@@ -5614,14 +6163,30 @@ async function submitInvite() {
   if (!name || !email) { errEl.textContent = 'Name and email are required.'; return; }
   if (!email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) { errEl.textContent = 'Invalid email address.'; return; }
 
+  // Extra friction for admin invites — full read access to every lead is a big
+  // privilege grant, so make the user type-confirm before the email goes out.
+  if (inviteMode === 'admin') {
+    const ok = confirm(
+      `Invite ${name} (${email}) as an ADMIN?\n\n` +
+      `Admins can:\n` +
+      `  • see every lead in the system (no agency/agent scope)\n` +
+      `  • see the full audit log\n` +
+      `  • deactivate other users\n\n` +
+      `Continue?`
+    );
+    if (!ok) return;
+  }
+
   btn.disabled = true;
   btn.textContent = 'Sending…';
 
   try {
-    const { data: { session } } = await sb.auth.getSession();
     const body = { name, email };
 
-    if (inviteMode === 'agency') {
+    if (inviteMode === 'admin') {
+      // No agency/agent rows to create — admin is a standalone user.
+      body.role = 'admin';
+    } else if (inviteMode === 'agency') {
       // Generate a new agency id + row first, then invite with that agency_id
       const newAgencyId = 'ag_' + Date.now();
       const principal = document.getElementById('inviteAgencyPrincipal').value.trim() || null;
@@ -5649,14 +6214,7 @@ async function submitInvite() {
     }
 
     // Call invite-user edge function
-    const resp = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/invite-user', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${session.access_token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    });
+    const resp = await callEdgeFunction('invite-user', body);
     const respData = await resp.json();
     if (!resp.ok) {
       errEl.textContent = respData.error || 'Invite failed';
@@ -5727,10 +6285,6 @@ async function openDeactivateModal(userId, role, name, agencyId) {
   document.getElementById('deactivateModal').classList.add('open');
 }
 
-// Deprecated stubs (no longer used but keep for safety)
-function findUserIdForAgent() { return null; }
-function findAgentIdForUser() { return null; }
-
 function closeDeactivateModal() {
   document.getElementById('deactivateModal').classList.remove('open');
   deactivateTarget = null;
@@ -5763,15 +6317,7 @@ async function submitDeactivate() {
   btn.textContent = 'Deactivating…';
 
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    const resp = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/deactivate-user', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${session.access_token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    });
+    const resp = await callEdgeFunction('deactivate-user', body);
     const data = await resp.json();
     if (!resp.ok) {
       errEl.textContent = data.error || 'Deactivation failed';
@@ -5818,19 +6364,54 @@ async function submitDeactivate() {
 }
 
 // ─── Reactivate ────────────────────────────────────
+// Admin-specific deactivate flow — no reassignment dropdown needed (admins
+// aren't lead owners), so a plain confirm() is enough. Two safeguards:
+//   1. You can't deactivate yourself (would lock you out instantly).
+//   2. You can't deactivate the last active admin (system would have no
+//      admin able to invite or manage anyone).
+async function deactivateAdmin(userId, displayName) {
+  if (me?.id === userId) {
+    alert("You can't deactivate yourself.\n\nIf you need another admin to do it, invite them first, then they can deactivate you.");
+    return;
+  }
+
+  // Re-fetch the current admin set so we count against fresh data (the page
+  // cache could be stale if another admin just changed something).
+  const { data: admins, error } = await sb
+    .from('users')
+    .select('id, deactivated')
+    .eq('role', 'admin');
+  if (error) {
+    alert('Could not verify admin count: ' + error.message);
+    return;
+  }
+  const activeAdmins = (admins || []).filter(u => !u.deactivated);
+  if (activeAdmins.length <= 1) {
+    alert("Can't deactivate the last active admin.\n\nInvite another admin first, then they can deactivate this one.");
+    return;
+  }
+
+  if (!confirm(`Deactivate admin ${displayName}?\n\nThey will lose login access immediately. You can reactivate them later from this page.`)) return;
+
+  try {
+    const resp = await callEdgeFunction('deactivate-user', { target_user_id: userId });
+    const data = await resp.json();
+    if (!resp.ok) {
+      alert('Deactivation failed: ' + (data.error || 'unknown error'));
+      return;
+    }
+    await renderUsersPage();
+    alert(displayName + ' deactivated.');
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+}
+
 async function reactivateUser(userId, displayName) {
   if (!confirm(`Reactivate ${displayName}? They will regain login access.`)) return;
 
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    const resp = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/reactivate-user', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${session.access_token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ target_user_id: userId })
-    });
+    const resp = await callEdgeFunction('reactivate-user', { target_user_id: userId });
     const data = await resp.json();
     if (!resp.ok) { alert('Reactivation failed: ' + (data.error || 'unknown error')); return; }
 
@@ -6025,15 +6606,7 @@ async function renderDeletedPage() {
 
   let resp;
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    const r = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/deleted-leads', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${session.access_token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ action: 'list' })
-    });
+    const r = await callEdgeFunction('deleted-leads', { action: 'list' });
     resp = await r.json();
     if (!r.ok) throw new Error(resp.error || 'Failed to load');
   } catch (err) {
@@ -6403,15 +6976,7 @@ async function restoreDeletedLeads(leadIds) {
   if (!confirm(`Restore ${label}? They will reappear on the main leads page.`)) return;
 
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    const r = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/deleted-leads', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${session.access_token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ action: 'restore', lead_ids: leadIds })
-    });
+    const r = await callEdgeFunction('deleted-leads', { action: 'restore', lead_ids: leadIds });
     const data = await r.json();
     if (!r.ok) {
       alert('Restore failed: ' + (data.error || 'unknown error'));
@@ -6459,15 +7024,7 @@ async function hardDeleteConfirm(leadIds) {
   });
 
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    const r = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/deleted-leads', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${session.access_token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ action: 'hard_delete', lead_ids: leadIds })
-    });
+    const r = await callEdgeFunction('deleted-leads', { action: 'hard_delete', lead_ids: leadIds });
     const data = await r.json();
     if (!r.ok) {
       alert('Permanent delete failed: ' + (data.error || 'unknown error'));
@@ -6781,8 +7338,10 @@ function mapFormToDb(formData) {
   if (formData.settleOk === 'Yes') settle_ok = true;
   else if (formData.settleOk === 'No') settle_ok = false;
 
-  // HWC status text + the three booleans
-  const hwc = (formData.hotWarmStatus || 'cold').toLowerCase();
+  // HWC status text + the three booleans. saveLead() enforces a non-empty value
+  // (Hot/Warm/Cold required; Star auto-set if CFS data is present), so no fallback here.
+  // For 'star' all three legacy booleans are false — the canonical text is the source of truth.
+  const hwc = (formData.hotWarmStatus || '').toLowerCase() || null;
   const is_hot = hwc === 'hot';
   const is_warm = hwc === 'warm';
   const is_cold = hwc === 'cold';
@@ -7090,6 +7649,7 @@ function formatReadyToBuyForAudit(v) {
   if (v === 'hot') return 'Hot (2 wks)';
   if (v === 'warm') return 'Warm (4 wks)';
   if (v === 'cold') return 'Cold (12 wks)';
+  if (v === 'star') return 'Star — Won (under CFS)';
   return v;
 }
 
@@ -7620,6 +8180,10 @@ async function callbackDismiss(leadId) {
 
 // Render table
 function renderTable() {
+  // Keep the dashboard in sync with leadsData on every render — cheap, idempotent,
+  // and avoids having to thread refresh calls through every save/edit pathway.
+  refreshDashboardIfVisible();
+
   const tbody = document.getElementById('leadsTableBody');
   const tableWrap = document.getElementById('mainTableWrapper');
   const cbView = document.getElementById('callbackView');
@@ -7668,6 +8232,7 @@ function renderTable() {
       <td class="frozen-1"><input type="checkbox" class="row-cb" data-lead-id="${lead.id}" onclick="event.stopPropagation()" onchange="onRowCheckboxChange()"></td>
       <td class="frozen-2">${lead.id}</td>
       <td class="frozen-3">${escapeHtml(formatDate(lead.date))}</td>
+      <td class="frozen-temp" style="text-align: center; font-size: 16px; line-height: 1;" title="${lead.hotWarmStatus ? escapeHtml(formatReadyToBuyForAudit(lead.hotWarmStatus)) : 'Ready To Buy not set'}">${hwcEmoji(lead.hotWarmStatus)}</td>
       <td class="frozen-4" style="font-weight: 600;">${lead.name}</td>
       <td>${escapeHtml(formatMobileDisplay(lead.mobile))}</td>
       <td style="color: var(--accent);">${lead.email}</td>
@@ -7704,12 +8269,14 @@ function renderTable() {
       <td style="text-align: center; font-size: 11px;">${lead.suburbPostcode || '—'}</td>
       <td>
         <span class="badge badge-${lead.hotWarmStatus}">
-          ${lead.hotWarmStatus === 'hot' ? '🔥 2 WKS' : lead.hotWarmStatus === 'warm' ? '🔸 4 WKS' : '❄️ 12 WKS'}
+          ${lead.hotWarmStatus === 'hot' ? '🔥 2 WKS' : lead.hotWarmStatus === 'warm' ? '☀️ 4 WKS' : lead.hotWarmStatus === 'star' ? '⭐️ WON' : '❄️ 12 WKS'}
         </span>
       </td>
       <td style="text-align: center; color: ${lead.followUp && lead.followUp !== '—' ? 'var(--success)' : 'var(--text-tertiary)'};">${lead.followUp || '—'}</td>
       <td style="text-align: center; color: ${lead.closed && lead.closed !== '—' ? 'var(--error)' : 'var(--text-tertiary)'};">${lead.closed || '—'}</td>
       <td style="text-align: center; color: ${lead.settleOk === 'Yes' ? 'var(--success)' : lead.settleOk === 'TBD' ? 'var(--warning)' : 'var(--text-tertiary)'};">${lead.settleOk || '—'}</td>
+      <td style="text-align: center; color: ${lead.underCfs === 'Yes' ? 'var(--success)' : 'var(--text-tertiary)'};">${lead.underCfs || '—'}</td>
+      <td style="text-align: center; font-size: 11px;">${lead.cfsLot || '—'}</td>
       <td style="font-weight: 500; font-size: 11px;" onclick="event.stopPropagation()">${renderAgencyCell(lead)}</td>
       <td style="font-size: 11px;" onclick="event.stopPropagation()">${renderAgentCell(lead)}</td>
     </tr>
@@ -8055,6 +8622,7 @@ function updateCounts() {
   set('hotCount', countFor('hot'));
   set('warmCount', countFor('warm'));
   set('coldCount', countFor('cold'));
+  set('starCount', countFor('star'));
   set('noactCount', countFor('noact'));
   set('callbackCount', countFor('callback'));
   set('noAgencyCount', countFor('noAgency'));
@@ -8065,6 +8633,7 @@ function updateCounts() {
   set('mvHotCountChip', countFor('hot'));
   set('mvWarmCountChip', countFor('warm'));
   set('mvColdCountChip', countFor('cold'));
+  set('mvStarCountChip', countFor('star'));
   set('mvNoactCountChip', countFor('noact'));
   set('mvCallbackCountChip', countFor('callback'));
   set('mvNoAgencyCountChip', countFor('noAgency'));
@@ -8095,7 +8664,7 @@ function matchesActiveFilters(lead) {
 
 // Single-filter matcher — returns true if lead matches this one filter key
 function leadMatchesFilter(lead, f) {
-  if (f === 'hot' || f === 'warm' || f === 'cold') {
+  if (f === 'hot' || f === 'warm' || f === 'cold' || f === 'star') {
     return lead.hotWarmStatus === f;
   }
   if (f === 'noact') {
@@ -8168,6 +8737,7 @@ function updateFilterSummary() {
     hot: 'Hot',
     warm: 'Warm',
     cold: 'Cold',
+    star: 'Won (under CFS)',
     noact: 'No activity',
     callback: 'Call back',
     noAgency: 'No agency',
@@ -8265,6 +8835,7 @@ function updateMobileHeader() {
     hot: 'Hot',
     warm: 'Warm',
     cold: 'Cold',
+    star: 'Won (under CFS)',
     noact: 'No activity',
     callback: 'Call back',
     noAgency: 'No agency',
@@ -8312,13 +8883,6 @@ function syncFilterUI() {
       c.classList.toggle('active', activeFilters.has(f));
     }
   });
-}
-
-function formatNameCompact(fullName) {
-  if (!fullName) return '';
-  const parts = fullName.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0];
-  return `${parts[0][0]}. ${parts[parts.length - 1]}`;
 }
 
 function formatShortDate(dateStr) {
@@ -8813,12 +9377,14 @@ function updateCommentsTrigger() {
 }
 
 function openCommentsModal() {
-  if (!currentEditingLead) {
-    alert('Save or select a lead first — comments need an existing lead.');
-    return;
-  }
+  // Allowed during new-lead entry (currentEditingLead === null). Comments typed
+  // here are buffered into #edit-comments and persisted when saveLead() runs.
   const nameEl = document.getElementById('commentsLeadName');
-  if (nameEl) nameEl.textContent = currentEditingLead.name ? `— ${currentEditingLead.name}` : '';
+  if (nameEl) {
+    nameEl.textContent = currentEditingLead?.name
+      ? `— ${currentEditingLead.name}`
+      : '— New Lead';
+  }
   document.getElementById('commentsError').textContent = '';
   document.getElementById('newCommentText').value = '';
   renderCommentsLog();
@@ -8866,12 +9432,6 @@ async function addNewComment() {
   errEl.textContent = '';
 
   if (!text) { errEl.textContent = 'Please write something first.'; return; }
-  if (!currentEditingLead || !currentEditingLead.id) {
-    errEl.textContent = 'No lead selected.'; return;
-  }
-
-  btn.disabled = true;
-  btn.classList.add('sending');
 
   // Build the new entry and prepend
   const stamp = formatCommentStamp();
@@ -8879,6 +9439,21 @@ async function addNewComment() {
   const hiddenInput = document.getElementById('edit-comments');
   const existing = hiddenInput.value || '';
   const merged = existing.trim() ? `${newEntry}\n${existing}` : newEntry;
+
+  // New-lead mode: no lead ID yet. Buffer to the hidden input only.
+  // saveLead() reads #edit-comments and persists it on the initial insert.
+  if (!currentEditingLead || !currentEditingLead.id) {
+    hiddenInput.value = merged;
+    textarea.value = '';
+    updateModalCommentBtn();
+    renderCommentsLog();
+    updateCommentsTrigger();
+    textarea.focus();
+    return;
+  }
+
+  btn.disabled = true;
+  btn.classList.add('sending');
 
   // Write to Supabase
   const { error } = await sb
@@ -8920,22 +9495,10 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-function calculate48Progress(lead) {
-  const steps = [lead.roiEmail, lead.call1, lead.call2, lead.sms, lead.finalEmail];
-  const states = steps.map(s => s && s !== '—' && s.trim().length > 0);
-  const done = states.filter(Boolean).length;
-  let dotsHtml = '';
-  for (let i = 0; i < 5; i++) {
-    dotsHtml += `<div class="mv-dot ${states[i] ? 'done' : 'pending'}"></div>`;
-    if (i < 4) dotsHtml += `<div class="mv-conn ${states[i] ? 'done' : 'pending'}"></div>`;
-  }
-  return { done, dotsHtml };
-}
-
 function buildMobileCard(lead) {
   const hwc = (lead.hotWarmStatus || 'cold').toLowerCase();
-  // "Ready To Buy" timeline labels — internal data stays hot/warm/cold
-  const hwcLabelMap = { hot: '2 wks', warm: '4 wks', cold: '12 wks' };
+  // "Ready To Buy" timeline labels — internal data stays hot/warm/cold/star
+  const hwcLabelMap = { hot: '2 wks', warm: '4 wks', cold: '12 wks', star: '⭐️ Won' };
   const hwcLabel = hwcLabelMap[hwc] || '—';
   const leadDate = formatShortDate(lead.date);
   const fullName = lead.name || '';
@@ -9042,13 +9605,429 @@ function isCallbackOverdue(iso) {
   return new Date(iso).getTime() < Date.now();
 }
 
-// Small inline badge used in the desktop date column when Call back filter is on
-function buildDesktopCallbackBadge(iso) {
+// ─── Progress Tracker dashboard (backlog #8) ─────────────────
+// View switchers. Body class .view-dashboard swaps visibility via CSS — the
+// .main-content table, the filter pills, and the mobile list/search/chips all
+// hide; only the mv-header (which contains the nav pills) stays.
+// Two explicit functions (no toggle) so the pill click is unambiguous.
+function showDashboardView() {
+  document.body.classList.add('view-dashboard');
+  setNavPillActiveState(true);
+  renderDashboardBoard();
+  loadDashActivity();
+  window.scrollTo({ top: 0 });
+}
+
+function showTableView() {
+  document.body.classList.remove('view-dashboard');
+  setNavPillActiveState(false);
+  window.scrollTo({ top: 0 });
+}
+
+function setNavPillActiveState(dashboardActive) {
+  document.getElementById('dashboardNavPill')?.classList.toggle('active', dashboardActive);
+  document.getElementById('mvDashboardNavPill')?.classList.toggle('active', dashboardActive);
+  document.getElementById('tableNavPill')?.classList.toggle('active', !dashboardActive);
+  document.getElementById('mvTableNavPill')?.classList.toggle('active', !dashboardActive);
+}
+
+// Legacy alias — kept so any external links / inherited code keep working.
+function toggleDashboardView() {
+  if (document.body.classList.contains('view-dashboard')) showTableView();
+  else showDashboardView();
+}
+
+// Re-render the dashboard if it's the active view. Hook this into save / edit
+// flows so the board stays in sync with leadsData.
+function refreshDashboardIfVisible() {
+  if (document.body.classList.contains('view-dashboard')) {
+    renderDashboardBoard();
+  }
+}
+
+// Admin agency filter — empty set = show all. Multi-select via toggle.
+// Only consulted when me?.role === 'admin'.
+let dashAgencyFilter = new Set();
+
+// Recent activity feed cache. Refilled on every showDashboardView() entry.
+let dashActivityEvents = [];
+
+async function loadDashActivity() {
+  // Show a loading state immediately so the column isn't blank during the fetch.
+  const container = document.querySelector('.dash-col-activity .dash-col-body');
+  if (container) container.innerHTML = '<div class="dash-empty">Loading recent activity…</div>';
+  try {
+    const { data, error } = await sb
+      .from('audit_log')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (error) {
+      console.warn('Activity feed load failed:', error.message);
+      dashActivityEvents = [];
+    } else {
+      dashActivityEvents = data || [];
+    }
+  } catch (err) {
+    console.warn('Activity feed load threw:', err);
+    dashActivityEvents = [];
+  }
+  renderDashActivityFeed();
+}
+
+function renderDashActivityFeed() {
+  const container = document.querySelector('.dash-col-activity .dash-col-body');
+  if (!container) return;
+
+  // The audit_log RLS is currently `USING (true)` — anyone authenticated sees
+  // every audit row, including events on leads outside their scope. Until that's
+  // tightened (backlog #15 permissions audit), filter client-side so the
+  // activity feed only shows events for leads the user can already see via the
+  // leads RLS. This keeps the feed aligned with the column visibility model:
+  //   admin   → all leads, all events
+  //   agency  → their agency's leads, all events on those leads (any user)
+  //   agent   → their own leads, all events on those leads (any user)
+  const visibleLeadIds = new Set(leadsData.map(l => String(l.id)));
+  const visible = dashActivityEvents.filter(e => visibleLeadIds.has(String(e.lead_id)));
+
+  if (visible.length === 0) {
+    container.innerHTML = '<div class="dash-empty">No recent activity</div>';
+    return;
+  }
+  container.innerHTML = visible.map(buildDashActivityItem).join('');
+}
+
+function buildDashActivityItem(e) {
+  const verb = activityVerb(e.action);
+  const dotCls = `k-${e.action || 'edited'}`;
+  const detail = activitySummary(e);
+  const relTime = relativeTimeAgo(e.created_at);
+  const safeUser = escapeHtml(e.user_name || '—');
+  const safeLead = escapeHtml(e.lead_name || '(unnamed)');
+  const safeVerb = escapeHtml(verb);
+  // Lead ID in audit_log is TEXT; openLeadFromAudit handles the type coercion.
+  const idAttr = JSON.stringify(String(e.lead_id || ''));
+  return `
+    <div class="dash-activity-item" onclick="openLeadFromAudit(${idAttr})">
+      <span class="dash-activity-dot ${dotCls}"></span>
+      <div class="dash-activity-body">
+        <div><span class="dash-activity-who">${safeUser}</span> <span class="dash-activity-action">${safeVerb}</span> <span class="dash-activity-lead">${safeLead}</span></div>
+        ${detail}
+        <div class="dash-activity-time">${escapeHtml(relTime)}</div>
+      </div>
+    </div>`;
+}
+
+function activityVerb(action) {
+  switch (action) {
+    case 'created':  return 'added new lead';
+    case 'edited':   return 'edited';
+    case 'assigned': return 'assigned';
+    case 'hidden':   return 'hid';
+    case 'unhidden': return 'restored';
+    case 'deleted':  return 'permanently deleted';
+    default:         return action || 'updated';
+  }
+}
+
+// Compact one-line summary of the change list. Shows the first change's
+// field + new value; "+N more" hint if there are additional changes.
+function activitySummary(e) {
+  if (!Array.isArray(e.changes) || e.changes.length === 0) return '';
+  const c = e.changes[0];
+  const field = escapeHtml(c.field || '');
+  const to = escapeHtml(c.to ?? '—');
+  const more = e.changes.length > 1
+    ? ` <span style="color:#94a3b8;">+${e.changes.length - 1} more</span>`
+    : '';
+  return `<div class="dash-activity-detail"><strong>${field}:</strong> ${to}${more}</div>`;
+}
+
+// ─── Close-out modal (dashboard tile → mark lead closed) ───
+let closeOutLeadId = null;
+
+function openCloseOutModal(leadId) {
+  const lead = leadsData.find(l => l.id === leadId);
+  if (!lead) return;
+  closeOutLeadId = leadId;
+  document.getElementById('closeOutTitle').textContent = `Close out — ${lead.name || '(unnamed)'}`;
+  document.getElementById('closeOutOutcome').value = '';
+  document.getElementById('closeOutNotes').value = '';
+  document.getElementById('closeOutError').textContent = '';
+  updateCloseOutButton();
+  document.getElementById('closeOutOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('closeOutOutcome')?.focus(), 50);
+}
+
+function closeCloseOutModal() {
+  document.getElementById('closeOutOverlay').classList.remove('open');
+  closeOutLeadId = null;
+}
+
+function updateCloseOutButton() {
+  const outcome = document.getElementById('closeOutOutcome').value;
+  const btn = document.getElementById('closeOutSubmit');
+  if (btn) btn.disabled = !outcome;
+}
+
+async function submitCloseOut() {
+  if (!closeOutLeadId) return;
+  const outcomeCol = document.getElementById('closeOutOutcome').value;
+  const notes = (document.getElementById('closeOutNotes').value || '').trim();
+  const errEl = document.getElementById('closeOutError');
+  const btn = document.getElementById('closeOutSubmit');
+
+  if (!outcomeCol) { errEl.textContent = 'Please choose an outcome.'; return; }
+  const outcomeOpt = CLOSED_OPTIONS.find(o => o.col === outcomeCol);
+  if (!outcomeOpt) { errEl.textContent = 'Unknown outcome.'; return; }
+  const outcomeLabel = outcomeOpt.label;
+
+  const lead = leadsData.find(l => l.id === closeOutLeadId);
+  if (!lead) { errEl.textContent = 'Lead not found.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  errEl.textContent = '';
+
+  // Set picked outcome to true, siblings to false (mirrors openPicker for closed).
+  const update = {};
+  CLOSED_OPTIONS.forEach(o => { update[o.col] = (o.col === outcomeCol); });
+
+  // Optional note → prepended as a new comment entry (newest-first storage order),
+  // prefixed `[Closed: <outcome>]` so it's recognisable in the comments log.
+  let mergedComments;
+  if (notes) {
+    const stamp = formatCommentStamp();
+    const newEntry = `${stamp} [Closed: ${outcomeLabel}] ${notes}`;
+    const existing = lead.pocComments || '';
+    mergedComments = existing.trim() ? `${newEntry}\n${existing}` : newEntry;
+    update.poc_comments = mergedComments;
+  }
+
+  try {
+    const { error } = await sb.from('leads').update(update).eq('id', closeOutLeadId);
+    if (error) {
+      console.error('Close-out save error:', error);
+      errEl.textContent = `Couldn't close: ${error.message || 'unknown error'}`;
+      btn.disabled = false;
+      btn.textContent = 'Close out';
+      return;
+    }
+  } catch (err) {
+    console.error('Close-out save threw:', err);
+    errEl.textContent = `Couldn't close: ${err.message || 'unknown error'}`;
+    btn.disabled = false;
+    btn.textContent = 'Close out';
+    return;
+  }
+
+  // Mirror locally so the tracker re-render filters this lead out immediately.
+  const prevClosed = lead.closed || '—';
+  lead.closed = outcomeLabel;
+  lead.nm = outcomeCol === 'nm';
+  lead.dc = outcomeCol === 'dc';
+  lead.ni = outcomeCol === 'ni';
+  lead.duplicate = outcomeCol === 'duplicate';
+  if (mergedComments !== undefined) lead.pocComments = mergedComments;
+
+  // Audit entry — uses 'edited' since the field changed; activity feed picks it up on next refresh.
+  const changes = [{ field: 'Closed', from: prevClosed, to: outcomeLabel }];
+  if (notes) changes.push({ field: 'Comments', from: '—', to: `[Closed: ${outcomeLabel}] ${notes}` });
+  logAuditEvent(closeOutLeadId, 'edited', changes);
+
+  closeCloseOutModal();
+  renderTable();             // hooks refreshDashboardIfVisible → tile drops out of the board
+  renderMobileList();
+  updateCounts();
+  loadDashActivity();        // pull the new audit event into the feed
+  showToast(`Closed — ${outcomeLabel}`, 'success');
+}
+
+// Escape key closes the close-out modal (mirrors the comments modal handler).
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const overlay = document.getElementById('closeOutOverlay');
+    if (overlay && overlay.classList.contains('open')) closeCloseOutModal();
+  }
+});
+
+function relativeTimeAgo(iso) {
   if (!iso) return '';
-  const d = new Date(iso);
-  const info = describeCallbackTime(d);
-  const cls = info.overdue ? 'cb-badge overdue' : 'cb-badge';
-  return `<div class="${cls}">${escapeHtml(info.label)}</div>`;
+  const then = new Date(iso).getTime();
+  if (isNaN(then)) return '';
+  const diffSec = Math.floor((Date.now() - then) / 1000);
+  if (diffSec < 60)        return 'Just now';
+  if (diffSec < 3600)      return `${Math.floor(diffSec / 60)}m ago`;
+  if (diffSec < 86400)     return `${Math.floor(diffSec / 3600)}h ago`;
+  if (diffSec < 7 * 86400) return `${Math.floor(diffSec / 86400)}d ago`;
+  return new Date(iso).toLocaleDateString('en-AU', { day: '2-digit', month: 'short' });
+}
+
+// Render the filter pill row. Admin-only; hidden via CSS for everyone else.
+// Called from enterApp() once agencyById is populated.
+function populateDashAgencyFilters() {
+  const container = document.getElementById('dashFilters');
+  if (!container) return;
+  if (me?.role !== 'admin') {
+    container.style.display = 'none';
+    return;
+  }
+  const agencies = Object.values(agencyById).sort((a, b) =>
+    String(a.name || '').localeCompare(String(b.name || ''))
+  );
+  let html = `
+    <span class="dash-filters-label">Agency:</span>
+    <span class="dash-filter-pill active" data-agency-id="" onclick="setDashAgencyFilter('')">All agencies</span>
+  `;
+  for (const a of agencies) {
+    html += `<span class="dash-filter-pill" data-agency-id="${escapeHtml(a.id)}" onclick="setDashAgencyFilter('${escapeHtml(a.id)}')">${escapeHtml(a.name || a.id)}</span>`;
+  }
+  container.innerHTML = html;
+  container.style.display = 'flex';
+}
+
+// Pill click handler. Empty id = clear filter; otherwise toggle the agency
+// in/out of the set. "All agencies" stays visually active when set is empty.
+function setDashAgencyFilter(agencyId) {
+  if (agencyId === '') {
+    dashAgencyFilter.clear();
+  } else if (dashAgencyFilter.has(agencyId)) {
+    dashAgencyFilter.delete(agencyId);
+  } else {
+    dashAgencyFilter.add(agencyId);
+  }
+  document.querySelectorAll('.dash-filter-pill').forEach(pill => {
+    const id = pill.dataset.agencyId;
+    if (id === '') {
+      pill.classList.toggle('active', dashAgencyFilter.size === 0);
+    } else {
+      pill.classList.toggle('active', dashAgencyFilter.has(id));
+    }
+  });
+  renderDashboardBoard();
+}
+
+// Bucket every active lead by temperature + first-activity rule.
+// Excluded: closed leads (any of the 4 outcomes) + Star (auto-won).
+function renderDashboardBoard() {
+  const buckets = { recent: [], hot: [], warm: [], cold: [] };
+  const applyAgencyFilter = me?.role === 'admin' && dashAgencyFilter.size > 0;
+
+  for (const lead of leadsData) {
+    if (lead.closed && lead.closed !== '—') continue;
+    if (lead.hotWarmStatus === 'star') continue;
+    if (applyAgencyFilter && !dashAgencyFilter.has(lead.assignedAgency)) continue;
+    const temp = (lead.hotWarmStatus || '').toLowerCase();
+    if (!['hot', 'warm', 'cold'].includes(temp)) continue;
+
+    // "Activity" = any comment, any 48hr stamp, or a Follow Up state set.
+    const hasActivity =
+      (lead.pocComments && String(lead.pocComments).trim()) ||
+      (lead.roiEmail   && lead.roiEmail   !== '—') ||
+      (lead.call1      && lead.call1      !== '—') ||
+      (lead.call2      && lead.call2      !== '—') ||
+      (lead.sms        && lead.sms        !== '—') ||
+      (lead.finalEmail && lead.finalEmail !== '—') ||
+      (lead.followUp   && lead.followUp   !== '—');
+
+    if (!hasActivity) buckets.recent.push(lead);
+    else              buckets[temp].push(lead);
+  }
+
+  // Newest first by lead date (DD-MM-YYYY).
+  const parseDDMMYYYY = d => {
+    if (!d) return 0;
+    const m = String(d).match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{2,4})/);
+    if (!m) return 0;
+    let [, dd, mm, yy] = m;
+    if (yy.length === 2) yy = '20' + yy;
+    return new Date(+yy, +mm - 1, +dd).getTime();
+  };
+  for (const k of Object.keys(buckets)) {
+    buckets[k].sort((a, b) => parseDDMMYYYY(b.date) - parseDDMMYYYY(a.date));
+  }
+
+  renderDashboardColumn('dashColRecent', buckets.recent, true);
+  renderDashboardColumn('dashColHot',    buckets.hot);
+  renderDashboardColumn('dashColWarm',   buckets.warm);
+  renderDashboardColumn('dashColCold',   buckets.cold);
+
+  const setC = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = n; };
+  setC('dashCountRecent', buckets.recent.length);
+  setC('dashCountHot',    buckets.hot.length);
+  setC('dashCountWarm',   buckets.warm.length);
+  setC('dashCountCold',   buckets.cold.length);
+}
+
+function renderDashboardColumn(containerId, leads, isRecent = false) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (leads.length === 0) {
+    el.innerHTML = `<div class="dash-empty">${isRecent ? 'No new leads waiting' : 'No leads here yet'}</div>`;
+    return;
+  }
+  el.innerHTML = leads.map(lead => buildDashboardTile(lead, isRecent)).join('');
+}
+
+function buildDashboardTile(lead, isRecent) {
+  // In the New Leads column the tile head goes green (matches the column head),
+  // regardless of the lead's assigned temp. The temp emoji still shows so users
+  // can see which column the lead will graduate into on first activity.
+  // In Hot/Warm/Cold columns the tile head uses the lead's own temp colour.
+  const temp = (lead.hotWarmStatus || '').toLowerCase();
+  const headCls = isRecent ? 'new' : (['hot','warm','cold'].includes(temp) ? temp : 'rec');
+  const headEmoji = temp === 'hot'  ? '🔥'
+                   : temp === 'warm' ? '☀️'
+                   : temp === 'cold' ? '❄️'
+                   : '';
+  const emojiCls = temp === 'cold' ? 'em-cold' : ''; // hooks the cold-only CSS filter
+
+  let commentHtml;
+  if (isRecent) {
+    commentHtml = '<div class="dash-tile-comment empty">No activity yet — log a comment or stamp to graduate</div>';
+  } else if (lead.pocComments && String(lead.pocComments).trim()) {
+    const parsed = parseLastComment(lead.pocComments);
+    const text = parsed && parsed.preview
+      ? parsed.preview
+      : String(lead.pocComments).split('\n')[0].slice(0, 140);
+    commentHtml = `<div class="dash-tile-comment">${escapeHtml(text)}</div>`;
+  } else {
+    commentHtml = '<div class="dash-tile-comment empty">No comments yet</div>';
+  }
+
+  const safeName = escapeHtml(lead.name || '(unnamed)');
+  const safeDate = escapeHtml(formatShortDate(lead.date) || '—');
+
+  // Agency rendered with a small building icon. lead.assignedAgency is the
+  // agency *ID* — resolve to the display name via agencyName(). Hidden entirely
+  // when unassigned (no "—" filler — keeps the meta row clean).
+  const agencyDisplay = agencyName(lead.assignedAgency);
+  const hasAgency = agencyDisplay && agencyDisplay !== '—';
+  const safeAgency = hasAgency ? escapeHtml(agencyDisplay) : '';
+  const agencyHtml = hasAgency
+    ? `<span class="agency" title="${safeAgency}">
+         <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V3h12v18M15 9h6v12M9 7h0M9 11h0M9 15h0"/></svg>
+         <span class="nm">${safeAgency}</span>
+       </span>`
+    : '';
+
+  return `
+    <div class="dash-tile t-${headCls}" onclick="viewLead(${lead.id})">
+      <div class="dash-tile-head">
+        <span class="emoji ${emojiCls}">${headEmoji}</span>
+        <span class="nm">${safeName}</span>
+      </div>
+      <div class="dash-tile-body">
+        <div class="dash-tile-meta">
+          <span class="date">${safeDate}</span>
+          ${agencyHtml}
+        </div>
+        ${commentHtml}
+        <div class="dash-tile-foot">
+          <span class="dash-tile-closeout" onclick="event.stopPropagation(); openCloseOutModal(${lead.id})" title="Close out — remove from tracker">Close out →</span>
+        </div>
+      </div>
+    </div>`;
 }
 
 function renderMobileList() {
@@ -9369,7 +10348,18 @@ function openNewLead() {
   if (delBtn) delBtn.style.display = 'none';
 }
 
-// Edit lead
+// PARKED — drawer-based edit path for existing leads.
+// Superseded by the lead-card inline-edit workflow
+// (editHeaderEmail, editHeaderName, etc. at ~line 10762).
+// Kept because the helpers (populateForm,
+// syncAssignmentFieldsForEdit, unlockLeadDate) contain real
+// logic that would be expensive to rewrite if a
+// "full-form edit" mode is ever restored.
+//
+// If you're reading this and considering deleting: confirm
+// no power-user / bulk-edit feature is planned, and verify
+// the helpers still work against current schema before
+// trusting them.
 function editLead(id) {
   const lead = leadsData.find(l => l.id === id);
   if (!lead) return;
@@ -10009,7 +10999,8 @@ async function saveLead() {
     deposit5: selectedDeposit === '5' ? '✓' : '—',
     deposit5plus5: selectedDeposit === '5plus5' ? '✓' : '—',
     deposit10: selectedDeposit === '10' ? '✓' : '—',
-    hotWarmStatus: selectedHWC || 'cold',
+    // Ready To Buy is required. saveLead() validates below — no silent default.
+    hotWarmStatus: selectedHWC,
     walkIns: selectedSource || '—',
     lsoVisit: selectedLSO || '—',
     buyerType: selectedBuyer || '—',
@@ -10022,6 +11013,35 @@ async function saveLead() {
   if (!formData.name) {
     alert('Please fill in required fields');
     return;
+  }
+
+  // Hard-block: Ready To Buy must be picked (Hot/Warm/Cold) on NEW leads.
+  // Edits to existing leads are lenient — legacy leads may have null status, and the
+  // entry-form pill group has no Star option (Star is set via the inline card flow).
+  const HWC_PICK_VALUES = ['hot', 'warm', 'cold'];
+  const isNewLead = !currentEditingLead;
+  if (isNewLead && !HWC_PICK_VALUES.includes(formData.hotWarmStatus)) {
+    showToast('Pick Hot, Warm, or Cold under "Ready To Buy" before saving', 'error');
+    // Switch to the Outcomes tab where the picker lives, scroll into view, and flash it
+    const pillGroup = document.querySelector('.pill-group .hwc-pill')?.parentElement;
+    if (pillGroup) {
+      pillGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      pillGroup.style.outline = '2px solid #dc2626';
+      pillGroup.style.borderRadius = '8px';
+      setTimeout(() => { pillGroup.style.outline = ''; pillGroup.style.borderRadius = ''; }, 2000);
+    }
+    return;
+  }
+
+  // Star ↔ CFS invariant: if CFS data is set, force status to 'star' regardless
+  // of what the user picked. (commitInline handlers already auto-promote on inline
+  // edits, but saveLead handles the new-lead path and bulk-form edit case.)
+  const cfsOk = currentEditingLead
+    ? (leadsData.find(l => l.id === currentEditingLead.id)?.underCfs === 'Yes')
+    : false; // new leads can't have CFS data yet
+  // Note: cfs_lot presence is enforced by validateLeadForm() / CFS validation already.
+  if (cfsOk) {
+    formData.hotWarmStatus = 'star';
   }
 
   // Default date if blank on a new lead (DD-MM-YYYY format to match existing data)
@@ -10053,15 +11073,7 @@ async function saveLead() {
       // INSERT new — route through submit-lead Edge Function.
       // It enforces the 4-week lock, logs duplicate attempts, and handles
       // ownership transfer when the lock has expired.
-      const { data: { session } } = await sb.auth.getSession();
-      const resp = await fetch('https://uwrmnwdtldmlxsbwypbo.supabase.co/functions/v1/submit-lead', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ lead: dbRow })
-      });
+      const resp = await callEdgeFunction('submit-lead', { lead: dbRow });
       const respData = await resp.json();
 
       if (resp.status === 409 && respData.error === 'duplicate') {
@@ -10140,6 +11152,7 @@ function hwcChipClass(status) {
   if (s === 'hot')  return 'lc-chip lc-chip-hot';
   if (s === 'warm') return 'lc-chip lc-chip-warm';
   if (s === 'cold') return 'lc-chip lc-chip-cold';
+  if (s === 'star') return 'lc-chip lc-chip-star';
   return 'lc-chip lc-chip-grey-tint';
 }
 
@@ -10147,43 +11160,10 @@ function hwcChipClass(status) {
 function hwcEmoji(status) {
   const s = (status || '').toLowerCase();
   if (s === 'hot')  return '🔥';
-  if (s === 'warm') return '🔸';
+  if (s === 'warm') return '☀️';
   if (s === 'cold') return '❄️';
+  if (s === 'star') return '⭐️';
   return '';
-}
-
-// Deposit preference from the three flag fields
-function depositLabel(lead) {
-  if (lead.deposit5 === '✓')       return '5%';
-  if (lead.deposit5plus5 === '✓')  return '5% + 5%';
-  if (lead.deposit10 === '✓')      return '10%';
-  return '—';
-}
-
-// Build one 48-hour process step
-function stepHtml(label, value) {
-  const done = value && value !== '—';
-  const stepCls = done ? 'lc-step' : 'lc-step lc-step-pending';
-  const dotCls  = done ? 'lc-dot lc-dot-done' : 'lc-dot lc-dot-pending';
-  const check = done
-    ? '<svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 5 L4 7 L8 3" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    : '';
-  return `<div class="${stepCls}"><div class="${dotCls}">${check}</div><div class="lc-step-label">${label}</div></div>`;
-}
-
-// Build row (simple label + value)
-function rowHtml(label, value, valueClass) {
-  const v = (value === undefined || value === null || value === '') ? '—' : value;
-  const cls = valueClass ? ` class="${valueClass}"` : '';
-  return `<div class="lc-row"><span class="lc-row-label">${escapeHtml(label)}</span><span${cls}>${v}</span></div>`;
-}
-
-// Row with a chip value
-function rowChipHtml(label, value, chipClass) {
-  if (!value || value === '—') {
-    return `<div class="lc-row"><span class="lc-row-label">${escapeHtml(label)}</span><span style="color: var(--brand-grey-6);">—</span></div>`;
-  }
-  return `<div class="lc-row"><span class="lc-row-label">${escapeHtml(label)}</span><span class="${chipClass}">${escapeHtml(value)}</span></div>`;
 }
 
 // ─── Inline-edit helpers (Phase 1) ─────────────────
@@ -10262,24 +11242,52 @@ async function toggleStep(leadId, field) {
 }
 
 // Ready To Buy picker (HWC status) — click the chip in the header to change timeline.
-// Internal data values stay 'hot'/'warm'/'cold'; labels are the buyer-timeline equivalents.
+// Internal data values stay 'hot'/'warm'/'cold'/'star'; labels are the buyer-timeline equivalents.
+// Star ↔ (under_cfs = true AND cfs_lot set) — the picker enforces both sides of the invariant.
 function openHwcPicker(event, leadId) {
   event.stopPropagation();
   const lead = leadsData.find(l => l.id === leadId);
   if (!lead) return;
   openInlinePicker(event.target, [
     { value: 'hot',  label: '🔥 (2 wks)' },
-    { value: 'warm', label: '🔸 (4 wks)' },
+    { value: 'warm', label: '☀️ (4 wks)' },
     { value: 'cold', label: '❄️ (12 wks)' },
+    { value: 'star', label: '⭐️ Won (under CFS)' },
     { value: null,   label: '— Clear' }
   ], async (val) => {
-    // Queue the canonical text + the 3 boolean mirrors in one go
-    queueEdit(leadId, {
+    // Manual Star path: CFS data must already exist on the lead.
+    if (val === 'star') {
+      const cfsOk = lead.underCfs === 'Yes' && lead.cfsLot && lead.cfsLot !== '—';
+      if (!cfsOk) {
+        showToast('⭐️ Star needs Under CFS = Yes and a CFS Lot — fill them in the CFS tab first', 'error');
+        switchCardTab('cfs');
+        return;
+      }
+    }
+
+    // Rollback path: switching FROM Star to anything else clears the CFS data
+    // (the Star ↔ CFS invariant requires both sides to be in sync).
+    const wasStar = lead.hotWarmStatus === 'star';
+    const downgrading = wasStar && val !== 'star';
+    if (downgrading) {
+      if (!confirm('This lead is currently ⭐️ Won (under CFS). Changing Ready To Buy will also clear the CFS data (Under CFS + CFS Lot). Continue?')) {
+        return;
+      }
+    }
+
+    // Queue the canonical text + the 3 boolean mirrors in one go.
+    // Downgrade also clears CFS columns so the invariant holds.
+    const update = {
       hot_warm_status: val,
       is_hot:  val === 'hot',
       is_warm: val === 'warm',
       is_cold: val === 'cold'
-    });
+    };
+    if (downgrading) {
+      update.under_cfs = null;
+      update.cfs_lot = null;
+    }
+    queueEdit(leadId, update);
     // Mirror locally for immediate UI refresh
     const i = leadsData.findIndex(l => l.id === leadId);
     if (i >= 0) {
@@ -10287,6 +11295,10 @@ function openHwcPicker(event, leadId) {
       leadsData[i].isHot  = val === 'hot';
       leadsData[i].isWarm = val === 'warm';
       leadsData[i].isCold = val === 'cold';
+      if (downgrading) {
+        leadsData[i].underCfs = '—';
+        leadsData[i].cfsLot = '—';
+      }
       if (currentViewingLead && currentViewingLead.id === leadId) currentViewingLead = leadsData[i];
     }
     // Re-render card so the chip reflects the new status
@@ -10655,6 +11667,10 @@ async function commitInlineText(el) {
   // CFS-specific: re-run validation if the user just typed into CFS Lot
   if (field === 'cfsLot') {
     updateCfsValidationMsg();
+    // Auto-promote to Star when both CFS sides are now satisfied.
+    maybeAutoPromoteToStar(leadId);
+    // Or auto-clear Star if Lot was just cleared (invariant broken).
+    maybeRollbackFromStar(leadId);
   }
 }
 
@@ -10702,7 +11718,59 @@ async function commitInlineSelect(el) {
   // CFS-specific: show/hide the "Lot required" warning under the two fields
   if (field === 'underCfs') {
     updateCfsValidationMsg();
+    maybeAutoPromoteToStar(leadId);
+    maybeRollbackFromStar(leadId);
   }
+}
+
+// Star ↔ CFS invariant helpers. Called from CFS inline-edit handlers.
+// Promote: when under_cfs becomes Yes AND cfs_lot is filled, set hot_warm_status='star'.
+// Rollback: when CFS data is removed while status is 'star', clear status and prompt for new value.
+function maybeAutoPromoteToStar(leadId) {
+  const lead = leadsData.find(l => l.id === leadId);
+  if (!lead) return;
+  const cfsOk = lead.underCfs === 'Yes' && lead.cfsLot && lead.cfsLot !== '—';
+  if (!cfsOk) return;
+  if (lead.hotWarmStatus === 'star') return; // already there
+  queueEdit(leadId, {
+    hot_warm_status: 'star',
+    is_hot: false, is_warm: false, is_cold: false
+  });
+  lead.hotWarmStatus = 'star';
+  lead.isHot = lead.isWarm = lead.isCold = false;
+  if (currentViewingLead && currentViewingLead.id === leadId) currentViewingLead = lead;
+  showToast('⭐️ Ready To Buy set to Won (under CFS)', 'success');
+  rerenderCardForLead(leadId);
+}
+
+function maybeRollbackFromStar(leadId) {
+  const lead = leadsData.find(l => l.id === leadId);
+  if (!lead) return;
+  if (lead.hotWarmStatus !== 'star') return;
+  const cfsOk = lead.underCfs === 'Yes' && lead.cfsLot && lead.cfsLot !== '—';
+  if (cfsOk) return; // invariant still holds
+  // CFS just broken. Clear status to null and force the user to pick Hot/Warm/Cold.
+  queueEdit(leadId, {
+    hot_warm_status: null,
+    is_hot: false, is_warm: false, is_cold: false
+  });
+  lead.hotWarmStatus = null;
+  lead.isHot = lead.isWarm = lead.isCold = false;
+  if (currentViewingLead && currentViewingLead.id === leadId) currentViewingLead = lead;
+  showToast('Ready To Buy cleared — pick Hot, Warm or Cold before saving', 'error');
+  rerenderCardForLead(leadId);
+}
+
+// Re-render the open lead card (preserves the active tab). No-op if no card is open.
+function rerenderCardForLead(leadId) {
+  if (!currentViewingLead || currentViewingLead.id !== leadId) return;
+  const activeTab = document.querySelector('#leadCardContent .lc-tab.active');
+  const currentTab = activeTab ? activeTab.dataset.tab : 'qualifying';
+  const card = document.getElementById('leadCardContent');
+  if (!card) return;
+  card.innerHTML = buildCardHTML(currentViewingLead);
+  card.classList.toggle('desktop-layout', window.innerWidth >= 900);
+  switchCardTab(currentTab);
 }
 
 // Header click-to-edit: name / mobile / email in the lead-card header.
@@ -10992,50 +12060,6 @@ async function commitDeposit(el, leadId) {
     switchCardTab(currentTab);
     updateSaveButton();
   }
-}
-
-// Role-aware assign strip with dropdowns (admin: both, agency: agent only, agent: readonly)
-function buildAssignStripHtml(lead) {
-  const leadId = lead.id;
-  const isAdmin  = me?.role === 'admin';
-  const isAgency = me?.role === 'agency';
-
-  // Agency cell
-  let agencyCell;
-  if (isAdmin) {
-    const agencies = Object.values(agencyById || {}).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-    const opts = '<option value="">— No agency —</option>' +
-      agencies.map(a => `<option value="${a.id}"${a.id === lead.assignedAgency ? ' selected' : ''}>${escapeHtml(a.name)}</option>`).join('');
-    agencyCell = `<select class="lc-assign-select" onchange="commitAssignAgency(this, ${leadId})">${opts}</select>`;
-  } else {
-    agencyCell = `<span class="lc-assign-value">${escapeHtml(agencyName(lead.assignedAgency))}</span>`;
-  }
-
-  // Agent cell — admin or agency (within their agency) can change it
-  let agentCell;
-  const canEditAgent = isAdmin || (isAgency && lead.assignedAgency === me.agencyId);
-  if (canEditAgent && lead.assignedAgency && lead.assignedAgency !== '—') {
-    const agents = Object.values(agentById || {})
-      .filter(a => a.agency_id === lead.assignedAgency)
-      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-    const opts = '<option value="">— No agent —</option>' +
-      agents.map(a => `<option value="${a.id}"${a.id === lead.assignedAgent ? ' selected' : ''}>${escapeHtml(a.name)}</option>`).join('');
-    agentCell = `<select class="lc-assign-select" onchange="commitAssignAgent(this, ${leadId})">${opts}</select>`;
-  } else {
-    agentCell = `<span class="lc-assign-value">${escapeHtml(agentName(lead.assignedAgent))}</span>`;
-  }
-
-  return `
-    <div class="lc-assign-strip">
-      <div class="lc-assign-item">
-        <span class="lc-assign-label">Agency</span>
-        ${agencyCell}
-      </div>
-      <div class="lc-assign-item">
-        <span class="lc-assign-label">Agent</span>
-        ${agentCell}
-      </div>
-    </div>`;
 }
 
 // Build the Assignment pane rows (Agency + Agent) used inside the tab.
@@ -11418,13 +12442,6 @@ function switchCardTab(name) {
   if (name === 'cfs') updateCfsValidationMsg();
 }
 
-function editCurrentLead() {
-  if (!currentViewingLead) return;
-  const id = currentViewingLead.id;
-  closeLeadCard();
-  editLead(id);
-}
-
 // ─── Call back (persisted + Add to Calendar) ─────────────
 // Clicking the Call back button in the card header opens this modal. If the lead already has
 // a callback set it shows a read-only VIEW with Edit/Clear/Add-to-calendar buttons. If not
@@ -11797,21 +12814,6 @@ closeReminderModal = function() {
   if (saved) saved.style.display = 'none';
   _origCloseReminder();
 };
-
-function markCurrentCalled() {
-  if (!currentViewingLead) return;
-  const index = leadsData.findIndex(l => l.id === currentViewingLead.id);
-  if (index === -1) return;
-  leadsData[index].followUp = '—';
-  currentViewingLead = leadsData[index];
-  // Re-render card and table without losing tab state
-  let currentTab = 'outcomes';
-  const activeTab = document.querySelector('#leadCardContent .lc-tab.active');
-  if (activeTab) currentTab = activeTab.dataset.tab;
-  document.getElementById('leadCardContent').innerHTML = buildCardHTML(currentViewingLead);
-  switchCardTab(currentTab);
-  renderTable();
-}
 
 // Close the topmost open overlay on Escape — modal-like overlays take precedence over the lead card
 document.addEventListener('keydown', function(e) {
