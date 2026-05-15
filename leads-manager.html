@@ -11557,7 +11557,32 @@ async function updateLeadField(leadId, dbField, newValue) {
 }
 
 // Naming helpers
+// Bug fix: the naive regex below converts every capital to "_<lowercase>", which
+// breaks consecutive-capital field names like `priceHL` (became `price_h_l`
+// instead of `price_hl` and rejected by Supabase). Known camelCase field names
+// are looked up first; the regex is the fallback for anything not pre-mapped.
 function camelToSnake(s) {
+  const knownMappings = {
+    priceHL:        'price_hl',
+    priceLand:      'price_land',
+    lsoVisit:       'lso_visit',
+    howDidYouHear:  'how_did_you_hear',
+    lotType:        'lot_type',
+    lotArea:        'lot_area',
+    lotNumbers:     'lot_numbers',
+    suburbPostcode: 'suburb_postcode',
+    timeToBuy:      'time_to_buy',
+    buyerType:      'buyer_type',
+    hotWarmStatus:  'hot_warm_status',
+    followUp:       'follow_up',
+    assignedAgency: 'assigned_agency',
+    assignedAgent:  'assigned_agent',
+    pocComments:    'poc_comments',
+    walkIns:        'walk_ins',
+    roiEmail:       'roi_email',
+    finalEmail:     'final_email',
+  };
+  if (knownMappings[s]) return knownMappings[s];
   return s.replace(/[A-Z]/g, ch => '_' + ch.toLowerCase());
 }
 function snakeToCamel(s) {
