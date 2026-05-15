@@ -4652,11 +4652,11 @@ body.view-dashboard .mv-header-sub { display: none; }
         <div class="form-grid">
           <div class="form-field">
             <label>House & Land Price</label>
-            <input type="text" id="edit-priceHL" placeholder="$850,000">
+            <input type="text" id="edit-priceHL" placeholder="$850,000" onblur="formatCurrencyOnBlur(this)">
           </div>
           <div class="form-field">
             <label>Land Price</label>
-            <input type="text" id="edit-priceLand" placeholder="$500,000">
+            <input type="text" id="edit-priceLand" placeholder="$500,000" onblur="formatCurrencyOnBlur(this)">
           </div>
           <div class="form-field">
             <label>Storey</label>
@@ -7103,8 +7103,10 @@ function mapLeadFromDb(r) {
     lsoVisit: r.lso_visit || '—',
     buyerType: r.buyer_type || '—',
     timeToBuy: r.time_to_buy || '—',
-    priceHL: r.price_hl || '—',
-    priceLand: r.price_land || '—',
+    // Apply $1,200,000 formatting at load time so every display path
+    // (table cell, lead card, dashboard tile) shows the same canonical form.
+    priceHL: formatCurrency(r.price_hl),
+    priceLand: formatCurrency(r.price_land),
     storey: (r.storey || '').toLowerCase() || '—',
     garage: (r.garage || '').toLowerCase() || '—',
     lotType: r.lot_type || '—',
@@ -8883,6 +8885,30 @@ function syncFilterUI() {
       c.classList.toggle('active', activeFilters.has(f));
     }
   });
+}
+
+// Format a price/currency value as $1,200,000. Idempotent (re-formatting an
+// already-formatted value returns the same thing). Returns the raw string
+// untouched if it contains letters (e.g. "TBD", "1.2M") so notes survive.
+// Returns '—' for null/empty/'—'.
+function formatCurrency(value) {
+  if (value == null || value === '' || value === '—') return '—';
+  const str = String(value).trim();
+  // Treat anything with letters as a non-numeric note — don't format.
+  if (/[a-zA-Z]/.test(str)) return str;
+  // Strip $, commas, spaces — keep the decimal for parseFloat.
+  const cleaned = str.replace(/[\$,\s]/g, '');
+  const n = parseFloat(cleaned);
+  if (!isFinite(n) || n === 0) return str;
+  // Real estate prices are whole dollars — drop any decimal.
+  return '$' + Math.round(n).toLocaleString('en-AU');
+}
+
+// Wired into the new-lead form's price inputs via onblur — normalizes
+// whatever the user typed in place (e.g. "1200000" → "$1,200,000").
+function formatCurrencyOnBlur(el) {
+  const f = formatCurrency(el.value);
+  el.value = f === '—' ? '' : f;
 }
 
 function formatShortDate(dateStr) {
@@ -11677,7 +11703,16 @@ async function commitInlineText(el) {
   const leadId = parseInt(el.dataset.leadId, 10);
   const lead = leadsData.find(l => l.id === leadId);
   if (!lead) return;
-  const newVal = el.value.trim();
+  let newVal = el.value.trim();
+  // Currency fields: normalize "1200000" / "$1,200,000.00" / etc. → "$1,200,000"
+  // before saving. Also reflect the normalized value back into the input so the
+  // user sees the canonical form. Comparison against oldVal happens after this
+  // so an unchanged-but-reformatted value doesn't trigger a needless DB write.
+  if (field === 'priceHL' || field === 'priceLand') {
+    const f = formatCurrency(newVal);
+    newVal = f === '—' ? '' : f;
+    el.value = newVal;
+  }
   const oldVal = lead[field] && lead[field] !== '—' ? lead[field] : '';
   if (newVal === oldVal) return;
   const dbField = camelToSnake(field);
