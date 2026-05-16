@@ -3577,8 +3577,14 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
   .dash-board { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }
 /* Mobile: horizontal carousel — one column per viewport width, snap on swipe.
-   Each column fills the dash-board height; its body scrolls internally. */
+   Each column fills the dash-board height; its body scrolls internally.
+   Horizontal padding is pushed off .dashboard-view and into .dash-head /
+   .dash-filters so the carousel can use the full viewport width without the
+   "sliver of the neighbouring column" alignment bug. */
 @media (max-width: 768px) {
+  .dashboard-view { padding: 14px 0 14px; }
+  .dash-head { padding: 0 16px; }
+  .dash-filters { padding: 0 16px; }
   .dash-board {
     display: flex;
     grid-template-columns: none;
@@ -3587,12 +3593,14 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    gap: 12px;
-    scroll-padding-left: 22px;
+    gap: 8px;
+    padding: 0 16px;
+    scroll-padding-left: 16px;
   }
   .dash-board::-webkit-scrollbar { display: none; }
   .dash-col {
-    flex: 0 0 calc(100vw - 44px);
+    /* Column = viewport minus the 16px board padding × 2 = 32px gutter total. */
+    flex: 0 0 calc(100vw - 32px);
     scroll-snap-align: start;
     height: 100%;
   }
