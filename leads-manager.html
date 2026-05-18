@@ -1500,15 +1500,34 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
 .lc-comment-post.sending { opacity: 0.7; cursor: wait; }
 .lc-comment-post svg { display: block; }
 .lc-comments-date {
-  flex: 0 0 52px;
+  flex: 0 0 80px;
   color: #94a3b8;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  white-space: nowrap;
   padding-top: 2px;
   font-variant-numeric: tabular-nums;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+/* Author chip in the lead-card comments list. Only shown when the comment
+   has author attribution — legacy entries (no author) just show the date. */
+.lc-comments-author {
+  align-self: flex-start;
+  background: #eef2ff;
+  color: #002675;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  text-transform: none;
+  letter-spacing: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .lc-comments-text {
   color: #1e293b;
@@ -3414,13 +3433,37 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
 .comment-entry:last-child { border-bottom: 0; }
 .comment-meta {
   flex-shrink: 0;
-  width: 52px;
+  width: 80px;
   color: #94a3b8;
   font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.3px;
   padding-top: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.comment-author-chip {
+  align-self: flex-start;
+  background: #eef2ff;
+  color: #002675;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  text-transform: none;
+  letter-spacing: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.comment-author-chip.legacy {
+  background: #f1f5f9;
+  color: #64748b;
+  font-weight: 500;
+  font-style: italic;
 }
 .comment-text {
   color: #1e293b;
@@ -3499,6 +3542,82 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
      own banner (#mvUnassignedBanner) inside it, so suppress this one entirely. */
   #unassignedBanner { display: none !important; }
   .mobile-view { display: flex; }
+}
+
+/* ─── View-only admin (role = admin_viewer) ─────────────────
+   Hide every write affordance via a single body.view-only class. Read paths
+   are untouched — view-only admins see the same dashboard, table, audit log,
+   etc. as full admins. Server-side RLS is the backstop (no INSERT/UPDATE/DELETE
+   policies grant access to admin_viewer), the CSS just stops view-only users
+   from seeing buttons they couldn't use anyway. */
+
+/* Big-ticket write buttons */
+body.view-only #newLeadBtn,
+body.view-only #mvNewLeadBtn,
+body.view-only .mv-fab,
+body.view-only #saveLeadBtn,
+body.view-only .lc-save-btn,
+body.view-only .lc-discard-btn,
+body.view-only .lc-comment-add,
+body.view-only .lc-comment-post,
+body.view-only .btn-add-comment,
+body.view-only #commentsOverlay .comments-add,
+body.view-only .lc-comment-actions,
+body.view-only .closeout,
+body.view-only .dash-tile-foot,
+body.view-only .dash-tile-closeout,
+body.view-only .ag-btn,
+body.view-only #adminPage-users .admin-btn-sm:not(:first-of-type),
+body.view-only .pill-group,
+body.view-only .deposit-pill,
+body.view-only .lc-hwc-chip,
+body.view-only .lc-picker-chip,
+body.view-only .hwc-pill,
+body.view-only .lc-edit-btn,
+body.view-only .lc-step,
+body.view-only .delete-btn,
+body.view-only .restore-btn,
+body.view-only .review-btn,
+body.view-only .un-action-btn,
+body.view-only .del-action-btn,
+body.view-only .del-actions,
+body.view-only .admin-btn-sm.danger,
+body.view-only .reminder-btn,
+body.view-only #saveReminderBtn,
+body.view-only #clearReminderBtn {
+  display: none !important;
+}
+
+/* Inline edits — disable inputs/selects so view-only users can't type in them */
+body.view-only .lc-inline-input,
+body.view-only .lc-inline-select,
+body.view-only #leadCardOverlay input,
+body.view-only #leadCardOverlay textarea,
+body.view-only #leadCardOverlay select {
+  pointer-events: none !important;
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+  cursor: not-allowed !important;
+}
+
+/* Inline-edit chevrons on picker chips — hide so chips look static */
+body.view-only .lc-picker-chip svg,
+body.view-only .lc-hwc-chip svg { display: none !important; }
+
+/* Persistent banner at the top so view-only users know why they can't write.
+   Renders via JS in enterApp when role === 'admin_viewer'. */
+body.view-only .view-only-banner { display: flex !important; }
+.view-only-banner {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: #fef2f2;
+  border-bottom: 0.5px solid #fecaca;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
 }
 
 /* ─── Progress Tracker dashboard (backlog #8) ──────────────── */
@@ -3651,11 +3770,30 @@ input.lc-header-input.lc-email { color: #a8c7ff; font-size: 14px; }
 /* Column heads keep their temp tints so the column is still instantly
    identifiable; only the body switches to neutral grey. New Leads gets green
    so it's clearly distinct from Cold's blue. */
-.dash-col[data-bucket="recent"] .dash-col-head { background: linear-gradient(180deg, #d1fae5, #ecfdf5); color: #047857; border-color: #6ee7b7; }
-.dash-col[data-bucket="hot"]    .dash-col-head { background: linear-gradient(180deg, #fee2e2, #fef2f2); color: #b91c1c; border-color: #fca5a5; }
-.dash-col[data-bucket="warm"]   .dash-col-head { background: linear-gradient(180deg, #fef3c7, #fffbeb); color: #b45309; border-color: #fcd34d; }
-.dash-col[data-bucket="cold"]   .dash-col-head { background: linear-gradient(180deg, #dbeafe, #eff6ff); color: #1d4ed8; border-color: #93c5fd; }
-.dash-col-activity .dash-col-head { background: #fff; color: var(--accent); }
+.dash-col[data-bucket="unassigned"] .dash-col-head { background: linear-gradient(180deg, #fed7aa, #fff7ed); color: #9a3412; border-color: #fdba74; }
+.dash-col[data-bucket="recent"]     .dash-col-head { background: linear-gradient(180deg, #d1fae5, #ecfdf5); color: #047857; border-color: #6ee7b7; }
+.dash-col[data-bucket="hot"]        .dash-col-head { background: linear-gradient(180deg, #fee2e2, #fef2f2); color: #b91c1c; border-color: #fca5a5; }
+.dash-col[data-bucket="warm"]       .dash-col-head { background: linear-gradient(180deg, #fef3c7, #fffbeb); color: #b45309; border-color: #fcd34d; }
+.dash-col[data-bucket="cold"]       .dash-col-head { background: linear-gradient(180deg, #dbeafe, #eff6ff); color: #1d4ed8; border-color: #93c5fd; }
+.dash-col-activity .dash-col-head   { background: #fff; color: var(--accent); }
+
+/* Tiles in the Unassigned column get an orange header band (matching the
+   column header). The temp emoji still shows so the agent can see what
+   the lead's temperature will be once assigned. */
+.dash-tile.t-unassigned .dash-tile-head { background: #ffedd5; color: #9a3412; border-bottom-color: #fdba74; }
+
+/* Unassigned column is agency-only. Hidden by default; revealed for agency role. */
+.dash-col-unassigned { display: none; }
+body.role-agency .dash-col-unassigned { display: flex; }
+/* Grid sizing: 5 cols by default, 6 when the Unassigned column is visible. */
+body.role-agency .dash-board { grid-template-columns: repeat(6, minmax(0,1fr)); }
+@media (max-width: 1280px) {
+  body.role-agency .dash-board { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@media (max-width: 900px) {
+  body.role-agency .dash-board { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+/* Mobile carousel is per-column, so the 6th column just adds another swipe. */
 
 .dash-tile {
   background: #fff;
@@ -4179,11 +4317,17 @@ body.view-dashboard .mv-header-sub { display: none; }
         </button>
       </div>
     </div>
-    <button class="btn btn-primary" onclick="openNewLead()">+ New Lead</button>
+    <button class="btn btn-primary" id="newLeadBtn" onclick="openNewLead()">+ New Lead</button>
   </div>
 </div>
 
 <!-- Unassigned leads banner (login reminder) -->
+<!-- Persistent banner for view-only admins. CSS toggles via body.view-only. -->
+<div class="view-only-banner">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+  <span>VIEW ONLY — you can browse leads, audit log, and the dashboard but can't make changes.</span>
+</div>
+
 <div id="unassignedBanner" style="display: none; align-items: center; gap: 12px; padding: 10px 20px; background: #fef7ed; border-bottom: 0.5px solid #fed7aa; color: #9a3412; font-size: 13px;">
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c2410c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
   <span style="font-weight: 500;" id="unassignedBannerCount"></span>
@@ -4306,6 +4450,15 @@ body.view-dashboard .mv-header-sub { display: none; }
   <!-- Order reads left-to-right as deal progression: most-actionable feed first,
        then waiting-room (no activity), then Cold → Warm → Hot. -->
   <div class="dash-board">
+    <!-- Agency-only first column: leads in their agency with no assigned agent.
+         Hidden by default; body.role-agency reveals it via CSS. -->
+    <div class="dash-col dash-col-unassigned" data-bucket="unassigned">
+      <div class="dash-col-head">
+        <span>Unassigned</span>
+        <span class="count" id="dashCountUnassigned">0</span>
+      </div>
+      <div class="dash-col-body" id="dashColUnassigned"></div>
+    </div>
     <div class="dash-col dash-col-activity">
       <div class="dash-col-head"><span>Recent activity</span></div>
       <div class="dash-col-body">
@@ -4990,10 +5143,21 @@ let leadsData = [];
 // Keyed by id so name resolution is a fast object lookup.
 let agencyById = {};
 let agentById = {};
+// Username of the agency-role user (the "owner") for each agency, used by the
+// dashboard bucketing logic to recognise comments authored by the agency.
+// Map: agency_id → username. Populated alongside agencies + agents.
+let agencyOwnerNameByAgencyId = {};
 
 // Current signed-in user profile (populated by enterApp after get_my_role RPC)
 // { id, username, role, agencyId, agentId, email }
 let me = null;
+
+// Role helpers — keep checks readable across the codebase.
+// `isAdminLike` extends admin-only READ paths to view-only admins (they get
+// the same admin pages, audit log, dashboard agency filters). All WRITE
+// checks should keep using `me.role === 'admin'` so view-only stays read-only.
+function isAdminLike() { return me?.role === 'admin' || me?.role === 'admin_viewer'; }
+function isViewOnly()  { return me?.role === 'admin_viewer'; }
 
 // ─── Auth ──────────────────────────────────────────
 async function doLogin() {
@@ -5140,11 +5304,23 @@ async function enterApp() {
   };
   console.log('✅ Logged in as', me);
 
+  // View-only admin gets a `body.view-only` class — CSS rules below hide every
+  // write affordance (Save buttons, inline-edit inputs, picker chips, invite
+  // buttons, close-out link, etc.). All read paths still work.
+  document.body.classList.toggle('view-only', me.role === 'admin_viewer');
+
+  // Role-scoped CSS class. Lets stylesheet rules show/hide role-specific UI
+  // (e.g. body.role-agency reveals the Unassigned dashboard column).
+  document.body.classList.remove('role-admin', 'role-admin_viewer', 'role-agency', 'role-agent');
+  if (me.role) document.body.classList.add(`role-${me.role}`);
+
   // Update header to show username + role badge
   const userEl = document.getElementById('currentUser');
   if (userEl) {
-    const roleLabel = (me.role || '').toUpperCase();
+    const roleLabel = me.role === 'admin_viewer' ? 'VIEW ONLY'
+                    : (me.role || '').toUpperCase();
     const roleColor = me.role === 'admin' ? '#002675'
+                    : me.role === 'admin_viewer' ? '#b91c1c'
                     : me.role === 'agency' ? '#7c3aed'
                     : '#0d9488';
     userEl.innerHTML = `
@@ -5332,22 +5508,35 @@ async function refreshGearBadges() {
   }
 }
 
-// ─── Lookup tables: agencies + agents ──────────────
+// ─── Lookup tables: agencies + agents + agency-owner names ──────────────
+// Loaded once at login. The agency-owner names feed the dashboard's bucketing
+// rule (a lead is "actioned" if its assigned agency owner OR assigned agent
+// has commented on it).
 async function loadLookupTables() {
-  const [{ data: agencies, error: agErr }, { data: agents, error: agtErr }] = await Promise.all([
+  const [
+    { data: agencies, error: agErr },
+    { data: agents,   error: agtErr },
+    { data: agencyUsers, error: usrErr },
+  ] = await Promise.all([
     sb.from('agencies').select('id, name'),
-    sb.from('agents').select('id, name, agency_id')
+    sb.from('agents').select('id, name, agency_id'),
+    sb.from('users').select('id, username, role, agency_id').eq('role', 'agency'),
   ]);
 
   if (agErr) console.error('Agencies load error:', agErr);
   if (agtErr) console.error('Agents load error:', agtErr);
+  if (usrErr) console.error('Agency users load error:', usrErr);
 
   agencyById = {};
   (agencies || []).forEach(a => { agencyById[a.id] = a; });
   agentById = {};
   (agents || []).forEach(a => { agentById[a.id] = a; });
+  agencyOwnerNameByAgencyId = {};
+  (agencyUsers || []).forEach(u => {
+    if (u.agency_id && u.username) agencyOwnerNameByAgencyId[u.agency_id] = u.username;
+  });
 
-  console.log(`✅ Loaded ${Object.keys(agencyById).length} agencies, ${Object.keys(agentById).length} agents`);
+  console.log(`✅ Loaded ${Object.keys(agencyById).length} agencies, ${Object.keys(agentById).length} agents, ${Object.keys(agencyOwnerNameByAgencyId).length} agency owners`);
 }
 
 function agencyName(id) {
@@ -5444,8 +5633,12 @@ function showGearForRole() {
   if (wrap)   wrap.style.display   = me ? 'block' : 'none';
   if (mvWrap) mvWrap.style.display = me ? 'block' : 'none';
 
-  // Toggle individual items based on role
+  // Toggle individual items based on role.
+  // `isAdminish` = admin OR view-only admin — both see the same admin pages
+  // (Users, Audit, Duplicates, etc.). View-only just can't do writes — the
+  // body.view-only CSS class hides the action buttons inside those pages.
   const isAdmin = me && me.role === 'admin';
+  const isAdminish = isAdmin || (me && me.role === 'admin_viewer');
   const isAgency = me && me.role === 'agency';
   const isAgent = me && me.role === 'agent';
 
@@ -5454,28 +5647,28 @@ function showGearForRole() {
     if (el) el.style.display = on ? '' : 'none';
   };
 
-  show('gearItem-users', isAdmin);
+  show('gearItem-users', isAdminish);
   show('gearItem-myAgents', isAgency);
-  show('gearItem-unassigned', isAdmin || isAgency);
-  show('gearItem-duplicates', isAdmin);
-  show('gearItem-deleted', isAdmin || isAgency || isAgent);
-  show('gearItem-audit', isAdmin);
-  show('gearDivider-archive', isAdmin || isAgency || isAgent);
-  show('gearHeader-archive', isAdmin || isAgency || isAgent);
+  show('gearItem-unassigned', isAdminish || isAgency);
+  show('gearItem-duplicates', isAdminish);
+  show('gearItem-deleted', isAdminish || isAgency || isAgent);
+  show('gearItem-audit', isAdminish);
+  show('gearDivider-archive', isAdminish || isAgency || isAgent);
+  show('gearHeader-archive', isAdminish || isAgency || isAgent);
 
   // Hide the "Manage" header if the user has no Manage items
   const manageHeader = document.querySelector('#gearMenu .gear-menu-header:not(#gearHeader-archive)');
   if (manageHeader) {
-    const hasManage = isAdmin || isAgency;
+    const hasManage = isAdminish || isAgency;
     manageHeader.style.display = hasManage ? '' : 'none';
   }
 
-  // Main-table filter chips — admin gets both, agency gets noAgent only
-  show('filterChip-noAgency', isAdmin);
-  show('filterChip-noAgent', isAdmin || isAgency);
+  // Main-table filter chips — admin (incl view-only) gets both, agency gets noAgent only
+  show('filterChip-noAgency', isAdminish);
+  show('filterChip-noAgent', isAdminish || isAgency);
   // Mobile equivalents
-  show('mvFilterChip-noAgency', isAdmin);
-  show('mvFilterChip-noAgent', isAdmin || isAgency);
+  show('mvFilterChip-noAgency', isAdminish);
+  show('mvFilterChip-noAgent', isAdminish || isAgency);
 }
 
 function toggleGearMenu(e) {
@@ -5615,11 +5808,14 @@ async function renderUsersPage() {
   // Users keyed by agency_id / agent_id — so we know which agency row corresponds to which user row
   const userByAgencyId = {};
   const userByAgentId = {};
+  // Both 'admin' and 'admin_viewer' roles surface in the Admins section so
+  // they can be managed together. They share the same gear/admin-page access;
+  // admin_viewer is just CSS-gated from writes.
   const adminUsers = [];
   (users || []).forEach(u => {
     if (u.role === 'agency' && u.agency_id) userByAgencyId[u.agency_id] = u;
     if (u.role === 'agent' && u.agent_id) userByAgentId[u.agent_id] = u;
-    if (u.role === 'admin') adminUsers.push(u);
+    if (u.role === 'admin' || u.role === 'admin_viewer') adminUsers.push(u);
   });
   // Sort admins: active first (alpha), then deactivated (alpha).
   adminUsers.sort((a, b) => {
@@ -5631,10 +5827,15 @@ async function renderUsersPage() {
 
   function buildAdminRow(adminUser) {
     const deactivated = adminUser.deactivated;
+    const isViewer = adminUser.role === 'admin_viewer';
     const isSelf = me && me.id === adminUser.id;
     const statusChip = deactivated
       ? '<span class="ag-chip deactivated"><span class="ag-dot"></span>Deactivated</span>'
       : '<span class="ag-chip active"><span class="ag-dot"></span>Active</span>';
+    // View-only chip — distinguishes admin vs admin_viewer at a glance.
+    const roleChip = isViewer
+      ? '<span class="ag-chip" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-weight:700;">VIEW ONLY</span>'
+      : '';
     // Self can't be deactivated; otherwise toggle Deactivate/Reactivate.
     let action = '';
     if (!isSelf) {
@@ -5649,6 +5850,7 @@ async function renderUsersPage() {
         <div class="agent-info-block">
           <div class="agent-name">${escapeHtml(adminUser.username || '—')}${selfTag}</div>
         </div>
+        ${roleChip}
         ${statusChip}
         ${action}
       </div>`;
@@ -5774,6 +5976,7 @@ async function renderUsersPage() {
       </div>
       <div>
         <button class="ag-btn primary" onclick="openInviteModal('admin')" style="background: #b91c1c; border-color: #b91c1c;">+ Invite admin</button>
+        <button class="ag-btn primary" onclick="openInviteModal('admin_viewer')" style="background: #fff; color: #b91c1c; border: 1px solid #b91c1c; margin-left: 8px;" title="View-only admin: sees everything, can't change anything">+ Invite view-only admin</button>
         <button class="ag-btn primary" style="margin-left: 8px;" onclick="openInviteModal('agency')">+ Invite agency</button>
         <button class="admin-btn-sm" style="margin-left: 8px;" onclick="closeAdminPage()">← Back to leads</button>
       </div>
@@ -6106,18 +6309,21 @@ function openInviteModal(mode, preselectAgencyId) {
 
   const title = mode === 'agency' ? 'Invite an agency'
                : mode === 'agent' ? 'Invite an agent'
+               : mode === 'admin_viewer' ? 'Invite a view-only admin'
                : 'Invite an admin';
   document.getElementById('inviteModalTitle').textContent = title;
 
-  // Admin invites get a louder subtitle warning users about full-read scope.
-  // Other modes use the default subtitle from the modal HTML.
+  // Admin invites get a louder subtitle warning about scope. View-only admins
+  // see the same data but can't write — same trust calculus on read scope.
   const sub = document.getElementById('inviteModalSub');
   if (sub) {
     sub.textContent = mode === 'admin'
       ? '⚠️ Admins see ALL leads, audit events, and admin pages. Only invite people you trust.'
+      : mode === 'admin_viewer'
+      ? '⚠️ View-only admins see ALL leads and audit events but can\'t make any changes. Trust them with the data; they just can\'t modify it.'
       : "They'll receive an email with a link to set their password.";
-    sub.style.color = mode === 'admin' ? '#b91c1c' : '';
-    sub.style.fontWeight = mode === 'admin' ? '600' : '';
+    sub.style.color = (mode === 'admin' || mode === 'admin_viewer') ? '#b91c1c' : '';
+    sub.style.fontWeight = (mode === 'admin' || mode === 'admin_viewer') ? '600' : '';
   }
 
   // Agency field visible only for agent invite
@@ -6182,6 +6388,20 @@ async function submitInvite() {
       `Continue?`
     );
     if (!ok) return;
+  } else if (inviteMode === 'admin_viewer') {
+    const ok = confirm(
+      `Invite ${name} (${email}) as a VIEW-ONLY admin?\n\n` +
+      `View-only admins can:\n` +
+      `  • see every lead in the system (no agency/agent scope)\n` +
+      `  • see the full audit log\n\n` +
+      `They CANNOT:\n` +
+      `  • add, edit, or delete leads\n` +
+      `  • add comments\n` +
+      `  • close out leads\n` +
+      `  • invite or deactivate users\n\n` +
+      `Continue?`
+    );
+    if (!ok) return;
   }
 
   btn.disabled = true;
@@ -6193,6 +6413,9 @@ async function submitInvite() {
     if (inviteMode === 'admin') {
       // No agency/agent rows to create — admin is a standalone user.
       body.role = 'admin';
+    } else if (inviteMode === 'admin_viewer') {
+      // Same shape as admin — no agency/agent rows. RLS restricts writes.
+      body.role = 'admin_viewer';
     } else if (inviteMode === 'agency') {
       // Generate a new agency id + row first, then invite with that agency_id
       const newAgencyId = 'ag_' + Date.now();
@@ -6386,19 +6609,28 @@ async function deactivateAdmin(userId, displayName) {
   // cache could be stale if another admin just changed something).
   const { data: admins, error } = await sb
     .from('users')
-    .select('id, deactivated')
-    .eq('role', 'admin');
+    .select('id, role, deactivated')
+    .in('role', ['admin', 'admin_viewer']);
   if (error) {
     alert('Could not verify admin count: ' + error.message);
     return;
   }
-  const activeAdmins = (admins || []).filter(u => !u.deactivated);
-  if (activeAdmins.length <= 1) {
-    alert("Can't deactivate the last active admin.\n\nInvite another admin first, then they can deactivate this one.");
-    return;
+
+  // Only enforce the "last active admin" guard for FULL admins. View-only
+  // admins can't manage users anyway, so deactivating the last viewer is
+  // fine — full admins still hold the keys.
+  const target = (admins || []).find(u => u.id === userId);
+  const targetIsViewer = target?.role === 'admin_viewer';
+  if (!targetIsViewer) {
+    const activeFullAdmins = (admins || []).filter(u => u.role === 'admin' && !u.deactivated);
+    if (activeFullAdmins.length <= 1) {
+      alert("Can't deactivate the last active admin.\n\nInvite another admin first, then they can deactivate this one.");
+      return;
+    }
   }
 
-  if (!confirm(`Deactivate admin ${displayName}?\n\nThey will lose login access immediately. You can reactivate them later from this page.`)) return;
+  const roleLabel = targetIsViewer ? 'view-only admin' : 'admin';
+  if (!confirm(`Deactivate ${roleLabel} ${displayName}?\n\nThey will lose login access immediately. You can reactivate them later from this page.`)) return;
 
   try {
     const resp = await callEdgeFunction('deactivate-user', { target_user_id: userId });
@@ -8967,8 +9199,12 @@ function parseLastComment(pocComments) {
   // Skip hidden entries — they're "disregard this", so the table preview
   // should show the most recent visible comment, not a struck-through one.
   const visible = entries.find(e => !e.hidden);
-  if (!visible) return { lastDate: '', preview: '' };
-  return { lastDate: visible.displayDate, preview: visible.text };
+  if (!visible) return { lastDate: '', preview: '', lastAuthor: null };
+  return {
+    lastDate: visible.displayDate,
+    preview: visible.text,
+    lastAuthor: visible.author || null,
+  };
 }
 
 // Parse comments into structured entries. Handles:
@@ -9028,9 +9264,13 @@ function renderCommentsForCard(rawComments) {
     }
     const textOnclick = e.hidden ? ' onclick="toggleHiddenCommentExpanded(this)"' : '';
 
+    // Author chip — shown only when attributed (legacy comments stay clean).
+    const authorChip = e.author
+      ? `<span class="lc-comments-author">${escapeHtml(e.author)}</span>`
+      : '';
     return `
       <li class="${rowClasses.join(' ')}">
-        <span class="lc-comments-date">${dateLabel}</span>
+        <span class="lc-comments-date">${dateLabel}${authorChip}</span>
         <div class="lc-comments-text"${textOnclick}>${textHtml}</div>
         ${actionsHtml}
       </li>`;
@@ -9318,14 +9558,22 @@ function parseAllComments(pocComments) {
       } catch (e) { /* not JSON, treat as plain */ }
     }
 
-    // 2) Stamped plain line: [DD-MM-YY] or [DD-MM-YYYY] optionally HH:MM, optional author
-    const m = lineForMatch.match(/^\[(\d{1,2})-(\d{1,2})-(\d{2,4})(?:\s+\d{1,2}:\d{1,2})?\]\s*(?:[\w@.]+:\s*)?(.+)$/);
+    // 2) Stamped plain line — variants we now accept:
+    //    [DD-MM-YY] text
+    //    [DD-MM-YY HH:MM] text
+    //    [DD-MM-YY · Author Name] text   ← new format, used to attribute the comment
+    //    [DD-MM-YY] author@email: text   ← legacy "email-style" attribution (still tolerated)
+    // The author capture group is OPTIONAL — pre-attribution legacy comments
+    // still parse cleanly. dashboard bucketing treats null-author entries as
+    // grandfathered "agent-authored".
+    const m = lineForMatch.match(/^\[(\d{1,2})-(\d{1,2})-(\d{2,4})(?:\s+\d{1,2}:\d{1,2})?(?:\s*·\s*([^\]]+?))?\]\s*(?:[\w@.]+:\s*)?(.+)$/);
     if (m) {
-      const [, d, mo, y, text] = m;
+      const [, d, mo, y, author, text] = m;
       const fullYear = y.length === 2 ? '20' + y : y;
       const dateStr = `${d.padStart(2,'0')}-${mo.padStart(2,'0')}-${fullYear}`;
       entries.push({
         displayDate: formatShortDate(dateStr),
+        author: author ? author.trim() : null,
         text,
         hidden: isHidden,
         firstLineIdx: lineIdx,
@@ -9375,13 +9623,17 @@ function parseAllComments(pocComments) {
 // currentEditingLead is the lead record being edited (v2's existing global).
 // We write comments directly to Supabase (commit-immediately model).
 
-function formatCommentStamp() {
-  // [DD-MM-YY] — 2-digit year, no time
+function formatCommentStamp(username) {
+  // [DD-MM-YY · Username] — 2-digit year, optional author after a middle dot.
+  // The author is used by the dashboard's bucketing logic to identify which
+  // entries were written by the lead's assigned agent (graduates the lead
+  // from New Leads → its temp column).
   const now = new Date();
   const d = String(now.getDate()).padStart(2, '0');
   const m = String(now.getMonth() + 1).padStart(2, '0');
   const y = String(now.getFullYear()).slice(-2);
-  return `[${d}-${m}-${y}]`;
+  const namePart = username ? ` · ${username}` : '';
+  return `[${d}-${m}-${y}${namePart}]`;
 }
 
 function updateCommentsTrigger() {
@@ -9447,9 +9699,15 @@ function renderCommentsLog() {
     const textHtml = paragraphs.length > 0
       ? paragraphs.map(p => `<p class="comment-para">${escapeHtml(p)}</p>`).join('')
       : '<p class="comment-para">&nbsp;</p>';
+    // Author chip: attributed comments show the author's name in a pill.
+    // Legacy entries (no author) show nothing — otherwise every existing
+    // comment in the system would be tagged "(unattributed)", which is noise.
+    const authorHtml = e.author
+      ? `<span class="comment-author-chip">${escapeHtml(e.author)}</span>`
+      : '';
     return `
       <div class="comment-entry">
-        <div class="comment-meta">${escapeHtml(e.displayDate || '—')}</div>
+        <div class="comment-meta">${escapeHtml(e.displayDate || '—')} ${authorHtml}</div>
         <div class="comment-text">${textHtml}</div>
       </div>
     `;
@@ -9466,8 +9724,10 @@ async function addNewComment() {
 
   if (!text) { errEl.textContent = 'Please write something first.'; return; }
 
-  // Build the new entry and prepend
-  const stamp = formatCommentStamp();
+  // Build the new entry and prepend. Include the current user's name in the
+  // stamp so the dashboard can identify comments authored by the lead's
+  // assigned agent (graduates the lead from New Leads → its temp column).
+  const stamp = formatCommentStamp(me?.username);
   const newEntry = `${stamp} ${text}`;
   const hiddenInput = document.getElementById('edit-comments');
   const existing = hiddenInput.value || '';
@@ -9830,7 +10090,7 @@ async function submitCloseOut() {
   // prefixed `[Closed: <outcome>]` so it's recognisable in the comments log.
   let mergedComments;
   if (notes) {
-    const stamp = formatCommentStamp();
+    const stamp = formatCommentStamp(me?.username);
     const newEntry = `${stamp} [Closed: ${outcomeLabel}] ${notes}`;
     const existing = lead.pocComments || '';
     mergedComments = existing.trim() ? `${newEntry}\n${existing}` : newEntry;
@@ -9901,7 +10161,7 @@ function relativeTimeAgo(iso) {
 function populateDashAgencyFilters() {
   const container = document.getElementById('dashFilters');
   if (!container) return;
-  if (me?.role !== 'admin') {
+  if (!isAdminLike()) {
     container.style.display = 'none';
     return;
   }
@@ -9940,31 +10200,79 @@ function setDashAgencyFilter(agencyId) {
   renderDashboardBoard();
 }
 
+// A lead is "actioned" if a comment was authored by the lead's *assigned
+// agency* (the role='agency' user) OR its *assigned agent*. The dashboard
+// uses this to decide between the New Leads column (not actioned) and the
+// temp column Hot/Warm/Cold (actioned). The rule is identical for every
+// viewer role — admin/agency/agent all see the same bucketing per lead.
+//
+// Grandfathering: comments without author attribution (pre-v3.4.3 legacy data)
+// are treated as if written by a responsible party. Once attribution is the
+// norm, this falls out naturally — every new comment carries its author.
+function isLeadActioned(lead) {
+  // No assignment at all → can't be "actioned by the assigned agency or agent".
+  if (!lead.assignedAgency || lead.assignedAgency === '—') return false;
+  if (!lead.pocComments || !String(lead.pocComments).trim()) return false;
+
+  const entries = parseAllComments(lead.pocComments).filter(e => !e.hidden);
+  if (entries.length === 0) return false;
+
+  // Build the set of names that count as "responsible party" comments — the
+  // assigned agent's display name + the assigned agency's owner username.
+  // Matched case-insensitively against `entry.author`.
+  const validAuthors = new Set();
+  if (lead.assignedAgent && lead.assignedAgent !== '—') {
+    const agent = agentById[lead.assignedAgent];
+    if (agent?.name) validAuthors.add(agent.name.trim().toLowerCase());
+  }
+  const ownerName = agencyOwnerNameByAgencyId[lead.assignedAgency];
+  if (ownerName) validAuthors.add(ownerName.trim().toLowerCase());
+
+  // Strict: a visible attributed comment by one of the responsible parties.
+  if (validAuthors.size > 0 && entries.some(e =>
+    e.author && validAuthors.has(e.author.trim().toLowerCase())
+  )) return true;
+
+  // Grandfather legacy unattributed comments as if responsible-party-authored.
+  if (entries.some(e => !e.author)) return true;
+
+  return false;
+}
+
 // Bucket every active lead by temperature + first-activity rule.
 // Excluded: closed leads (any of the 4 outcomes) + Star (auto-won).
+//
+// Agency role gets an extra `unassigned` bucket: leads in their agency with
+// no assigned agent. These are pulled out BEFORE the activity check so they
+// only appear in the Unassigned column (never duplicated elsewhere).
 function renderDashboardBoard() {
-  const buckets = { recent: [], hot: [], warm: [], cold: [] };
-  const applyAgencyFilter = me?.role === 'admin' && dashAgencyFilter.size > 0;
+  const buckets = { unassigned: [], recent: [], hot: [], warm: [], cold: [] };
+  const applyAgencyFilter = isAdminLike() && dashAgencyFilter.size > 0;
+  const isAgencyView = me?.role === 'agency';
 
   for (const lead of leadsData) {
     if (lead.closed && lead.closed !== '—') continue;
     if (lead.hotWarmStatus === 'star') continue;
     if (applyAgencyFilter && !dashAgencyFilter.has(lead.assignedAgency)) continue;
+
+    // Agency view: leads in my agency with no assigned agent → Unassigned column.
+    // This pre-empts the temp/activity check so the tile appears in exactly
+    // one column. Admin/agent roles don't get this column — their unassigned
+    // leads (if any) flow through to New Leads.
+    if (
+      isAgencyView &&
+      lead.assignedAgency === me.agencyId &&
+      (!lead.assignedAgent || lead.assignedAgent === '—')
+    ) {
+      buckets.unassigned.push(lead);
+      continue;
+    }
+
     const temp = (lead.hotWarmStatus || '').toLowerCase();
     if (!['hot', 'warm', 'cold'].includes(temp)) continue;
 
-    // "Activity" = any comment, any 48hr stamp, or a Follow Up state set.
-    const hasActivity =
-      (lead.pocComments && String(lead.pocComments).trim()) ||
-      (lead.roiEmail   && lead.roiEmail   !== '—') ||
-      (lead.call1      && lead.call1      !== '—') ||
-      (lead.call2      && lead.call2      !== '—') ||
-      (lead.sms        && lead.sms        !== '—') ||
-      (lead.finalEmail && lead.finalEmail !== '—') ||
-      (lead.followUp   && lead.followUp   !== '—');
-
-    if (!hasActivity) buckets.recent.push(lead);
-    else              buckets[temp].push(lead);
+    if (!isLeadActioned(lead)) buckets.recent.push(lead);
+    else                       buckets[temp].push(lead);
   }
 
   // Newest first by lead date (DD-MM-YYYY).
@@ -9980,56 +10288,88 @@ function renderDashboardBoard() {
     buckets[k].sort((a, b) => parseDDMMYYYY(b.date) - parseDDMMYYYY(a.date));
   }
 
-  renderDashboardColumn('dashColRecent', buckets.recent, true);
-  renderDashboardColumn('dashColHot',    buckets.hot);
-  renderDashboardColumn('dashColWarm',   buckets.warm);
-  renderDashboardColumn('dashColCold',   buckets.cold);
+  // Unassigned: pass `isUnassigned` so the tile shows "Assign an agent" in
+  // place of the comment-graduate hint and uses a distinct accent.
+  renderDashboardColumn('dashColUnassigned', buckets.unassigned, false, true);
+  renderDashboardColumn('dashColRecent',     buckets.recent, true);
+  renderDashboardColumn('dashColHot',        buckets.hot);
+  renderDashboardColumn('dashColWarm',       buckets.warm);
+  renderDashboardColumn('dashColCold',       buckets.cold);
 
   const setC = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = n; };
-  setC('dashCountRecent', buckets.recent.length);
-  setC('dashCountHot',    buckets.hot.length);
-  setC('dashCountWarm',   buckets.warm.length);
-  setC('dashCountCold',   buckets.cold.length);
+  setC('dashCountUnassigned', buckets.unassigned.length);
+  setC('dashCountRecent',     buckets.recent.length);
+  setC('dashCountHot',        buckets.hot.length);
+  setC('dashCountWarm',       buckets.warm.length);
+  setC('dashCountCold',       buckets.cold.length);
 }
 
-function renderDashboardColumn(containerId, leads, isRecent = false) {
+function renderDashboardColumn(containerId, leads, isRecent = false, isUnassigned = false) {
   const el = document.getElementById(containerId);
   if (!el) return;
   if (leads.length === 0) {
-    el.innerHTML = `<div class="dash-empty">${isRecent ? 'No new leads waiting' : 'No leads here yet'}</div>`;
+    const empty = isUnassigned
+      ? 'No unassigned leads — every lead in your agency has an agent'
+      : isRecent
+      ? 'No new leads waiting'
+      : 'No leads here yet';
+    el.innerHTML = `<div class="dash-empty">${empty}</div>`;
     return;
   }
-  el.innerHTML = leads.map(lead => buildDashboardTile(lead, isRecent)).join('');
+  el.innerHTML = leads.map(lead => buildDashboardTile(lead, isRecent, isUnassigned)).join('');
 }
 
-function buildDashboardTile(lead, isRecent) {
-  // In the New Leads column the tile head goes green (matches the column head),
-  // regardless of the lead's assigned temp. The temp emoji still shows so users
-  // can see which column the lead will graduate into on first activity.
-  // In Hot/Warm/Cold columns the tile head uses the lead's own temp colour.
+function buildDashboardTile(lead, isRecent, isUnassigned = false) {
+  // Column-specific header colour:
+  //   Unassigned column → orange band (matches column head)
+  //   New Leads column  → green band (matches column head)
+  //   Hot/Warm/Cold     → lead's own temp colour
+  // Temp emoji always shows the lead's hotWarmStatus so the user can see
+  // what temperature category the lead will land in once it graduates.
   const temp = (lead.hotWarmStatus || '').toLowerCase();
-  const headCls = isRecent ? 'new' : (['hot','warm','cold'].includes(temp) ? temp : 'rec');
+  const headCls = isUnassigned ? 'unassigned'
+                : isRecent ? 'new'
+                : (['hot','warm','cold'].includes(temp) ? temp : 'rec');
   const headEmoji = temp === 'hot'  ? '🔥'
                    : temp === 'warm' ? '☀️'
                    : temp === 'cold' ? '❄️'
                    : '';
   const emojiCls = temp === 'cold' ? 'em-cold' : ''; // hooks the cold-only CSS filter
 
+  // Parse the most recent visible comment once — used for both the preview
+  // text AND the meta-row date+author (so the tile shows last activity rather
+  // than the lead-creation date).
+  const parsed = parseLastComment(lead.pocComments);
+  const hasComments = !!(parsed && parsed.preview);
+
   let commentHtml;
-  if (isRecent) {
-    commentHtml = '<div class="dash-tile-comment empty">No activity yet — log a comment or stamp to graduate</div>';
-  } else if (lead.pocComments && String(lead.pocComments).trim()) {
-    const parsed = parseLastComment(lead.pocComments);
-    const text = parsed && parsed.preview
-      ? parsed.preview
-      : String(lead.pocComments).split('\n')[0].slice(0, 140);
+  if (isUnassigned) {
+    commentHtml = '<div class="dash-tile-comment empty">No agent assigned — open the lead to assign one</div>';
+  } else if (isRecent) {
+    commentHtml = '<div class="dash-tile-comment empty">No activity yet — log a comment to graduate</div>';
+  } else if (hasComments) {
+    const text = parsed.preview;
     commentHtml = `<div class="dash-tile-comment">${escapeHtml(text)}</div>`;
   } else {
     commentHtml = '<div class="dash-tile-comment empty">No comments yet</div>';
   }
 
   const safeName = escapeHtml(lead.name || '(unnamed)');
-  const safeDate = escapeHtml(formatShortDate(lead.date) || '—');
+
+  // Meta-row date: prefer the last comment's date when comments exist, fall
+  // back to the lead-creation date for leads still in New Leads / no comments.
+  // First-name only for the author tag (compact in the narrow meta row).
+  const metaDateText = hasComments && parsed.lastDate
+    ? parsed.lastDate
+    : (formatShortDate(lead.date) || '—');
+  const firstName = parsed && parsed.lastAuthor
+    ? String(parsed.lastAuthor).trim().split(/\s+/)[0]
+    : '';
+  const safeMetaDate = escapeHtml(metaDateText);
+  const safeFirstName = escapeHtml(firstName);
+  const dateAuthorHtml = firstName
+    ? `<span class="date">${safeMetaDate} · <strong>${safeFirstName}</strong></span>`
+    : `<span class="date">${safeMetaDate}</span>`;
 
   // Agency rendered with a small building icon. lead.assignedAgency is the
   // agency *ID* — resolve to the display name via agencyName(). Hidden entirely
@@ -10052,7 +10392,7 @@ function buildDashboardTile(lead, isRecent) {
       </div>
       <div class="dash-tile-body">
         <div class="dash-tile-meta">
-          <span class="date">${safeDate}</span>
+          ${dateAuthorHtml}
           ${agencyHtml}
         </div>
         ${commentHtml}
