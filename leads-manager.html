@@ -3782,11 +3782,13 @@ body.view-only .view-only-banner { display: flex !important; }
    the lead's temperature will be once assigned. */
 .dash-tile.t-unassigned .dash-tile-head { background: #ffedd5; color: #9a3412; border-bottom-color: #fdba74; }
 
-/* Unassigned column is agency-only. Hidden by default; revealed for agency role. */
+/* Unassigned column is agency-only AND only shown when there's at least one
+   unassigned lead. `body.has-unassigned` is toggled by renderDashboardBoard
+   based on the bucket count. Empty Unassigned → column + 6th-col grid slot
+   collapse so the layout looks identical to admin's 5-col view. */
 .dash-col-unassigned { display: none; }
-body.role-agency .dash-col-unassigned { display: flex; }
-/* Grid sizing: 5 cols by default, 6 when the Unassigned column is visible. */
-body.role-agency .dash-board { grid-template-columns: repeat(6, minmax(0,1fr)); }
+body.role-agency.has-unassigned .dash-col-unassigned { display: flex; }
+body.role-agency.has-unassigned .dash-board { grid-template-columns: repeat(6, minmax(0,1fr)); }
 @media (max-width: 1280px) {
   body.role-agency .dash-board { grid-template-columns: repeat(3, minmax(0,1fr)); }
 }
@@ -10287,6 +10289,10 @@ function renderDashboardBoard() {
   for (const k of Object.keys(buckets)) {
     buckets[k].sort((a, b) => parseDDMMYYYY(b.date) - parseDDMMYYYY(a.date));
   }
+
+  // Toggle has-unassigned on body so the CSS hides the Unassigned column +
+  // collapses the grid back to 5 cols when there's nothing to show.
+  document.body.classList.toggle('has-unassigned', buckets.unassigned.length > 0);
 
   // Unassigned: pass `isUnassigned` so the tile shows "Assign an agent" in
   // place of the comment-graduate hint and uses a distinct accent.
